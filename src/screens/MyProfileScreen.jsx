@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
-import { useFonts } from 'expo-font';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "react-native";
 import * as SplashScreen from 'expo-splash-screen';
-import MyProfileSettingsModal from "../components/myProfile/MyProfileSettingsModal";
+import MyProfileSettingsModal from "../components/myProfile/modal/MyProfileSettingsModal";
+import AboutMeBlock from "../components/myProfile/AboutMeBlock";
+import CompaniesBlock from "../components/myProfile/CompaniesBlock";
+import EditProfileModal from "../components/myProfile/modal/EditProfileModal";
+import EditRoleModal from "../components/myProfile/modal/EditRoleModal";
 
 
 SplashScreen.preventAutoHideAsync();
@@ -10,125 +13,62 @@ SplashScreen.preventAutoHideAsync();
 const MyProfileScreen = () => {
 
   const [activeButton, setActiveButton] = useState(1);
-  const [modalOpen, setModalOpen] = useState([false]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [changeInfoModalOpen, setChangeInfoModalOpen] = useState(false);
+  const [changeRoleModalOpen, setChangeRoleModalOpen] = useState(false);
 
   return (
     <View style={styles.container}>
-        <View style={styles.header}>
-            <View style={styles.nameAndRoleContainer}>
-                <View style={styles.nameContainer}>
-                    <Text style={styles.name}>
-                        Рустам Кутлубаев
-                    </Text>
-                    <View style={styles.openDropDown}>
-                        <TouchableOpacity onPress={() => setModalOpen(true)}>
-                            <Image style={styles.dropDownIcon} source={require('../../assets/images/drop_down.png')}/>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                <View style={styles.roleContainer}>
-                    <Text style={styles.role}>
-                        Владелец сайта
-                    </Text>
-                </View>
+      <View style={styles.header}>
+        <View style={styles.nameAndRoleContainer}>
+          <View style={styles.nameContainer}>
+            <Text style={styles.name}>
+              Рустам Кутлубаев
+            </Text>
+            <View style={styles.openDropDown}>
+              <TouchableOpacity onPress={() => setModalOpen(true)}>
+                <Image style={styles.dropDownIcon} source={require('../../assets/images/drop_down.png')} />
+              </TouchableOpacity>
             </View>
-            <View style={styles.headerButtons}>
-                <View style={[styles.reviewButtonContainer, activeButton == 1 ? styles.activeHeaderButtonContainer : null]}>
-                    <Text style={[styles.reviewButton, activeButton == 1 ? styles.activeHeaderButton : null]}>
-                        Обзор
-                    </Text>
-                </View>
-                <View style={[styles.companiesButtonContainer, activeButton == 2 ? styles.activeHeaderButtonContainer : null]}>
-                    <Text style={[styles.companiesButton, activeButton == 2 ? styles.activeHeaderButton : null]}>
-                        Компании
-                    </Text>
-                </View>
-            </View>
+          </View>
+          <View style={styles.roleContainer}>
+            <Text style={styles.role}>
+              Владелец сайта
+            </Text>
+          </View>
         </View>
-        <View style={styles.main}>
-           <View style={styles.mainInfoContainer}>
-              <Text style={styles.mainInfoTitle}>
-                Основные данные
+        <View style={styles.headerButtons}>
+					<TouchableOpacity onPress={() => setActiveButton(1)}>
+            <View style={[styles.reviewButtonContainer, activeButton == 1 ? styles.activeHeaderButtonContainer : null]}>
+              <Text style={[styles.reviewButton, activeButton == 1 ? styles.activeHeaderButton : null]}>
+                Обзор
               </Text>
-              <View style={styles.mainInfo}>
-                  <View style={styles.mainInfoBlock}>
-                    <View style={styles.mainInfoBlockLeft}>
-                      <Text style={styles.mainInfoBlockTitle}>
-                        Имя
-                      </Text>
-                      <Text style={styles.mainInfoBlockText}>
-                        Рустам Кутлубаев
-                      </Text>
-                    </View>
-                    <TouchableOpacity><Image style={styles.mainInfoBlockImage} source={require('../../assets/images/arrow_right.png')}/></TouchableOpacity>
-                  </View>
-                  <View style={styles.mainInfoBlockBorder}></View>
-                  <View style={styles.mainInfoBlock}>
-                    <View style={styles.mainInfoBlockLeft}>
-                      <Text style={styles.mainInfoBlockTitle}>
-                        Email
-                      </Text>
-                      <Text style={styles.mainInfoBlockText}>
-                        rust.k@sort-1.pro
-                      </Text>
-                    </View>
-                    <TouchableOpacity><Image style={styles.mainInfoBlockImage} source={require('../../assets/images/arrow_right.png')}/></TouchableOpacity>
-                  </View>
-                  <View style={styles.mainInfoBlockBorder}></View>
-                  <View style={styles.mainInfoBlock}>
-                    <View style={styles.mainInfoBlockLeft}>
-                      <Text style={styles.mainInfoBlockTitle}>
-                        Мобильный номер
-                      </Text>
-                      <Text style={styles.mainInfoBlockText}>
-                        +7 (903) 960-84-66
-                      </Text>
-                    </View>
-                    <TouchableOpacity><Image style={styles.mainInfoBlockImage} source={require('../../assets/images/arrow_right.png')}/></TouchableOpacity>
-                  </View>
-              </View>
-           </View>
-           <View style={styles.anotherBlock}>
-            <View style={styles.mainInfoBlock}>
-                <View style={styles.mainInfoBlockLeft}>
-                  <Text style={styles.mainInfoBlockTitle}>
-                    Уровень доступа
-                  </Text>
-                  <Text style={styles.mainInfoBlockText}>
-                    Владелец сайта
-                  </Text>
-                </View>
-                <TouchableOpacity><Image style={styles.mainInfoBlockImage} source={require('../../assets/images/arrow_right.png')}/></TouchableOpacity>
-              </View>
-           </View>
-           <View style={styles.anotherBlock}>
-            <View style={styles.mainInfoBlock}>
-                <View style={styles.mainInfoBlockLeft}>
-                  <Text style={styles.mainInfoBlockTitle}>
-                    Пароль
-                  </Text>
-                  <Text style={styles.mainInfoBlockText}>
-                    Изменен 2 Дек 2022
-                  </Text>
-                </View>
-                <TouchableOpacity><Image style={styles.mainInfoBlockImage} source={require('../../assets/images/arrow_right.png')}/></TouchableOpacity>
-              </View>
-           </View>
-           <View style={styles.anotherBlock}>
-            <View style={styles.mainInfoBlock}>
-                <View style={styles.mainInfoBlockLeft}>
-                  <Text style={styles.mainInfoBlockTitle}>
-                    API
-                  </Text>
-                  <Text style={styles.mainInfoBlockText}>
-                    Включен
-                  </Text>
-                </View>
-                <TouchableOpacity><Image style={styles.mainInfoBlockImage} source={require('../../assets/images/arrow_right.png')}/></TouchableOpacity>
-              </View>
-           </View>
+            </View>
+          </TouchableOpacity>   
+          <TouchableOpacity onPress={() => setActiveButton(2)}>
+            <View style={[styles.companiesButtonContainer, activeButton == 2 ? styles.activeHeaderButtonContainer : null]}>
+              <Text style={[styles.companiesButton, activeButton == 2 ? styles.activeHeaderButton : null]}>
+                Компании
+              </Text>
+            </View>
+          </TouchableOpacity>
         </View>
-        <MyProfileSettingsModal visible={modalOpen} setVisible={setModalOpen}/>
+      </View>
+      <View style={styles.main}>
+        <ScrollView style={{ width: '100%' }} >
+          {activeButton == 1
+          ?
+          <AboutMeBlock />
+          :
+          <CompaniesBlock/>
+          }
+        </ScrollView>
+      </View>
+      {/* Это тип футер */}
+      
+      <MyProfileSettingsModal visible={modalOpen} setVisible={setModalOpen} setChangeInfoModalOpen={setChangeInfoModalOpen} setChangeRoleModalOpen={setChangeRoleModalOpen}/>
+      <EditProfileModal visible={changeInfoModalOpen} onClose={() => setChangeInfoModalOpen(false)}/>
+      <EditRoleModal visible={changeRoleModalOpen} onClose={() => setChangeRoleModalOpen(false)}/>
     </View>
   );
 };
@@ -160,14 +100,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto'
   },
   openDropDown: {
-    
+
   },
   dropDownIcon: {
     width: 32,
     height: 32
   },
   roleContainer: {
-    
+
   },
   role: {
     fontFamily: 'Roboto',
@@ -210,58 +150,6 @@ const styles = StyleSheet.create({
   },
   main: {
     padding: 16,
-  },
-  mainInfoContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16
-  },
-  mainInfo: {
-    
-  },
-  mainInfoTitle: {
-    fontSize: 16,
-    fontFamily: 'Roboto',
-    fontWeight: 500,
-    lineHeight: 24,
-    marginBottom: 4,
-    color: '#333333'
-  },
-  mainInfoBlock: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  mainInfoBlockLeft: {
-    
-  },
-  mainInfoBlockTitle: {
-    fontStyle: 'Roboto',
-    fontSize: 16,
-    color: '#333333',
-    opacity: 0.7,
-    marginBottom: 4
-  },
-  mainInfoBlockText: {
-    fontStyle: 'Roboto',
-    fontSize: 16,
-    color: '#333333',
-  },
-  mainInfoBlockImage: {
-    width: 32,
-    height: 32
-  },
-  mainInfoBlockBorder: {
-    borderBottomColor: '#E0E0E0',
-    borderBottomWidth: 1,
-    marginTop: 16,
-    marginBottom: 16
-  },
-  anotherBlock:{
-    padding: 16,
-    borderRadius: 16,
-    backgroundColor: '#FFFFFF',
-    marginBottom: 4
+    flex: 1
   },
 })

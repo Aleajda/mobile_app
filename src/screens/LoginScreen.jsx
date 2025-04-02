@@ -13,10 +13,10 @@ const LoginScreen = ({ navigation }) => {
 
   const handleLogin = () => {
     if (username && password) {
-      AuthApi.getSeed().then(async (res) => {
-        await AuthApi.Login(username, password, res);
-        console.log(await AuthApi.getSessionId());
-      })
+      // AuthApi.getSeed().then(async (res) => {
+      //   await AuthApi.Login(username, password, res);
+      //   console.log(await AuthApi.getSessionId());
+      // })
       // navigation.navigate("MainPage", { username });
     } else {
       // AuthApi.getSeed();
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderWidth: 1,
     borderColor: "#BDBDBD",
-    borderRadius: 5,
+    borderRadius: 8,
     padding: 10,
     marginBottom: 16,
   },

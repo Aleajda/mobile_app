@@ -15,7 +15,7 @@ const ProfileScreen = ({ route, navigation }) => {
       <View style={styles.contentContainer}>
           <View style={styles.aboutMeContainer}>
             <View style={styles.aboutMe}>
-              <Text style={styles.aboutMeName}>{route.params.username}</Text>
+              <Text style={styles.aboutMeName}>{route.params.username || "Имя пользователя"}</Text>
               <Text style={styles.aboutMeEmail}>email@email.com</Text>
             </View>
             <TouchableOpacity><Image style={styles.aboutMeArrowIcon} source={require('../../assets/images/arrow_right.png')}/></TouchableOpacity>

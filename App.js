@@ -7,7 +7,7 @@ import * as SplashScreen from 'expo-splash-screen';
 export default function App() {
 
   const [loaded, error] = useFonts({
-      'Roboto': require('./assets/fonts/Roboto-Regular.ttf'),
+      'Roboto': require('./assets/fonts/Roboto.ttf'),
       'Emblema': require('./assets/fonts/EmblemaOne-Regular.ttf')
     });
   

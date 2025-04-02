@@ -1,5 +1,5 @@
-b{
-  "name": "my_app3",
+{
+  "name": "my_app",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -14,14 +14,14 @@ b{
     "@react-navigation/drawer": "^7.1.2",
     "@react-navigation/native": "^7.0.15",
     "axios": "^1.8.4",
-    "expo": "~52.0.38",
+    "expo": "^52.0.41",
     "expo-font": "^13.0.4",
     "expo-splash-screen": "^0.29.22",
     "expo-status-bar": "~2.0.1",
     "js-sha256": "^0.11.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "react-native": "0.76.7",
+    "react-native": "^0.76.8",
     "react-native-calendars": "^1.1310.0",
     "react-native-dotenv": "^3.4.11",
     "react-native-gesture-handler": "~2.20.2",
@@ -33,7 +33,8 @@ b{
     "react-native-web": "~0.19.13"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "babel-plugin-module-resolver": "^5.0.2"
   },
   "private": true
 }
