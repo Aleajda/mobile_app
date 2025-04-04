@@ -136,14 +136,14 @@ const styles = StyleSheet.create({
       headerText: {
         color: '#333333',
         fontSize: 24,
-        fontWeight: 500,
+        fontWeight: 'bold',
         fontFamily: 'Roboto',
       },
       headerClose: {
         color: '#2F80ED',
         paddingHorizontal: 12,
         fontSize: 16,
-        fontWeight: 500,
+        fontWeight: 'bold',
         fontFamily: 'Roboto',
       },
       mainContent: {
@@ -191,9 +191,8 @@ const styles = StyleSheet.create({
       buttonText: {
         fontFamily: 'Roboto',
         fontSize: 16,
-        fontWeight: 500,
+        fontWeight: 'bold',
         color: '#FFFFFF',
-        lineHeight: 16,
       }
 })
 

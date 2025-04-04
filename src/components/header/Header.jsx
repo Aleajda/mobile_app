@@ -4,7 +4,7 @@ import { View, Image, StyleSheet, TouchableOpacity, Text } from 'react-native';
 const Header = ({navigation}) => {
   return (
     <View style={styles.container}>
-        <TouchableOpacity onPress={() => navigation.openDrawer()}><Image style={styles.menuIcon} source={require('../../assets/images/menu_icon.png')}/></TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.openDrawer()}><Image style={styles.menuIcon} source={require('@assets/images/menu_icon.png')}/></TouchableOpacity>
     
         <View style={styles.brandContainer}>
             <Text style={styles.brand}>Sort1.pro</Text>
@@ -12,7 +12,7 @@ const Header = ({navigation}) => {
 
         <View>
             <View style={styles.productCardContainer}>
-                <TouchableOpacity><Image style={styles.productCardIcon} source={require('../../assets/images/basket_filled_24px.png')}/></TouchableOpacity>
+                <TouchableOpacity><Image style={styles.productCardIcon} source={require('@assets/images/basket_filled_24px.png')}/></TouchableOpacity>
                 <Text style={styles.productCardCount}>2</Text>
             </View>
         </View>
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Roboto',
         color: "#333333",
         fontSize: 16,
-        fontWeight: 500,
+        fontWeight: 'bold',
     },
     productCardContainer: {
         width: 58,
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Roboto',
         marginLeft: 4,
         color: '#2F80ED',
-        fontWeight: 500,
+        fontWeight: 'bold',
         fontSize: 16,
     },
     menuIcon: {

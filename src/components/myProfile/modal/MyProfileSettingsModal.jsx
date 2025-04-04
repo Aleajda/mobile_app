@@ -11,7 +11,7 @@ import {
 
 
 
-const MyProfileSettingsModal = ({ visible, setVisible, setChangeInfoModalOpen, setChangeRoleModalOpen }) => {
+const MyProfileSettingsModal = ({ visible, setVisible, setChangeInfoModalOpen, setChangeRoleModalOpen, setChangePasswordModalOpen }) => {
 
 
 
@@ -63,7 +63,7 @@ const MyProfileSettingsModal = ({ visible, setVisible, setChangeInfoModalOpen, s
                             </Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => setChangePasswordModalOpen(true)}>
                         <View style={styles.blockContainer}>
                             <Text style={styles.blockText}>Сменить пароль</Text>
                         </View>

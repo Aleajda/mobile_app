@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
       headerText: {
         color: '#333333',
         fontSize: 24,
-        fontWeight: 500,
+        fontWeight: 'bold',
         fontFamily: 'Roboto',
       },
       mainContent: {
@@ -131,9 +131,8 @@ const styles = StyleSheet.create({
       rightButtonText: {
         fontFamily: 'Roboto',
         fontSize: 16,
-        fontWeight: 500,
+        fontWeight: 'bold',
         color: '#FFFFFF',
-        lineHeight: 16,
       },
       leftButtonContainer: {
         height: 32,
@@ -147,8 +146,7 @@ const styles = StyleSheet.create({
       leftButtonText: {
         fontFamily: 'Roboto',
         fontSize: 16,
-        fontWeight: 500,
+        fontWeight: 'bold',
         color: '#2F80ED',
-        lineHeight: 16
       }
 })

@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     addNewBtnText: {
         fontFamily: 'Roboto',
         fontSize: 16,
-        fontWeight: 500,
+        fontWeight: 'bold',
         color: '#2F80ED'
     },
     companiesBlock:{
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     companiesBlockTitle: {
         fontFamily: 'Roboto',
         fontSize: 16,
-        fontWeight: 500,
+        fontWeight: 'bold',
         color: '#333333'
     },
     companiesBlockDescription: {

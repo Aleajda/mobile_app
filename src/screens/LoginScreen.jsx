@@ -176,14 +176,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     color: "#333333",
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: 'bold',
   },
   title: {
     fontFamily: 'Roboto',
     padding: 16,
     color: "#fff",
     fontSize: 32,
-    fontWeight: 500,
+    fontWeight: 'bold',
     lineHeight: 32,
     textAlign: "center",
   },
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 16,
     color: "#333333B2",
-    fontWeight: 500,
+    fontWeight: 'bold',
   },
   activeTabContainer: {
     backgroundColor: "#2F80ED1A",
@@ -236,14 +236,14 @@ const styles = StyleSheet.create({
     marginTop: 14,
     backgroundColor: "#007bff",
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 8,
     alignItems: "center",
   },
   buttonText: {
     fontFamily: 'Roboto',
     color: "#fff",
     fontSize: 16,
-    fontWeight: 500,
+    fontWeight: 'bold',
   },
 });
 

@@ -6,17 +6,20 @@ import AboutMeBlock from "../components/myProfile/AboutMeBlock";
 import CompaniesBlock from "../components/myProfile/CompaniesBlock";
 import EditProfileModal from "../components/myProfile/modal/EditProfileModal";
 import EditRoleModal from "../components/myProfile/modal/EditRoleModal";
+import EditPasswordModal from "../components/myProfile/modal/EditPasswordModal";
 
 
 SplashScreen.preventAutoHideAsync();
 
-const MyProfileScreen = () => {
+const MyProfileScreen = ({ route }) => {
 
   const [activeButton, setActiveButton] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [changeInfoModalOpen, setChangeInfoModalOpen] = useState(false);
   const [changeRoleModalOpen, setChangeRoleModalOpen] = useState(false);
-
+  const [changePasswordModalOpen, setChangePasswordModalOpen] = useState(false);
+  const { aboutMeButton } = route.params;
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -25,7 +28,7 @@ const MyProfileScreen = () => {
             <Text style={styles.name}>
               Рустам Кутлубаев
             </Text>
-            <View style={styles.openDropDown}>
+            <View style={[styles.openDropDown, aboutMeButton ? null : {display: 'none'}]} >
               <TouchableOpacity onPress={() => setModalOpen(true)}>
                 <Image style={styles.dropDownIcon} source={require('../../assets/images/drop_down.png')} />
               </TouchableOpacity>
@@ -66,9 +69,10 @@ const MyProfileScreen = () => {
       </View>
       {/* Это тип футер */}
       
-      <MyProfileSettingsModal visible={modalOpen} setVisible={setModalOpen} setChangeInfoModalOpen={setChangeInfoModalOpen} setChangeRoleModalOpen={setChangeRoleModalOpen}/>
+      <MyProfileSettingsModal visible={modalOpen} setVisible={setModalOpen} setChangeInfoModalOpen={setChangeInfoModalOpen} setChangeRoleModalOpen={setChangeRoleModalOpen} setChangePasswordModalOpen={setChangePasswordModalOpen}/>
       <EditProfileModal visible={changeInfoModalOpen} onClose={() => setChangeInfoModalOpen(false)}/>
       <EditRoleModal visible={changeRoleModalOpen} onClose={() => setChangeRoleModalOpen(false)}/>
+      <EditPasswordModal visible={changePasswordModalOpen} onClose={() => setChangePasswordModalOpen(false)}/>
     </View>
   );
 };
@@ -95,7 +99,7 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 24,
-    fontWeight: 500,
+    fontWeight: 'bold',
     color: '#333333',
     fontFamily: 'Roboto'
   },
@@ -135,7 +139,7 @@ const styles = StyleSheet.create({
   reviewButton: {
     fontFamily: 'Roboto',
     fontSize: 16,
-    fontWeight: 500,
+    fontWeight: 'bold',
     color: '#333333'
   },
   companiesButtonContainer: {
@@ -145,7 +149,7 @@ const styles = StyleSheet.create({
   companiesButton: {
     fontFamily: 'Roboto',
     fontSize: 16,
-    fontWeight: 500,
+    fontWeight: 'bold',
     color: '#333333'
   },
   main: {

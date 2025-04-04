@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'Roboto',
     fontSize: 24,
-    fontWeight: 500,
+    fontWeight: 'bold',
     color: '#333333'
   },
   contentContainer: {
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   },
   aboutMeName: {
     fontFamily: 'Roboto',
-    fontWeight: 500,
+    fontWeight: 'bold',
     fontSize: 16,
     
     color: "#333333"
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 16,
     color: "#333333B2",
-    fontWeight: 500,
+    fontWeight: 'bold',
   },
   activeTabContainer: {
     backgroundColor: "#2F80ED1A",
@@ -189,12 +189,12 @@ const styles = StyleSheet.create({
   infoText1: {
     fontFamily: 'Roboto',
     fontSize: 16,
-    fontWeight: 500
+    fontWeight: 'bold'
   },
   infoText2: {
     fontFamily: 'Roboto',
     fontSize: 32,
-    fontWeight: 500
+    fontWeight: 'bold'
   },
   infoBorder: {
     borderTopWidth: 1,

@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     mainInfoTitle: {
         fontSize: 16,
         fontFamily: "Roboto",
-        fontWeight: 500,
+        fontWeight: 'bold',
         lineHeight: 24,
         marginBottom: 4,
         color: "#333333",
