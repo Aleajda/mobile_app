@@ -10,8 +10,8 @@ import EditRoleModal from "../components/myProfile/modal/EditRoleModal";
 
 SplashScreen.preventAutoHideAsync();
 
-const MyProfileScreen = ({ navigation }) => {
-
+const UsersScreen = ({ navigation }) => {
+  
   // const [activeButton, setActiveButton] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [changeInfoModalOpen, setChangeInfoModalOpen] = useState(false);
@@ -78,7 +78,7 @@ const MyProfileScreen = ({ navigation }) => {
   );
 };
 
-export default MyProfileScreen;
+export default UsersScreen;
 
 const styles = StyleSheet.create({
   container: {

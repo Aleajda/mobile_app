@@ -18,7 +18,7 @@ const MyProfileScreen = ({ route }) => {
   const [changeInfoModalOpen, setChangeInfoModalOpen] = useState(false);
   const [changeRoleModalOpen, setChangeRoleModalOpen] = useState(false);
   const [changePasswordModalOpen, setChangePasswordModalOpen] = useState(false);
-  const { aboutMeButton } = route.params;
+  const { aboutMeButton, role, username } = route.params;
   
   return (
     <View style={styles.container}>
@@ -26,7 +26,7 @@ const MyProfileScreen = ({ route }) => {
         <View style={styles.nameAndRoleContainer}>
           <View style={styles.nameContainer}>
             <Text style={styles.name}>
-              Рустам Кутлубаев
+              {username ? username : 'Рустам Кутлубаев'}
             </Text>
             <View style={[styles.openDropDown, aboutMeButton ? null : {display: 'none'}]} >
               <TouchableOpacity onPress={() => setModalOpen(true)}>
@@ -36,7 +36,7 @@ const MyProfileScreen = ({ route }) => {
           </View>
           <View style={styles.roleContainer}>
             <Text style={styles.role}>
-              Владелец сайта
+              {role ? role : 'Владелец сайта'}
             </Text>
           </View>
         </View>

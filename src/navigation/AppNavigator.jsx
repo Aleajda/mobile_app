@@ -10,6 +10,7 @@ import UsersScreen from '../screens/UsersScreen';
 import { Text, View } from 'react-native';
 import GoBackHeader from '../components/header/GoBackHeader';
 import SitesScreen from '../screens/SitesScreen';
+import ContractorScreen from '../screens/ContractorScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -23,16 +24,16 @@ const AppNavigator = () => {
         <Drawer.Screen name="Users" component={UsersScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
         <Drawer.Screen name="Sites" component={SitesScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
         <Drawer.Screen name="UsersWithHomeButtons" component={ProfileScreen} options={({ navigation }) => ({header: () => <View><Header navigation={navigation} /><GoBackHeader /></View>, drawerItemStyle: {display: 'none'}})} initialParams={{ aboutMeButton: false }}/>
+        <Drawer.Screen name="Contractors" component={ContractorScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
         {/* Не сделано */}
-        <Drawer.Screen name="Корзина" component={UsersScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
+        {/* <Drawer.Screen name="Корзина" component={UsersScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
         <Drawer.Screen name="Поиск детали" component={UsersScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
-        <Drawer.Screen name="Контрагенты" component={UsersScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
         <Drawer.Screen name="Заказы" component={UsersScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
         <Drawer.Screen name="Платежи" component={UsersScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
         <Drawer.Screen name="Документы" component={UsersScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
         <Drawer.Screen name="Отчеты" component={UsersScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
         <Drawer.Screen name="Профили поставщиков" component={UsersScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
-        <Drawer.Screen name="Помощь" component={UsersScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
+        <Drawer.Screen name="Помощь" component={UsersScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} /> */}
       </Drawer.Navigator>
     </NavigationContainer>
   );

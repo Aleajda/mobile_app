@@ -4,7 +4,7 @@
     "slug": "my_app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/menu_icon.png",
+    "icon": "./assets/images/logo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -19,10 +19,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/menu_icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.aleajda.my_app"
     },
     "web": {
       "favicon": "./assets/images/menu_icon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "31a4aed6-8713-405d-84e2-a9d8fbd57ceb"
+      }
     }
   }
 }

@@ -13,7 +13,7 @@ const SitesBlock = ({ navigation }) => {
                     <Text style={styles.addNewBtnText}>Добавить сайт</Text>
                 </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate("UsersWithHomeButtons")}>
+            <TouchableOpacity>
             <View style={styles.usersBlock}>
                 <View style={styles.usersBlockText}>
                     <Text style={styles.usersBlockTitle}>shop.idetta.ru</Text>
@@ -32,7 +32,7 @@ const SitesBlock = ({ navigation }) => {
                 </TouchableOpacity>
             </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate("UsersWithHomeButtons")}>
+            <TouchableOpacity>
             <View style={styles.usersBlock}>
                 <View style={styles.usersBlockText}>
                     <Text style={styles.usersBlockTitle}>91.244.252.140:8081</Text>

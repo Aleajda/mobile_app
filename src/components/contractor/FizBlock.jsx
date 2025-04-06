@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Image, StyleSheet, TouchableOpacity, View, Text } from "react-native";
 
 
-const CompaniesBlock = ({ navigation }) => {
+const FizBlock = () => {
 
     const [visible, setVisible] = useState(false);
 
@@ -10,18 +10,21 @@ const CompaniesBlock = ({ navigation }) => {
         <View>
             <TouchableOpacity>
                 <View style={styles.addNewBtn}>
-                    <Text style={styles.addNewBtnText}>Создать пользователя</Text>
+                    <Text style={styles.addNewBtnText}>Создать контрагента</Text>
                 </View>
             </TouchableOpacity>
             {/* navigation.navigate("MainPage", { username }); */}
-            <TouchableOpacity onPress={() => navigation.navigate("UsersWithHomeButtons", {username: 'Ильина Людмила', role: 'Менеджер'})}>
+            <TouchableOpacity>
             <View style={styles.usersBlock}>
                 <View style={styles.usersBlockText}>
-                    <Text style={styles.usersBlockTitle}>Ильина Людмила</Text>
-                    <Text style={styles.usersBlockDescription}>Менеджер</Text>
+                    <Text style={styles.usersBlockTitle}>Зарипов Айнур Фаизович</Text>
+                    <Text style={styles.usersBlockDescription}>Контрагент</Text>
                     <View style={styles.usersBlockGroups}>
-                        <View style={styles.usersBlockGroupsApi}>
-                            <Text style={styles.usersBlockGroupsApiText}>API</Text>
+                        <View style={styles.usersBlockGroupsContainer}>
+                            <Text style={styles.usersBlockGroupsText}>Покупатель</Text>
+                        </View>
+                        <View style={styles.usersBlockGroupsContainer}>
+                            <Text style={styles.usersBlockGroupsText}>Физ. лицо</Text>
                         </View>
                     </View>
                 </View>
@@ -33,14 +36,39 @@ const CompaniesBlock = ({ navigation }) => {
                 </TouchableOpacity>
             </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate("UsersWithHomeButtons", {username: 'Рустам Кутлубаев', role: 'Владелец сайта'})}>
+            <TouchableOpacity>
             <View style={styles.usersBlock}>
                 <View style={styles.usersBlockText}>
-                    <Text style={styles.usersBlockTitle}>Рустам Кутлубаев</Text>
-                    <Text style={styles.usersBlockDescription}>Владелец сайта</Text>
+                    <Text style={styles.usersBlockTitle}>Зарипов Айнур Фаизович</Text>
+                    <Text style={styles.usersBlockDescription}>Контрагент</Text>
                     <View style={styles.usersBlockGroups}>
-                        <View style={styles.usersBlockGroupsApi}>
-                            <Text style={styles.usersBlockGroupsApiText}>API</Text>
+                        <View style={styles.usersBlockGroupsContainer}>
+                            <Text style={styles.usersBlockGroupsText}>Покупатель</Text>
+                        </View>
+                        <View style={styles.usersBlockGroupsContainer}>
+                            <Text style={styles.usersBlockGroupsText}>Физ. лицо</Text>
+                        </View>
+                    </View>
+                </View>
+                <TouchableOpacity onPress={() => setVisible(true)}>
+                    <Image
+                        style={styles.editUserImage}
+                        source={require("../../../assets/images/drop_down.png")}
+                    />
+                </TouchableOpacity>
+            </View>
+            </TouchableOpacity>
+            <TouchableOpacity>
+            <View style={styles.usersBlock}>
+                <View style={styles.usersBlockText}>
+                    <Text style={styles.usersBlockTitle}>Зарипов Айнур Фаизович</Text>
+                    <Text style={styles.usersBlockDescription}>Контрагент</Text>
+                    <View style={styles.usersBlockGroups}>
+                        <View style={styles.usersBlockGroupsContainer}>
+                            <Text style={styles.usersBlockGroupsText}>Покупатель</Text>
+                        </View>
+                        <View style={styles.usersBlockGroupsContainer}>
+                            <Text style={styles.usersBlockGroupsText}>Физ. лицо</Text>
                         </View>
                     </View>
                 </View>
@@ -55,6 +83,8 @@ const CompaniesBlock = ({ navigation }) => {
         </View>
     );
 };
+
+export default FizBlock;
 
 const styles = StyleSheet.create({
     addNewBtn: {
@@ -98,28 +128,28 @@ const styles = StyleSheet.create({
         marginBottom: 16
     },
     usersBlockGroups: {
-
+        flexDirection: 'row',
+        gap: 4,
+        flexWrap: 'wrap'
     },
-    usersBlockGroupsApi: {
+    usersBlockGroupsContainer: {
         
-        backgroundColor: "#27AE601A",
+        backgroundColor: "#2F80ED1A",
         paddingHorizontal: 12,
         height: 32,
-        width: 50,
+        flex: 0,
         borderRadius: 8,
         alignItems: 'center',
         justifyContent: 'center'
     },
-    usersBlockGroupsApiText: {
+    usersBlockGroupsText: {
         fontFamily: 'Roboto',
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#27AE60'
+        color: '#2F80ED'
     },
     editUserImage: {
         width: 32,
         height: 32
     }
 });
-
-export default CompaniesBlock;
