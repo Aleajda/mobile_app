@@ -4,13 +4,14 @@ import { NavigationContainer } from '@react-navigation/native';
 import LoginScreen from '../screens/LoginScreen';
 import MainScreen from '../screens/MainScreen';
 import Header from '../components/header/Header';
-import ProfileScreen from '../screens/MyProfileScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 import CustomDrawer from './CustomDraver';
 import UsersScreen from '../screens/UsersScreen';
 import { Text, View } from 'react-native';
 import GoBackHeader from '../components/header/GoBackHeader';
 import SitesScreen from '../screens/SitesScreen';
 import ContractorScreen from '../screens/ContractorScreen';
+import ProductCardScreen from '../screens/ProductCardScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -23,8 +24,10 @@ const AppNavigator = () => {
         <Drawer.Screen name="Profile" component={ProfileScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})}  initialParams={{ aboutMeButton: true }}/>
         <Drawer.Screen name="Users" component={UsersScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
         <Drawer.Screen name="Sites" component={SitesScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
-        <Drawer.Screen name="UsersWithHomeButtons" component={ProfileScreen} options={({ navigation }) => ({header: () => <View><Header navigation={navigation} /><GoBackHeader /></View>, drawerItemStyle: {display: 'none'}})} initialParams={{ aboutMeButton: false }}/>
+        <Drawer.Screen name="UsersWithHomeButtons" component={ProfileScreen} options={({ navigation }) => ({header: () => <View><Header navigation={navigation} /><GoBackHeader goTo={"Users"}/></View>, drawerItemStyle: {display: 'none'}})} initialParams={{ aboutMeButton: false }}/>
+        <Drawer.Screen name="ContractorsWithHomeButtons" component={ProfileScreen} options={({ navigation }) => ({header: () => <View><Header navigation={navigation} /><GoBackHeader goTo={"Contractors"}/></View>, drawerItemStyle: {display: 'none'}})} initialParams={{ aboutMeButton: false }}/>
         <Drawer.Screen name="Contractors" component={ContractorScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
+        <Drawer.Screen name="ProductCard" component={ProductCardScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
         {/* Не сделано */}
         {/* <Drawer.Screen name="Корзина" component={UsersScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
         <Drawer.Screen name="Поиск детали" component={UsersScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />

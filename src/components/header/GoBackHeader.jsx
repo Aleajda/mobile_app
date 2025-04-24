@@ -5,14 +5,14 @@ import MyProfileSettingsModal from '../myProfile/modal/MyProfileSettingsModal';
 import EditRoleModal from '../myProfile/modal/EditRoleModal';
 import { useNavigation } from '@react-navigation/native';
 
-const GoBackHeader = () => {
+const GoBackHeader = ({goTo}) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [changeInfoModalOpen, setChangeInfoModalOpen] = useState(false);
     const [changeRoleModalOpen, setChangeRoleModalOpen] = useState(false);
     const navigation = useNavigation();
     return (
         <View style={styles.container}>
-                <TouchableOpacity onPress={() => navigation.navigate("Users")}><Image style={styles.menuIcon} source={require('@assets/images/blue_arrow_left_32px.png')}/></TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate(goTo)}><Image style={styles.menuIcon} source={require('@assets/images/blue_arrow_left_32px.png')}/></TouchableOpacity>
                 <View>
                     <View style={styles.productCardContainer}>
                         <TouchableOpacity onPress={() => setModalOpen(true)}><Image style={styles.productCardIcon} source={require('@assets/images/drop_down.png')}/></TouchableOpacity>

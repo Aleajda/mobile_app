@@ -9,9 +9,9 @@ import EditRoleModal from "../components/myProfile/modal/EditRoleModal";
 import EditPasswordModal from "../components/myProfile/modal/EditPasswordModal";
 
 
-SplashScreen.preventAutoHideAsync();
 
-const MyProfileScreen = ({ route }) => {
+
+const ContractorFiz = ({ route }) => {
 
   const [activeButton, setActiveButton] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
@@ -58,7 +58,7 @@ const MyProfileScreen = ({ route }) => {
         </View>
       </View>
       <View style={styles.main}>
-        <ScrollView style={{ width: '100%' }} >
+        <ScrollView showsVerticalScrollIndicator={false}>
           {activeButton == 1
           ?
           <AboutMeBlock />

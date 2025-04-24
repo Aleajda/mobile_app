@@ -118,13 +118,14 @@ const styles = StyleSheet.create({
         fontStyle: "Roboto",
         fontSize: 16,
         color: "#333333",
-        opacity: 0.7,
+        fontWeight: 'bold',
         marginBottom: 4,
     },
     mainInfoBlockText: {
         fontStyle: "Roboto",
         fontSize: 16,
         color: "#333333",
+        opacity: 0.7
     },
     mainInfoBlockImage: {
         width: 32,

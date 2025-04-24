@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import { Image, StyleSheet, TouchableOpacity, View, Text } from "react-native";
 
 
-const CompaniesBlock = ({ navigation }) => {
+const UsersBlock = ({ navigation }) => {
 
     const [visible, setVisible] = useState(false);
-
     return (
         <View>
             <TouchableOpacity>
@@ -122,4 +121,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default CompaniesBlock;
+export default UsersBlock;

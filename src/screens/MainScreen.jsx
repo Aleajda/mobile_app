@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Button, StyleSheet, Image, TouchableOpacity} from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { View, Text, Button, StyleSheet, Image, TouchableOpacity, ScrollView} from "react-native";
 import DateRangeModal from "../components/DateRangeModal";
 
 const ProfileScreen = ({ route, navigation }) => {
@@ -52,7 +51,7 @@ const ProfileScreen = ({ route, navigation }) => {
             </TouchableOpacity>
           </View>
             <View style={styles.infoContainer}>
-            <ScrollView >
+            <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={styles.info}>
                   <Text style={styles.infoText1}>11 заказов на сумму</Text>
                   <View style={styles.infoBorder}></View>
@@ -65,6 +64,11 @@ const ProfileScreen = ({ route, navigation }) => {
                 </View>
                 <View style={styles.info}>
                   <Text style={styles.infoText1}>Возвраты</Text>
+                  <View style={styles.infoBorder}></View>
+                  <Text style={styles.infoText2}>12 345.67₽</Text>
+                </View>
+                <View style={styles.info}>
+                  <Text style={styles.infoText1}>Платежи поставщикам</Text>
                   <View style={styles.infoBorder}></View>
                   <Text style={styles.infoText2}>12 345.67₽</Text>
                 </View>
@@ -107,6 +111,8 @@ const styles = StyleSheet.create({
     color: '#333333'
   },
   contentContainer: {
+    flex: 1,
+    
     padding: 16,
   },
   aboutMeContainer: {
@@ -175,8 +181,7 @@ const styles = StyleSheet.create({
     height: 16,
   },
   infoContainer: {
-    
-    maxHeight: '75%',
+    flex: 1
   },
   info: {
     height: 120,

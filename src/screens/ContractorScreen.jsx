@@ -4,7 +4,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import FizBlock from "../components/contractor/FizBlock";
 import UrBlock from "../components/contractor/UrBlock";
 
-SplashScreen.preventAutoHideAsync();
+
 
 const ContractorScreen = ({ navigation }) => {
 
@@ -89,7 +89,7 @@ const ContractorScreen = ({ navigation }) => {
             <View style={styles.main}>
                 <ScrollView style={{ width: '100%' }} >
                     {activeButton == 1 
-                    ? <FizBlock/>
+                    ? <FizBlock navigation={navigation}/>
                     : activeButton == 2
                     ? <UrBlock/>
                     : null

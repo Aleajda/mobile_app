@@ -8,8 +8,6 @@ import EditProfileModal from "../components/myProfile/modal/EditProfileModal";
 import EditRoleModal from "../components/myProfile/modal/EditRoleModal";
 
 
-SplashScreen.preventAutoHideAsync();
-
 const UsersScreen = ({ navigation }) => {
   
   // const [activeButton, setActiveButton] = useState(1);

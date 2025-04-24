@@ -2,93 +2,104 @@ import React, { useState } from "react";
 import { Image, StyleSheet, TouchableOpacity, View, Text } from "react-native";
 
 
-const FizBlock = ({ navigation }) => {
+const ContractorCheckBlock = ({ navigation }) => {
 
     const [visible, setVisible] = useState(false);
 
-    const tabsData = [{title: 'Адреса', count: 2}, {title: 'Счета', count: 1}, {title: 'Договоры', count: 1}, {title: 'Автомобили', count: 1}, {title: 'Заказы', count: 1}, {title: 'Акт сверки', count: 1}]
+    const tabsData = [{title: 'Адреса', count: 2}, {title: 'Счета', count: 1}, {title: 'Договоры', count: 1}]
 
     return (
         <View>
             <TouchableOpacity>
                 <View style={styles.addNewBtn}>
-                    <Text style={styles.addNewBtnText}>Создать контрагента</Text>
+                    <Text style={styles.addNewBtnText}>Добавить счет</Text>
                 </View>
             </TouchableOpacity>
             {/* navigation.navigate("MainPage", { username }); */}
             
-            <TouchableOpacity onPress={() => navigation.navigate("ContractorsWithHomeButtons", {username: 'Айнур Фаизович', role: 'Контрагент', tabs: tabsData})}>
+            <TouchableOpacity>
                 <View style={styles.usersBlock}>
                     <View style={styles.usersBlockText}>
-                        <Text style={styles.usersBlockTitle}>Зарипов Айнур Фаизович</Text>
+                        <Text style={styles.usersBlockTitle}>ООО "ПАРТКОМ"</Text>
                         <Text style={styles.usersBlockDescription}>Контрагент</Text>
                         <View style={styles.usersBlockGroups}>
                             <View style={styles.usersBlockGroupsContainer}>
                                 <Text style={styles.usersBlockGroupsText}>Покупатель</Text>
                             </View>
                             <View style={styles.usersBlockGroupsContainer}>
-                                <Text style={styles.usersBlockGroupsText}>Физ. лицо</Text>
+                                <Text style={styles.usersBlockGroupsText}>Поставщик</Text>
+                            </View>
+                            <View style={styles.usersBlockGroupsContainer}>
+                                <Text style={styles.usersBlockGroupsText}>www.part-kom.ru</Text>
                             </View>
                         </View>
                     </View>
                     <TouchableOpacity onPress={() => setVisible(true)}>
                         <Image
                             style={styles.editUserImage}
-                            source={require("../../../assets/images/drop_down.png")}
+                            source={require("@assets/images/drop_down.png")}
                         />
                     </TouchableOpacity>
                 </View>
             </TouchableOpacity>
             
-            <TouchableOpacity onPress={() => navigation.navigate("ContractorsWithHomeButtons", {username: 'Айнур Фаизович', role: 'Контрагент', tabs: tabsData})}>
+            <TouchableOpacity>
                 <View style={styles.usersBlock}>
                     <View style={styles.usersBlockText}>
-                        <Text style={styles.usersBlockTitle}>Зарипов Айнур Фаизович</Text>
+                        <Text style={styles.usersBlockTitle}>ООО "ПАРТКОМ"</Text>
                         <Text style={styles.usersBlockDescription}>Контрагент</Text>
                         <View style={styles.usersBlockGroups}>
                             <View style={styles.usersBlockGroupsContainer}>
                                 <Text style={styles.usersBlockGroupsText}>Покупатель</Text>
                             </View>
                             <View style={styles.usersBlockGroupsContainer}>
-                                <Text style={styles.usersBlockGroupsText}>Физ. лицо</Text>
+                                <Text style={styles.usersBlockGroupsText}>Поставщик</Text>
+                            </View>
+                            <View style={styles.usersBlockGroupsContainer}>
+                                <Text style={styles.usersBlockGroupsText}>www.part-kom.ru</Text>
                             </View>
                         </View>
                     </View>
                     <TouchableOpacity onPress={() => setVisible(true)}>
                         <Image
                             style={styles.editUserImage}
-                            source={require("../../../assets/images/drop_down.png")}
+                            source={require("@assets/images/drop_down.png")}
                         />
                     </TouchableOpacity>
                 </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate("ContractorsWithHomeButtons", {username: 'Айнур Фаизович', role: 'Контрагент', tabs: tabsData})}>
+
+            <TouchableOpacity>
                 <View style={styles.usersBlock}>
                     <View style={styles.usersBlockText}>
-                        <Text style={styles.usersBlockTitle}>Зарипов Айнур Фаизович</Text>
+                        <Text style={styles.usersBlockTitle}>ООО "ПАРТКОМ"</Text>
                         <Text style={styles.usersBlockDescription}>Контрагент</Text>
                         <View style={styles.usersBlockGroups}>
                             <View style={styles.usersBlockGroupsContainer}>
                                 <Text style={styles.usersBlockGroupsText}>Покупатель</Text>
                             </View>
                             <View style={styles.usersBlockGroupsContainer}>
-                                <Text style={styles.usersBlockGroupsText}>Физ. лицо</Text>
+                                <Text style={styles.usersBlockGroupsText}>Поставщик</Text>
+                            </View>
+                            <View style={styles.usersBlockGroupsContainer}>
+                                <Text style={styles.usersBlockGroupsText}>www.part-kom.ru</Text>
                             </View>
                         </View>
                     </View>
                     <TouchableOpacity onPress={() => setVisible(true)}>
                         <Image
                             style={styles.editUserImage}
-                            source={require("../../../assets/images/drop_down.png")}
+                            source={require("@assets/images/drop_down.png")}
                         />
                     </TouchableOpacity>
                 </View>
             </TouchableOpacity>
+
         </View>
     );
 };
 
-export default FizBlock;
+export default ContractorCheckBlock;
 
 const styles = StyleSheet.create({
     addNewBtn: {

@@ -1,22 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "react-native";
-import * as SplashScreen from 'expo-splash-screen';
-import MyProfileSettingsModal from "../components/myProfile/modal/MyProfileSettingsModal";
-import AboutMeBlock from "../components/myProfile/AboutMeBlock";
-import UsersBlock from "../components/users/UsersBlock";
-import EditProfileModal from "../components/myProfile/modal/EditProfileModal";
-import EditRoleModal from "../components/myProfile/modal/EditRoleModal";
 import SitesBlock from "../components/sites/SitesBlock";
 
 
-SplashScreen.preventAutoHideAsync();
+
 
 const SitesScreen = ({ navigation }) => {
 
-  // const [activeButton, setActiveButton] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
-  const [changeInfoModalOpen, setChangeInfoModalOpen] = useState(false);
-  const [changeRoleModalOpen, setChangeRoleModalOpen] = useState(false);
 
   return (
     <View style={styles.container}>
@@ -31,50 +22,13 @@ const SitesScreen = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           </View>
-        {/* <ScrollView horizontal showsHorizontalScrollIndicator={false}>  
-        <View style={styles.headerButtons}>
-          <TouchableOpacity>
-          <View style={styles.headerButton}>
-            <Text style={styles.headerButtonText}>
-              Владелец
-            </Text>
-          </View>
-          </TouchableOpacity>
-          <TouchableOpacity>
-          <View style={styles.headerButton}>
-            <Text style={styles.headerButtonText}>
-              Менеджер
-            </Text>
-          </View>
-          </TouchableOpacity>
-          <TouchableOpacity>
-          <View style={styles.headerButton}>
-            <Text style={styles.headerButtonText}>
-              Кассир
-            </Text>
-          </View>
-          </TouchableOpacity>
-          <TouchableOpacity>
-          <View style={styles.headerButton}>
-            <Text style={styles.headerButtonText}>
-              Логист
-            </Text>
-          </View>
-          </TouchableOpacity>
-
-        </View>
-        </ScrollView> */}
+        
       </View>
       <View style={styles.main}>
         <ScrollView style={{ width: '100%' }} >
           <SitesBlock navigation={navigation}/>   
         </ScrollView>
       </View>
-      {/* Это тип футер */}
-      
-      {/* <MyProfileSettingsModal visible={modalOpen} setVisible={setModalOpen} setChangeInfoModalOpen={setChangeInfoModalOpen} setChangeRoleModalOpen={setChangeRoleModalOpen}/>
-      <EditProfileModal visible={changeInfoModalOpen} onClose={() => setChangeInfoModalOpen(false)}/>
-      <EditRoleModal visible={changeRoleModalOpen} onClose={() => setChangeRoleModalOpen(false)}/> */}
     </View>
   );
 };
