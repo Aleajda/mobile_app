@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Image, StyleSheet, TouchableOpacity, View, Text } from "react-native";
+import EditSiteModal from "./modal/EditSitePropertiesModal";
 
 
 const SitesBlock = ({ navigation }) => {
@@ -13,7 +14,7 @@ const SitesBlock = ({ navigation }) => {
                     <Text style={styles.addNewBtnText}>Добавить сайт</Text>
                 </View>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("Site", {name: 'shop.idetta.ru', company: 'ООО "ДЖЕТПАРТС"'})}>
             <View style={styles.usersBlock}>
                 <View style={styles.usersBlockText}>
                     <Text style={styles.usersBlockTitle}>shop.idetta.ru</Text>
@@ -27,12 +28,12 @@ const SitesBlock = ({ navigation }) => {
                 <TouchableOpacity onPress={() => setVisible(true)}>
                     <Image
                         style={styles.editUserImage}
-                        source={require("../../../assets/images/drop_down.png")}
+                        source={require("@assets/images/drop_down.png")}
                     />
                 </TouchableOpacity>
             </View>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("Site", {name: '91.244.252.140:8081', company: 'ООО "ДЖЕТПАРТС"'})}>
             <View style={styles.usersBlock}>
                 <View style={styles.usersBlockText}>
                     <Text style={styles.usersBlockTitle}>91.244.252.140:8081</Text>
@@ -46,7 +47,7 @@ const SitesBlock = ({ navigation }) => {
                 <TouchableOpacity onPress={() => setVisible(true)}>
                     <Image
                         style={styles.editUserImage}
-                        source={require("../../../assets/images/drop_down.png")}
+                        source={require("@assets/images/drop_down.png")}
                     />
                 </TouchableOpacity>
             </View>

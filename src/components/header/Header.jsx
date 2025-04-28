@@ -11,10 +11,12 @@ const Header = ({navigation}) => {
         </View>
 
         <View>
+            <TouchableOpacity onPress={() => navigation.navigate('ProductCard')}>
             <View style={styles.productCardContainer}>
-                <TouchableOpacity><Image style={styles.productCardIcon} source={require('@assets/images/basket_filled_24px.png')}/></TouchableOpacity>
+                <Image style={styles.productCardIcon} source={require('@assets/images/basket_filled_24px.png')}/>
                 <Text style={styles.productCardCount}>2</Text>
             </View>
+            </TouchableOpacity>
         </View>
     </View>
   );

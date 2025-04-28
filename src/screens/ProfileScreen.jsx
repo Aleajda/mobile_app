@@ -9,8 +9,12 @@ import EditRoleModal from "../components/myProfile/modal/EditRoleModal";
 import EditPasswordModal from "../components/myProfile/modal/EditPasswordModal";
 import AboutContractorBlock from "../components/myProfile/contractors/AboutContractorBlock";
 import ContractorAddressBlock from "../components/myProfile/contractors/ContractorAddressBlock";
-import ContractorCheckBlock from "../components/myProfile/contractors/ContractorCheckBlock";
+
 import ContractorOrders from "../components/myProfile/contractors/ContractorOrders";
+import ContractorContractBlock from "../components/myProfile/contractors/ContractorContractBlock";
+import ContractorCarBlock from "../components/myProfile/contractors/ContractorCarBlock";
+import ContractorAktBlock from "../components/myProfile/contractors/ContractorAktBlock";
+import ContractorCheckBlock from "../components/myProfile/contractors/ContractorCheckBlock copy";
 
 
 
@@ -31,8 +35,16 @@ const MyProfileScreen = ({ route }) => {
           return <AboutContractorBlock />;
         case 2:
           return <ContractorAddressBlock />;
+        case 3:
+          return <ContractorCheckBlock/>;
+        case 4: 
+          return <ContractorContractBlock/>;
+        case 5:
+          return <ContractorCarBlock/>;
         case 6:
           return <ContractorOrders />;
+        case 7:
+          return <ContractorAktBlock/>;
         default:
           return <ContractorCheckBlock />;
       }

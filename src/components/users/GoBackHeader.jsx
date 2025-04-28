@@ -5,29 +5,21 @@ import MyProfileSettingsModal from '../myProfile/modal/MyProfileSettingsModal';
 import EditRoleModal from '../myProfile/modal/EditRoleModal';
 import { useNavigation } from '@react-navigation/native';
 import EditPasswordModal from '../myProfile/modal/EditPasswordModal';
-import ContractorSettingsModal from '../myProfile/contractors/modal/ContractorSettingsModal';
 
-const GoBackHeader = ({goTo, contractor}) => {
+const GoBackHeader = ({goTo}) => {
     const [modalOpen, setModalOpen] = useState(false);
-    const [contractorModalOpen, setContractorModalOpen] = useState(false);
     const [changeInfoModalOpen, setChangeInfoModalOpen] = useState(false);
     const [changeRoleModalOpen, setChangeRoleModalOpen] = useState(false);
     const [changePasswordModalOpen, setChangePasswordModalOpen] = useState(false);
     const navigation = useNavigation();
-
     return (
         <View style={styles.container}>
                 <TouchableOpacity onPress={() => navigation.navigate(goTo)}><Image style={styles.menuIcon} source={require('@assets/images/blue_arrow_left_32px.png')}/></TouchableOpacity>
                 <View>
                     <View style={styles.productCardContainer}>
-                        <TouchableOpacity onPress={() => contractor ? setContractorModalOpen(true) : setModalOpen(true)}><Image style={styles.productCardIcon} source={require('@assets/images/drop_down.png')}/></TouchableOpacity>
+                        <TouchableOpacity onPress={() => setModalOpen(true)}><Image style={styles.productCardIcon} source={require('@assets/images/drop_down.png')}/></TouchableOpacity>
                     </View>
                 </View>
-                <MyProfileSettingsModal visible={modalOpen} setChangePasswordModalOpen={setChangeInfoModalOpen} setVisible={setModalOpen} setChangeInfoModalOpen={setChangeInfoModalOpen} setChangeRoleModalOpen={setChangeRoleModalOpen}/>
-                <EditProfileModal visible={changeInfoModalOpen} onClose={() => setChangeInfoModalOpen(false)}/>
-                <EditRoleModal visible={changeRoleModalOpen} onClose={() => setChangeRoleModalOpen(false)}/> 
-                <EditPasswordModal visible={changePasswordModalOpen} onClose={() => setChangePasswordModalOpen(false)} />
-                <ContractorSettingsModal visible={contractorModalOpen} setVisible={setContractorModalOpen}/>
             </View>
     );
 }

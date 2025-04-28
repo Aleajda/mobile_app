@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Image, StyleSheet, TouchableOpacity, View, Text } from "react-native";
+import AddressModal from "./modal/AddressModal";
 
 const ContractorAddressBlock = () => {
 
@@ -7,7 +8,7 @@ const ContractorAddressBlock = () => {
 
     return (
         <View>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => setVisible(true)}>
                 <View style={styles.addNewBtn}>
                     <Text style={styles.addNewBtnText}>Добавить адрес</Text>
                 </View>
@@ -117,7 +118,7 @@ const ContractorAddressBlock = () => {
                     </View>
                 </View>
             </View>
-
+            <AddressModal visible={visible} onClose={() => setVisible(false)}/>
         </View>
     );
 };

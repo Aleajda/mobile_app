@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Image, StyleSheet, TouchableOpacity, View, Text } from "react-native";
+import AutomobileModal from "./modal/AutomobileModal";
 
 
-const ContractorCheckBlock = ({ navigation }) => {
+const ContractorCarBlock = ({ navigation }) => {
 
     const [visible, setVisible] = useState(false);
 
@@ -10,9 +11,9 @@ const ContractorCheckBlock = ({ navigation }) => {
 
     return (
         <View>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => setVisible(true)}>
                 <View style={styles.addNewBtn}>
-                    <Text style={styles.addNewBtnText}>Добавить счет</Text>
+                    <Text style={styles.addNewBtnText}>Добавить автомобиль</Text>
                 </View>
             </TouchableOpacity>
             {/* navigation.navigate("MainPage", { username }); */}
@@ -34,7 +35,7 @@ const ContractorCheckBlock = ({ navigation }) => {
                             </View>
                         </View>
                     </View>
-                    <TouchableOpacity onPress={() => setVisible(true)}>
+                    <TouchableOpacity >
                         <Image
                             style={styles.editUserImage}
                             source={require("@assets/images/drop_down.png")}
@@ -60,7 +61,7 @@ const ContractorCheckBlock = ({ navigation }) => {
                             </View>
                         </View>
                     </View>
-                    <TouchableOpacity onPress={() => setVisible(true)}>
+                    <TouchableOpacity>
                         <Image
                             style={styles.editUserImage}
                             source={require("@assets/images/drop_down.png")}
@@ -86,7 +87,7 @@ const ContractorCheckBlock = ({ navigation }) => {
                             </View>
                         </View>
                     </View>
-                    <TouchableOpacity onPress={() => setVisible(true)}>
+                    <TouchableOpacity>
                         <Image
                             style={styles.editUserImage}
                             source={require("@assets/images/drop_down.png")}
@@ -94,12 +95,12 @@ const ContractorCheckBlock = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </TouchableOpacity>
-
+            <AutomobileModal visible={visible} onClose={() => setVisible(false)}/>
         </View>
     );
 };
 
-export default ContractorCheckBlock;
+export default ContractorCarBlock;
 
 const styles = StyleSheet.create({
     addNewBtn: {

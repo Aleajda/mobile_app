@@ -87,7 +87,7 @@ const ContractorScreen = ({ navigation }) => {
                 </View>
             </View>
             <View style={styles.main}>
-                <ScrollView style={{ width: '100%' }} >
+                <ScrollView style={{ width: '100%' }} showsVerticalScrollIndicator={false}>
                     {activeButton == 1 
                     ? <FizBlock navigation={navigation}/>
                     : activeButton == 2
