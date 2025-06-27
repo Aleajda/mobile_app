@@ -120,6 +120,7 @@ const SearchDetailScreen = ({ navigation }) => {
                                 </TouchableOpacity>
                             )}
                             style={styles.mainContentBrandList}
+                            contentContainerStyle={{ paddingBottom: 16 }}
                             showsVerticalScrollIndicator={false}
                         />
                     </View>
@@ -194,6 +195,7 @@ const styles = StyleSheet.create({
     main: {
         flex: 1,
         padding: 16,
+        paddingBottom: 0,
     },
     mainContent: {
         flex: 1,
