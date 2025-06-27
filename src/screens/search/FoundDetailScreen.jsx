@@ -12,6 +12,8 @@ const FoundDetailScreen = ({ navigation, route }) => {
     const [changeInfoModalOpen, setChangeInfoModalOpen] = useState(false);
     const [changeRoleModalOpen, setChangeRoleModalOpen] = useState(false);
     const [activeButton, setActiveButton] = useState(1);
+    // Добавляем состояние для фильтра доставки: null - без фильтра, 0 - в наличии, 1-3 - до 3 дней, 4-7 - 3-7 дней
+    const [deliveryFilter, setDeliveryFilter] = useState("all");
     
     // Получаем параметры из навигации
     const { article, brand, brandId, detailId } = route.params || {};
@@ -19,6 +21,7 @@ const FoundDetailScreen = ({ navigation, route }) => {
     // Состояния для поиска
     const [isSearching, setIsSearching] = useState(true);
     const [searchResults, setSearchResults] = useState({ items: [], analogs: [] });
+    const [filteredResults, setFilteredResults] = useState({ items: [], analogs: [] });
     const [searchController, setSearchController] = useState(null);
     const [itemsCount, setItemsCount] = useState({ originals: 0, analogs: 0 });
     
@@ -28,6 +31,7 @@ const FoundDetailScreen = ({ navigation, route }) => {
             searchController.stopSearch();
         }
         setSearchResults({ items: [], analogs: [] });
+        setFilteredResults({ items: [], analogs: [] });
         setItemsCount({ originals: 0, analogs: 0 });
         setIsSearching(false);
     };
@@ -41,6 +45,50 @@ const FoundDetailScreen = ({ navigation, route }) => {
             }
         };
     }, []);
+    
+    // Применяем фильтр по доставке к результатам
+    useEffect(() => {
+        if (!searchResults.items && !searchResults.analogs) return;
+        
+        // Функция для фильтрации по времени доставки
+        const filterByDelivery = (items) => {
+            if (deliveryFilter === "all") return items; // Без фильтра
+            
+            return items.filter(item => {
+                const time = parseInt(item.time) || 0;
+                
+                if (deliveryFilter === 0) {
+                    // В наличии (время доставки = 0)
+                    return time === 0;
+                } else if (deliveryFilter === 3) {
+                    // До 3 дней (время доставки от 1 до 3 дней)
+                    return time > 0 && time <= 3;
+                } else if (deliveryFilter === 7) {
+                    // 3-7 дней (время доставки от 3 до 7 дней)
+                    return time >= 3 && time <= 7;
+                }
+                
+                return true;
+            });
+        };
+        
+        // Применяем фильтр к оригиналам и аналогам
+        const filteredItems = filterByDelivery(searchResults.items || []);
+        const filteredAnalogs = filterByDelivery(searchResults.analogs || []);
+        
+        // Обновляем отфильтрованные результаты
+        setFilteredResults({
+            items: filteredItems,
+            analogs: filteredAnalogs
+        });
+        
+        // Обновляем счетчики
+        setItemsCount({
+            originals: filteredItems.length,
+            analogs: filteredAnalogs.length
+        });
+        
+    }, [searchResults, deliveryFilter]);
     
     // Запускаем поиск при фокусе на экране и очищаем при потере фокуса
     useFocusEffect(
@@ -57,10 +105,22 @@ const FoundDetailScreen = ({ navigation, route }) => {
         }, [article, brand, brandId, detailId]) // Зависимости для перезапуска поиска при изменении параметров
     );
     
+    // Обработчик изменения фильтра доставки
+    const handleDeliveryFilterChange = (newFilter) => {
+        // Если нажали на тот же фильтр, возвращаемся к "Все"
+        const updatedFilter = deliveryFilter === newFilter ? "all" : newFilter;
+        setDeliveryFilter(updatedFilter);
+        
+        // Перезапускаем поиск с новым фильтром
+        clearSearchData();
+        startSearch();
+    };
+    
     // Функция для запуска поиска
     const startSearch = () => {
         setIsSearching(true);
         setSearchResults({ items: [], analogs: [] });
+        setFilteredResults({ items: [], analogs: [] });
         setItemsCount({ originals: 0, analogs: 0 });
         
         const controller = SearchApi.searchContinuous(
@@ -98,11 +158,6 @@ const FoundDetailScreen = ({ navigation, route }) => {
                     setSearchResults({
                         items: sortedOriginals,
                         analogs: sortedAnalogs
-                    });
-                    
-                    setItemsCount({
-                        originals: sortedOriginals.length,
-                        analogs: sortedAnalogs.length
                     });
                 }
             },
@@ -150,23 +205,30 @@ const FoundDetailScreen = ({ navigation, route }) => {
                 </View>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     <View style={styles.headerButtons}>
-                        <TouchableOpacity>
-                            <View style={styles.headerButton}>
-                                <Text style={styles.headerButtonText}>
+                        <TouchableOpacity onPress={() => handleDeliveryFilterChange("all")}>
+                            <View style={[styles.headerButton, deliveryFilter === "all" ? styles.activeHeaderButton : null]}>
+                                <Text style={[styles.headerButtonText, deliveryFilter === "all" ? styles.activeHeaderButtonText : null]}>
+                                    Все
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => handleDeliveryFilterChange(0)}>
+                            <View style={[styles.headerButton, deliveryFilter === 0 ? styles.activeHeaderButton : null]}>
+                                <Text style={[styles.headerButtonText, deliveryFilter === 0 ? styles.activeHeaderButtonText : null]}>
                                     В наличии
                                 </Text>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity>
-                            <View style={styles.headerButton}>
-                                <Text style={styles.headerButtonText}>
+                        <TouchableOpacity onPress={() => handleDeliveryFilterChange(3)}>
+                            <View style={[styles.headerButton, deliveryFilter === 3 ? styles.activeHeaderButton : null]}>
+                                <Text style={[styles.headerButtonText, deliveryFilter === 3 ? styles.activeHeaderButtonText : null]}>
                                     до 3 дней
                                 </Text>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity>
-                            <View style={styles.headerButton}>
-                                <Text style={styles.headerButtonText}>
+                        <TouchableOpacity onPress={() => handleDeliveryFilterChange(7)}>
+                            <View style={[styles.headerButton, deliveryFilter === 7 ? styles.activeHeaderButton : null]}>
+                                <Text style={[styles.headerButtonText, deliveryFilter === 7 ? styles.activeHeaderButtonText : null]}>
                                     3-7 дней
                                 </Text>
                             </View>
@@ -205,14 +267,14 @@ const FoundDetailScreen = ({ navigation, route }) => {
                     {activeButton == 1 
                     ? <OriginalBlock 
                         navigation={navigation} 
-                        searchResult={{ items: searchResults.items }} 
+                        searchResult={{ items: filteredResults.items }} 
                         article={article}
                         brand={brand}
                       />
                     : activeButton == 2
                     ? <AnalogBlock 
                         navigation={navigation} 
-                        searchResult={{ analogs: searchResults.analogs }}
+                        searchResult={{ analogs: filteredResults.analogs }}
                       />
                     : null
                     }
@@ -309,6 +371,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 16,
         color: '#333333B2'
+    },
+    activeHeaderButton: {
+        backgroundColor: '#2F80ED1A',
+    },
+    activeHeaderButtonText: {
+        color: '#2F80ED',
     },
 
 

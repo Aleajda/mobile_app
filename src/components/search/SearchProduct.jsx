@@ -48,8 +48,10 @@ const SearchProduct = ({ item = {} }) => {
             <TouchableOpacity style={styles.productCardContainer}>
                 <Image style={styles.productCard} source={require("@assets/images/basket_filled_24px.png")}/>
             </TouchableOpacity>
-            <Text style={styles.orderTitle}>{item.name || 'Деталь'}</Text>
-            <Text style={styles.orderTitle2}>{item.brand || 'Бренд'}</Text>
+            <View style={styles.textContainer}>
+                <Text style={styles.orderTitle} numberOfLines={1} ellipsizeMode="tail">{item.name || 'Деталь'}</Text>
+                <Text style={styles.orderTitle2} numberOfLines={1} ellipsizeMode="tail">{item.brand || 'Бренд'}</Text>
+            </View>
             <View style={styles.orderBuyer}>
                 <Text style={styles.orderBuyerStatus}>Поставщик</Text>
                 <Text style={styles.orderBuyerName}>{item.pl_name || item.supplier || 'Основной'}</Text>
@@ -84,11 +86,15 @@ const styles = StyleSheet.create({
     productCardContainer: {
         position: 'absolute',
         top: 20,
-        right: 20
+        right: 20,
+        zIndex: 1
     },
     productCard: {
         width: 24,
         height: 24,
+    },
+    textContainer: {
+        paddingRight: 50, // Отступ справа для предотвращения перекрытия текста и иконки
     },
     orderTitle: {
         fontFamily: 'Roboto',
