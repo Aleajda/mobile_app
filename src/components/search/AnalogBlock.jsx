@@ -32,7 +32,7 @@ const AnalogBlock = ({ navigation, searchResult }) => {
                             Аналоги
                         </Text>
                         <Text style={styles.description}>
-                            10 самых дешевых аналогов от других производителей
+                            найденные аналоги от других производителей
                         </Text>
                     </View>
                     

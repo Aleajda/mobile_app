@@ -32,7 +32,7 @@ const OriginalBlock = ({ navigation, searchResult, article, brand }) => {
                             Оригинальные детали
                         </Text>
                         <Text style={styles.description}>
-                            10 самых дешевых оригинальных деталей
+                            найденные оригинальные детали
                         </Text>
                     </View>
                     

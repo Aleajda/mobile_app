@@ -185,6 +185,8 @@ const FoundDetailScreen = ({ navigation, route }) => {
 
     // Обработчик нажатия кнопки назад
     const handleGoBack = () => {
+        // Сбрасываем фильтр доставки на значение по умолчанию
+        setDeliveryFilter("all");
         clearSearchData();
         navigation.navigate("Search detail");
     };
