@@ -14,15 +14,20 @@ const SearchDetailScreen = ({ navigation }) => {
     };
 
     const searchBrands = async () => {
-        if (!searchValue.trim()) return;
+        if (!searchValue.trim() || searchValue.length < 3) return;
         
         setLoading(true);
         setError(null);
         
         try {
-            const result = await SearchApi.getBrands(searchValue);
+            const result = await SearchApi.getBrands(searchValue.toUpperCase());
             if (result) {
-                setBrands(result);
+                // Ensure each item has a unique key property
+                const brandsWithKeys = result.map((brand, index) => ({
+                    ...brand,
+                    uniqueKey: `brand-${brand.brand_id || ''}-${brand.brand || ''}-${index}`
+                }));
+                setBrands(brandsWithKeys);
             } else {
                 setError('Не удалось найти бренды по указанному артикулу');
             }
@@ -33,6 +38,19 @@ const SearchDetailScreen = ({ navigation }) => {
             setLoading(false);
         }
     };
+
+    // Автоматический поиск при вводе 3 и более символов
+    useEffect(() => {
+        if (searchValue.length >= 3) {
+            const timer = setTimeout(() => {
+                searchBrands();
+            }, 500); // Задержка 500мс для предотвращения частых запросов при быстром вводе
+            
+            return () => clearTimeout(timer);
+        } else if (searchValue.length === 0) {
+            setBrands([]);
+        }
+    }, [searchValue]);
 
     const handleBrandSelect = (brand) => {
         navigation.navigate("Found detail", { 
@@ -63,7 +81,6 @@ const SearchDetailScreen = ({ navigation }) => {
                             placeholder="Поиск детали"
                             value={searchValue}
                             onChangeText={setSearchValue}
-                            onSubmitEditing={searchBrands}
                             returnKeyType="search"
                         />
                         {searchValue.length > 0 && (
@@ -75,13 +92,6 @@ const SearchDetailScreen = ({ navigation }) => {
                             </TouchableOpacity>
                         )}
                     </View>
-                    <TouchableOpacity 
-                        style={styles.searchButton} 
-                        onPress={searchBrands}
-                        disabled={!searchValue.trim() || loading}
-                    >
-                        <Text style={styles.searchButtonText}>Найти</Text>
-                    </TouchableOpacity>
                 </View>
             </View>
 
@@ -100,7 +110,7 @@ const SearchDetailScreen = ({ navigation }) => {
                         <Text style={styles.mainContentBrands}>Бренды</Text>
                         <FlatList
                             data={brands}
-                            keyExtractor={(item) => item.brand_id.toString()}
+                            keyExtractor={(item) => item.uniqueKey || `brand-${item.brand || ''}-${Math.random().toString(36).substr(2, 9)}`}
                             renderItem={({ item }) => (
                                 <TouchableOpacity onPress={() => handleBrandSelect(item)}>
                                     <View style={styles.brandListItem}>
@@ -113,9 +123,13 @@ const SearchDetailScreen = ({ navigation }) => {
                             showsVerticalScrollIndicator={false}
                         />
                     </View>
-                ) : searchValue.trim() ? (
+                ) : searchValue.length > 0 && searchValue.length < 3 ? (
                     <View style={styles.emptyContainer}>
-                        <Text style={styles.emptyText}>Введите артикул и нажмите "Найти"</Text>
+                        <Text style={styles.emptyText}>Введите минимум 3 символа для поиска</Text>
+                    </View>
+                ) : searchValue.length >= 3 ? (
+                    <View style={styles.emptyContainer}>
+                        <Text style={styles.emptyText}>Ничего не найдено</Text>
                     </View>
                 ) : null}
             </View>
@@ -176,18 +190,6 @@ const styles = StyleSheet.create({
     icon: {
         width: 24,
         height: 24,
-    },
-    searchButton: {
-        backgroundColor: '#2F80ED',
-        borderRadius: 8,
-        paddingVertical: 12,
-        alignItems: 'center',
-    },
-    searchButtonText: {
-        color: '#FFFFFF',
-        fontFamily: 'Roboto',
-        fontSize: 16,
-        fontWeight: 'bold',
     },
     main: {
         flex: 1,

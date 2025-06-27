@@ -32,14 +32,14 @@ const AnalogBlock = ({ navigation, searchResult }) => {
                             Аналоги
                         </Text>
                         <Text style={styles.description}>
-                            Подходящие аналоги от других производителей
+                            10 самых дешевых аналогов от других производителей
                         </Text>
                     </View>
                     
                     <FlatList
                         data={analogs}
                         renderItem={renderItem}
-                        keyExtractor={(item, index) => `analog-${index}`}
+                        keyExtractor={(item, index) => item.id ? `analog-${item.id}` : `analog-${item.article}-${item.brand}-${index}`}
                         scrollEnabled={false}
                         ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
                     />

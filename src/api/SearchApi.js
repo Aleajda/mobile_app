@@ -15,7 +15,7 @@ export default SearchApi = {
                 process.env.EXPO_PUBLIC_API_URL,
                 { 
                     show_price: "on",
-                    article: article,
+                    article: article.toUpperCase(),
                     brand: "",
                     brand_id: "",
                     brands: "",
@@ -36,6 +36,8 @@ export default SearchApi = {
                     }
                 }
             );
+            
+            console.log('Ответ getBrands:', response.data);
             
             if (response.data.status === 'ok') {
                 console.log(response.data.brands);
@@ -65,7 +67,7 @@ export default SearchApi = {
                 process.env.EXPO_PUBLIC_API_URL,
                 { 
                     show_price: "on",
-                    article: article,
+                    article: article.toUpperCase(),
                     brand: brand,
                     brand_id: brandId,
                     brands: brand,
@@ -86,6 +88,8 @@ export default SearchApi = {
                     }
                 }
             );
+            
+            console.log('Ответ searchByArticle:', response.data);
             
             if (response.data.status === 'ok') {
                 return response.data;
@@ -113,26 +117,26 @@ export default SearchApi = {
             const sessionId = await this.getSessionId();
             const profileId = await AsyncStorage.getItem('profileId') || "212"; // Значение по умолчанию
             
-            // Список плагинов из примера запроса
-            const plugins = ["1","2","5","14","16","18","19","20","27","31","49","73","80","92","97","123","124","125","133","137","149","193","220","223","256","300","305","307","309","328","373","385","387","392","397","402","418","440","442","478","479"];
+            const requestData = { 
+                profileId: profileId,
+                article: article.toUpperCase(),
+                brand: brand,
+                brands: brand,
+                brand_id: brandId,
+                detail_id: detailId,
+                request_id: requestId,
+                zakaz_detail_id: "0",
+                zakaz_id: "0",
+                zakaz_detail_count: "0",
+                show_price: "on",
+                action: "search_sort1"
+            };
+            
+            console.log('Отправляемые данные:', requestData);
             
             const response = await axios.post(
                 process.env.EXPO_PUBLIC_API_URL,
-                { 
-                    profileId: profileId,
-                    article: article,
-                    brand: brand,
-                    brands: brand,
-                    brand_id: brandId,
-                    detail_id: detailId,
-                    request_id: requestId,
-                    zakaz_detail_id: "0",
-                    zakaz_id: "0",
-                    zakaz_detail_count: "0",
-                    show_price: "on",
-                    plugins: plugins,
-                    action: "search_sort1"
-                },
+                requestData,
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -141,6 +145,8 @@ export default SearchApi = {
                     }
                 }
             );
+            
+            console.log('Ответ searchSort1:', response.data);
             
             if (response.data) {
                 return response.data;

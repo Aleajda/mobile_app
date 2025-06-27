@@ -32,14 +32,14 @@ const OriginalBlock = ({ navigation, searchResult, article, brand }) => {
                             Оригинальные детали
                         </Text>
                         <Text style={styles.description}>
-                            Найденные оригинальные детали
+                            10 самых дешевых оригинальных деталей
                         </Text>
                     </View>
                     
                     <FlatList
                         data={items}
                         renderItem={renderItem}
-                        keyExtractor={(item, index) => `original-${index}`}
+                        keyExtractor={(item, index) => item.id ? `original-${item.id}` : `original-${item.article}-${item.brand}-${index}`}
                         scrollEnabled={false}
                         ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
                     />

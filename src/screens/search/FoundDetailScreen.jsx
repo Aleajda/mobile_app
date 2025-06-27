@@ -64,7 +64,7 @@ const FoundDetailScreen = ({ navigation, route }) => {
         setItemsCount({ originals: 0, analogs: 0 });
         
         const controller = SearchApi.searchContinuous(
-            article,
+            article.toUpperCase(),
             brand,
             brandId,
             detailId,
@@ -81,16 +81,28 @@ const FoundDetailScreen = ({ navigation, route }) => {
                         item.brand && item.brand.toUpperCase() !== brand.toUpperCase()
                     );
                     
-                    console.log('Оригиналов:', originals.length, 'Аналогов:', analogs.length);
+                    // Сортируем по цене (от меньшей к большей)
+                    const sortByPrice = (a, b) => {
+                        const priceA = parseFloat(a.price || a.sale_price || a.cost || 0);
+                        const priceB = parseFloat(b.price || b.sale_price || b.cost || 0);
+                        return priceA - priceB;
+                    };
+                    
+                    // Сортируем и ограничиваем до 10 элементов
+                    const sortedOriginals = [...originals].sort(sortByPrice).slice(0, 10);
+                    const sortedAnalogs = [...analogs].sort(sortByPrice).slice(0, 10);
+                    
+                    console.log('Оригиналов (всего/отображено):', originals.length, '/', sortedOriginals.length);
+                    console.log('Аналогов (всего/отображено):', analogs.length, '/', sortedAnalogs.length);
                     
                     setSearchResults({
-                        items: originals,
-                        analogs: analogs
+                        items: sortedOriginals,
+                        analogs: sortedAnalogs
                     });
                     
                     setItemsCount({
-                        originals: originals.length,
-                        analogs: analogs.length
+                        originals: sortedOriginals.length,
+                        analogs: sortedAnalogs.length
                     });
                 }
             },
@@ -127,11 +139,6 @@ const FoundDetailScreen = ({ navigation, route }) => {
             <View style={styles.header}>
                 <View style={styles.goBackHeader}>
                     <TouchableOpacity onPress={handleGoBack}><Image style={styles.goBackIcon} source={require('@assets/images/blue_arrow_left_32px.png')}/></TouchableOpacity>
-                    <View>
-                        <View style={styles.searchIconContainer}>
-                            <TouchableOpacity onPress={null}><Image style={styles.searchIcon} source={require('@assets/images/search_32px.png')}/></TouchableOpacity>
-                        </View>
-                    </View>
                 </View>
                 <View style={styles.titleContainer}>
                     <Text style={styles.title}>
@@ -247,15 +254,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginBottom: 24
     },
-    searchIconContainer: { 
-        flexDirection: 'row',
-        alignItems: 'center'
-    },
     goBackIcon: {
-        width: 32,
-        height: 32
-    },
-    searchIcon: {
         width: 32,
         height: 32
     },
@@ -293,14 +292,6 @@ const styles = StyleSheet.create({
         color: '#333333'
     },
 
-
-    searchContainer: {
-
-    },
-    searchIcon: {
-        width: 32,
-        height: 32
-    },
     headerButtons: {
         flexDirection: 'row',
         marginBottom: 16,
