@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Тест API Sort1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f5f5f5;
+            white-space: pre-wrap;
+        }
+        .success {
+            background-color: #e7f7e7;
+            border-color: #c3e6c3;
+        }
+        .error {
+            background-color: #ffeeee;
+            border-color: #ffcccc;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #3367d6;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <h1>Тест API Sort1</h1>
+    
+    <label for="sessionId">SORT1SESSID:</label>
+    <input type="text" id="sessionId" value="6r8bp1691b1bf3ms88tsohnfat">
+    
+    <label for="article">Артикул:</label>
+    <input type="text" id="article" value="OC90">
+    
+    <button onclick="makeRequest()">Отправить запрос</button>
+    
+    <div id="result">Результат запроса будет отображен здесь...</div>
+    
+    <script>
+        // Автоматически отправляем запрос при загрузке страницы
+        window.onload = function() {
+            makeRequest();
+        };
+        
+        function makeRequest() {
+            const resultDiv = document.getElementById('result');
+            const sessionId = document.getElementById('sessionId').value;
+            const article = document.getElementById('article').value;
+            
+            resultDiv.innerHTML = "Отправка запроса...";
+            resultDiv.className = "";
+            
+            // Данные для запроса из curl-команды
+            const data = {
+                "show_price": "on",
+                "article": article,
+                "brand": "",
+                "brand_id": "4982",
+                "brands": "",
+                "detail_id": "",
+                "request_id": "",
+                "zakaz_detail_id": "0",
+                "zakaz_id": "0",
+                "market_zakaz_id": "0",
+                "zakaz_detail_count": "0",
+                "filter_text": "",
+                "action": "get_brands_online"
+            };
+            
+            // Заголовки запроса из curl-команды
+            const headers = {
+                'Accept': '*/*',
+                'Accept-Language': 'ru-RU,ru;q=0.6',
+                'Connection': 'keep-alive',
+                'Content-Type': 'application/json',
+                'Origin': 'https://sort1.pro',
+                'Referer': 'https://sort1.pro/modules/1',
+                'Sec-Fetch-Dest': 'empty',
+                'Sec-Fetch-Mode': 'cors',
+                'Sec-Fetch-Site': 'same-origin',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Cookie': `SORT1SESSID=${sessionId}`
+            };
+            
+            // Создаем объект XMLHttpRequest
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'https://sort1.pro/api/index.php', true);
+            
+            // Устанавливаем заголовки
+            for (const [key, value] of Object.entries(headers)) {
+                xhr.setRequestHeader(key, value);
+            }
+            
+            // Обработка ответа
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        resultDiv.innerHTML = `Успешно! Ответ:\n${JSON.stringify(response, null, 2)}`;
+                        resultDiv.className = "success";
+                    } catch (e) {
+                        resultDiv.innerHTML = `Ошибка парсинга JSON: ${e}\nОтвет сервера: ${xhr.responseText}`;
+                        resultDiv.className = "error";
+                    }
+                } else {
+                    resultDiv.innerHTML = `Ошибка HTTP: ${xhr.status} ${xhr.statusText}\nОтвет сервера: ${xhr.responseText}`;
+                    resultDiv.className = "error";
+                }
+            };
+            
+            // Обработка ошибки сети
+            xhr.onerror = function() {
+                resultDiv.innerHTML = "Сетевая ошибка! Возможно, проблема с CORS. Проверьте консоль браузера для деталей.";
+                resultDiv.className = "error";
+                console.error("Сетевая ошибка при отправке запроса:", xhr);
+            };
+            
+            // Отправляем запрос
+            xhr.send(JSON.stringify(data));
+            
+            // Выводим детали запроса
+            console.log("Отправлен запрос:", {
+                url: 'https://sort1.pro/api/index.php',
+                method: 'POST',
+                headers: headers,
+                data: data
+            });
+        }
+    </script>
+</body>
+</html> 

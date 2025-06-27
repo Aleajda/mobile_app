@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "react-native";
 import SitesBlock from "../components/sites/SitesBlock";
 import ProductCardBlock from "../components/productCard/ProductCardBlock";
+import ProductCardSettingsModal from "../components/productCard/modal/ProductCardSettingsModal";
+import ProductCardEditModal from "../components/productCard/modal/ProductCardEditModal";
 
 
 
@@ -10,6 +12,7 @@ const ProductCardScreen = ({ navigation }) => {
 
     const [modalOpen, setModalOpen] = useState(false);
     const [productCardCounter, setProductCardCounter] = useState({ count: 0, totalPrice: 0 });
+    const [visible, setVisible] = useState(false);
 
     return (
         <View style={styles.container}>
@@ -19,7 +22,7 @@ const ProductCardScreen = ({ navigation }) => {
                         Корзина
                     </Text>
                     <View style={styles.searchContainer}>
-                        <TouchableOpacity onPress={() => setModalOpen(true)}>
+                        <TouchableOpacity onPress={null}>
                             <Image style={styles.searchIcon} source={require('@assets/images/search_32px.png')} />
                         </TouchableOpacity>
                     </View>
@@ -31,7 +34,7 @@ const ProductCardScreen = ({ navigation }) => {
                             <Text style={styles.headerInfoSelectedCount}>{productCardCounter.count}</Text>
                         </View>
                     </View>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => setVisible(true)}>
                         <View style={styles.actionButton}>
                             <Text style={styles.actionButtonText}>
                                 Действия
@@ -56,7 +59,7 @@ const ProductCardScreen = ({ navigation }) => {
                             {productCardCounter.totalPrice} ₽
                         </Text>
                     </View>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate("OrderPlacing")}>
                         <View style={styles.rightButtonContainer}>
                             <Text style={styles.rightButtonText}>
                                 Оформить заказ
@@ -65,6 +68,9 @@ const ProductCardScreen = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </View>
+
+            <ProductCardEditModal visible={modalOpen} onClose={() => setModalOpen(false)}/>
+            <ProductCardSettingsModal setEditModalOpen={() => setModalOpen(true)} visible={visible} setVisible={setVisible}/>
         </View>
     );
 };

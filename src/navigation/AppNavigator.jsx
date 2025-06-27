@@ -13,6 +13,13 @@ import SitesScreen from '../screens/SitesScreen';
 import ContractorScreen from '../screens/ContractorScreen';
 import ProductCardScreen from '../screens/ProductCardScreen';
 import SiteScreen from '../screens/SiteScreen';
+import SearchDetailScreen from '../screens/search/SearchDetailScreen';
+import FoundDetailScreen from '../screens/search/FoundDetailScreen';
+import DetailScreen from '../screens/search/DetailScreen';
+import OrderPlacingScreen from '../screens/OrderPlacingScreen';
+import OrdersScreen from '../screens/OrdersScreen';
+import OrderDescriptionScreen from '../screens/OrderDescriptionScreen';
+
 
 const Drawer = createDrawerNavigator();
 
@@ -30,6 +37,13 @@ const AppNavigator = () => {
         <Drawer.Screen name="Contractors" component={ContractorScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
         <Drawer.Screen name="ProductCard" component={ProductCardScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
         <Drawer.Screen name="Site" component={SiteScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />, drawerItemStyle: {display: 'none'}})} />
+        <Drawer.Screen name="Search detail" component={SearchDetailScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
+        <Drawer.Screen name="Found detail" component={FoundDetailScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
+        <Drawer.Screen name="Detail" component={DetailScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />, drawerItemStyle: {display: 'none'}})} />
+        <Drawer.Screen name="OrderPlacing" component={OrderPlacingScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />, drawerItemStyle: {display: 'none'}})} />
+        <Drawer.Screen name="Orders" component={OrdersScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
+        <Drawer.Screen name="OrderDescription" component={OrderDescriptionScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />, drawerItemStyle: {display: 'none'}})} />
+
         {/* Не сделано */}
         {/* <Drawer.Screen name="Корзина" component={UsersScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
         <Drawer.Screen name="Поиск детали" component={UsersScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />

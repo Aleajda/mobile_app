@@ -1,0 +1,263 @@
+import React, { useState, useEffect } from 'react';
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator, FlatList } from 'react-native';
+import SearchApi from '../../api/SearchApi';
+
+const SearchDetailScreen = ({ navigation }) => {
+    const [searchValue, setSearchValue] = useState('');
+    const [brands, setBrands] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    const clearInput = () => {
+        setSearchValue('');
+        setBrands([]);
+    };
+
+    const searchBrands = async () => {
+        if (!searchValue.trim()) return;
+        
+        setLoading(true);
+        setError(null);
+        
+        try {
+            const result = await SearchApi.getBrands(searchValue);
+            if (result) {
+                setBrands(result);
+            } else {
+                setError('Не удалось найти бренды по указанному артикулу');
+            }
+        } catch (err) {
+            console.error('Ошибка поиска брендов:', err);
+            setError('Произошла ошибка при поиске. Попробуйте позже.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleBrandSelect = (brand) => {
+        navigation.navigate("Found detail", { 
+            article: searchValue, 
+            brand: brand.brand,
+            brandId: brand.brand_id,
+            detailId: brand.detail_id || '',
+            description: brand.name || ''
+        });
+    };
+
+    return (
+        <View style={styles.container}>
+            <View style={styles.header}>
+                <View style={styles.headerText}>
+                    <Text style={styles.headerTextTitle}>Поиск детали</Text>
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <Text style={styles.headerTextCancel}>Отменить</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.headerInput}>
+                    <View style={styles.inputWrapper}>
+                        <TextInput
+                            style={styles.textInput}
+                            placeholderTextColor="#828282"
+                            cursorColor="#2F80ED"
+                            placeholder="Поиск детали"
+                            value={searchValue}
+                            onChangeText={setSearchValue}
+                            onSubmitEditing={searchBrands}
+                            returnKeyType="search"
+                        />
+                        {searchValue.length > 0 && (
+                            <TouchableOpacity onPress={clearInput} style={styles.iconWrapper}>
+                                <Image
+                                    style={styles.icon}
+                                    source={require('@assets/images/close_24px.png')}
+                                />
+                            </TouchableOpacity>
+                        )}
+                    </View>
+                    <TouchableOpacity 
+                        style={styles.searchButton} 
+                        onPress={searchBrands}
+                        disabled={!searchValue.trim() || loading}
+                    >
+                        <Text style={styles.searchButtonText}>Найти</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+
+            <View style={styles.main}>
+                {loading ? (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color="#2F80ED" />
+                        <Text style={styles.loadingText}>Поиск брендов...</Text>
+                    </View>
+                ) : error ? (
+                    <View style={styles.errorContainer}>
+                        <Text style={styles.errorText}>{error}</Text>
+                    </View>
+                ) : brands.length > 0 ? (
+                    <View style={styles.mainContent}>
+                        <Text style={styles.mainContentBrands}>Бренды</Text>
+                        <FlatList
+                            data={brands}
+                            keyExtractor={(item) => item.brand_id.toString()}
+                            renderItem={({ item }) => (
+                                <TouchableOpacity onPress={() => handleBrandSelect(item)}>
+                                    <View style={styles.brandListItem}>
+                                        <Text style={styles.brandListTitle}>{item.brand}</Text>
+                                        <Text style={styles.brandListDescription}>{item.name || 'Неизвестно'}</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            )}
+                            style={styles.mainContentBrandList}
+                            showsVerticalScrollIndicator={false}
+                        />
+                    </View>
+                ) : searchValue.trim() ? (
+                    <View style={styles.emptyContainer}>
+                        <Text style={styles.emptyText}>Введите артикул и нажмите "Найти"</Text>
+                    </View>
+                ) : null}
+            </View>
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#E0E0E0',
+    },
+    header: {
+        padding: 16,
+        backgroundColor: '#fff',
+    },
+    headerText: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 24,
+    },
+    headerTextTitle: {
+        fontSize: 24,
+        color: '#333333',
+        fontFamily: 'Roboto',
+        fontWeight: 'bold',
+        letterSpacing: 0 
+    },
+    headerTextCancel: {
+        fontSize: 16,
+        color: '#333333',
+        color: '#2F80ED',
+        fontWeight: 'bold',
+        letterSpacing: 0 
+    },
+    headerInput: {
+        gap: 8,
+    },
+    inputWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderWidth: 1,
+        borderColor: '#2D9CDB',
+        borderRadius: 8,    
+    },
+    textInput: {
+        flex: 1,
+        paddingHorizontal: 16,
+        height: 40,
+        fontFamily: 'Roboto',
+        fontSize: 16
+    },
+    iconWrapper: {
+        marginRight: 12
+    },
+    icon: {
+        width: 24,
+        height: 24,
+    },
+    searchButton: {
+        backgroundColor: '#2F80ED',
+        borderRadius: 8,
+        paddingVertical: 12,
+        alignItems: 'center',
+    },
+    searchButtonText: {
+        color: '#FFFFFF',
+        fontFamily: 'Roboto',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    main: {
+        flex: 1,
+        padding: 16,
+    },
+    mainContent: {
+        flex: 1,
+    },
+    mainContentBrands: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 16,
+        fontFamily: 'Roboto'
+    },
+    mainContentBrandList: {
+        flex: 1,
+    },
+    brandListItem: {
+        backgroundColor: '#FFFFFF',
+        padding: 16,
+        borderRadius: 16,
+        marginBottom: 4,
+    },
+    brandListTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        fontFamily: 'Roboto',
+        color: '#333333'
+    },
+    brandListDescription: {
+        fontSize: 16,
+        color: '#333333',
+        fontFamily: 'Roboto',
+        opacity: 0.7
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingText: {
+        marginTop: 16,
+        fontFamily: 'Roboto',
+        fontSize: 16,
+        color: '#333333',
+    },
+    errorContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 16,
+    },
+    errorText: {
+        fontFamily: 'Roboto',
+        fontSize: 16,
+        color: '#EB5757',
+        textAlign: 'center',
+    },
+    emptyContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 16,
+    },
+    emptyText: {
+        fontFamily: 'Roboto',
+        fontSize: 16,
+        color: '#828282',
+        textAlign: 'center',
+    },
+});
+
+export default SearchDetailScreen;

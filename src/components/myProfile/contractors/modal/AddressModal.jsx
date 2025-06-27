@@ -356,11 +356,13 @@ anotherBlock: {
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#BDBDBD',
-    textAlign: 'center',
+    
     fontSize: 16,
     color: "#333333",
     fontFamily: 'Roboto',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    paddingVertical: 12,
+    paddingHorizontal: 16
   },
   timeSeparator: {
     marginHorizontal: 8,

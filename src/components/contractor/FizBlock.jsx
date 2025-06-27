@@ -1,16 +1,18 @@
 import React, { useState } from "react";
 import { Image, StyleSheet, TouchableOpacity, View, Text } from "react-native";
+import NewContractorModal from "./modal/NewContractorModal";
 
 
 const FizBlock = ({ navigation }) => {
 
     const [visible, setVisible] = useState(false);
+    const [addNewContractorModalVisible, setAddNewContractorModalVisible] = useState(false);
 
     const tabsData = [{title: 'Адреса', count: 2}, {title: 'Счета', count: 1}, {title: 'Договоры', count: 1}, {title: 'Автомобили', count: 1}, {title: 'Заказы', count: 1}, {title: 'Акт сверки', count: 1}]
 
     return (
         <View>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => setAddNewContractorModalVisible(true)}>
                 <View style={styles.addNewBtn}>
                     <Text style={styles.addNewBtnText}>Создать контрагента</Text>
                 </View>
@@ -84,6 +86,7 @@ const FizBlock = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </TouchableOpacity>
+            <NewContractorModal visible={addNewContractorModalVisible} onClose={() => setAddNewContractorModalVisible(false)} />
         </View>
     );
 };

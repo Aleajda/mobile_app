@@ -10,26 +10,76 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [activeTab, setActiveTab] = useState(1);
   const [modalVisible, setModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  
+  // Поля для регистрации
+  const [name, setName] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [middlename, setMiddlename] = useState("");
+  const [inn, setInn] = useState("");
+  const [email, setEmail] = useState("");
+  const [mphone, setMphone] = useState("");
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (username && password) {
-      // AuthApi.getSeed().then(async (res) => {
-      //   await AuthApi.Login(username, password, res);
-      //   console.log(await AuthApi.getSessionId());
-      // })
-      // navigation.navigate("MainPage", { username });
+      setLoading(true);
+      setError("");
+      
+      try {
+        const sessionId = await AuthApi.login(username, password);
+        if (sessionId) {
+          navigation.navigate("MainPage", { username });
+        } else {
+          setError("Ошибка авторизации. Проверьте логин и пароль.");
+        }
+      } catch (error) {
+        setError(error.message || "Ошибка авторизации");
+      } finally {
+        setLoading(false);
+      }
     } else {
-      // AuthApi.getSeed();
-      // console.log('sfsfd');
-      // alert("Введите имя пользователя и пароль");
-      navigation.navigate("MainPage", { username });
+      setError("Введите имя пользователя и пароль");
     }
   };
+  
+  const handleRegister = async () => {
+    if (!lastname || !name || !email || !mphone) {
+      setError("Заполните обязательные поля");
+      return;
+    }
+    
+    setLoading(true);
+    setError("");
+    
+    try {
+      const userData = {
+        lastname,
+        name,
+        middlename,
+        inn,
+        email,
+        mphone
+      };
+      
+      const result = await AuthApi.registerUser(userData);
+      if (result) {
+        setModalVisible(true);
+      } else {
+        setError("Ошибка при регистрации");
+      }
+    } catch (error) {
+      setError(error.message || "Ошибка при регистрации");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   StatusBar.setBarStyle("dark-content");
 
   return (
     <View style={styles.container}>
-         <StatusBar barStyle="light-content" backgroundColor="#1E1E1E" />
+         <StatusBar barStyle='light-content' backgroundColor="#1E1E1E" />
       <View style={styles.header}>
         <View style={styles.brandContainer}>
           <Text style={styles.brand}>Sort1.pro</Text>
@@ -68,6 +118,9 @@ const LoginScreen = ({ navigation }) => {
               </View>
             </TouchableOpacity>
           </View>
+          
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          
           {activeTab == 1
           ?
           <View>
@@ -86,8 +139,12 @@ const LoginScreen = ({ navigation }) => {
                 value={password}
                 onChangeText={setPassword}
             />
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Войти</Text>
+            <TouchableOpacity 
+                style={[styles.button, loading && styles.disabledButton]} 
+                onPress={handleLogin}
+                disabled={loading}
+            >
+                <Text style={styles.buttonText}>{loading ? "Вход..." : "Войти"}</Text>
             </TouchableOpacity>
           </View>
           :
@@ -96,51 +153,52 @@ const LoginScreen = ({ navigation }) => {
                 placeholderTextColor="#828282"
                 style={styles.input}
                 placeholder="Имя"
-                value={username}
-                
+                value={name}
+                onChangeText={setName}
             />
             <TextInput
                 placeholderTextColor="#828282"
                 style={styles.input}
                 placeholder="Фамилия"
-                secureTextEntry
-                value={password}
-                
+                value={lastname}
+                onChangeText={setLastname}
             />
             <TextInput
                 placeholderTextColor="#828282"
                 style={styles.input}
                 placeholder="Отчество"
-                secureTextEntry
-                value={password}
-                
+                value={middlename}
+                onChangeText={setMiddlename}
             />
             <TextInput
                 placeholderTextColor="#828282"
                 style={styles.input}
                 placeholder="ИНН"
-                secureTextEntry
-                value={password}
-                
+                value={inn}
+                onChangeText={setInn}
             />
             <TextInput
                 placeholderTextColor="#828282"
                 style={styles.input}
                 placeholder="Email"
-                secureTextEntry
-                value={password}
-                
+                value={email}
+                onChangeText={setEmail}
             />
             <TextInput
                 placeholderTextColor="#828282"
                 style={styles.input}
                 placeholder="Мобильный телефон"
-                secureTextEntry
-                value={password}
-                
+                value={mphone}
+                onChangeText={setMphone}
             />
-            <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
-                <Text style={[styles.buttonText, {fontFamily: "Emblema"}]}>Зарегистрироваться</Text>
+            <TouchableOpacity 
+                style={[styles.button, loading && styles.disabledButton]} 
+                onPress={handleRegister}
+                disabled={loading}
+            >
+                <Text style={[styles.buttonText, {fontFamily: "Emblema"}]}>
+                    {loading ? "Регистрация..." : "Зарегистрироваться"}
+                </Text>
             </TouchableOpacity>
           </View>
         }
@@ -239,11 +297,20 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
   },
+  disabledButton: {
+    backgroundColor: "#007bff80",
+  },
   buttonText: {
     fontFamily: 'Roboto',
     color: "#fff",
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  errorText: {
+    fontFamily: 'Roboto',
+    color: "#E53935",
+    marginBottom: 10,
+    textAlign: "center",
   },
 });
 
