@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const sessionId = await AuthApi.getSessionId();
         if (sessionId) {
+          console.log('sessionId', sessionId);
           setIsAuthenticated(true);
         } else {
           setIsAuthenticated(false);

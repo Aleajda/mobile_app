@@ -1,18 +1,39 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "react-native";
-import SitesBlock from "../components/sites/SitesBlock";
+import React, { useEffect, useState, useCallback } from "react";
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, RefreshControl } from "react-native";
 import ProductCardBlock from "../components/productCard/ProductCardBlock";
 import ProductCardSettingsModal from "../components/productCard/modal/ProductCardSettingsModal";
 import ProductCardEditModal from "../components/productCard/modal/ProductCardEditModal";
-
-
-
+import BasketApi, { basketUpdateEvent } from "../api/BasketApi";
 
 const ProductCardScreen = ({ navigation }) => {
-
     const [modalOpen, setModalOpen] = useState(false);
     const [productCardCounter, setProductCardCounter] = useState({ count: 0, totalPrice: 0 });
     const [visible, setVisible] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
+
+    // Функция для обновления данных корзины
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        try {
+            // Вызываем событие обновления корзины
+            basketUpdateEvent.emit();
+            setRefreshing(false);
+        } catch (error) {
+            console.error('Ошибка при обновлении корзины:', error);
+            setRefreshing(false);
+        }
+    }, []);
+
+    // Форматирование цены
+    const formatPrice = (price) => {
+        if (!price) return '0 ₽';
+        return new Intl.NumberFormat('ru-RU', {
+            style: 'currency',
+            currency: 'RUB',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(price);
+    };
 
     return (
         <View style={styles.container}>
@@ -45,8 +66,21 @@ const ProductCardScreen = ({ navigation }) => {
 
             </View>
             <View style={styles.main}>
-                <ScrollView style={{ width: '100%' }} showsVerticalScrollIndicator={false}>
-                    <ProductCardBlock setProductCardCounter={setProductCardCounter} />
+                <ScrollView 
+                    style={{ width: '100%' }} 
+                    showsVerticalScrollIndicator={false}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            colors={['#2F80ED']}
+                        />
+                    }
+                >
+                    <ProductCardBlock 
+                        key={refreshing ? 'refreshing' : 'not-refreshing'} 
+                        setProductCardCounter={setProductCardCounter} 
+                    />
                 </ScrollView>
             </View>
             <View style={styles.footer}>
@@ -56,7 +90,7 @@ const ProductCardScreen = ({ navigation }) => {
                             {productCardCounter.count} товаров на сумму
                         </Text>
                         <Text style={styles.footerContainerTextPrice}>
-                            {productCardCounter.totalPrice} ₽
+                            {formatPrice(productCardCounter.totalPrice)}
                         </Text>
                     </View>
                     <TouchableOpacity onPress={() => navigation.navigate("OrderPlacing")}>

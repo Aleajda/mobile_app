@@ -1,27 +1,88 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { StyleSheet, View, Text, Pressable, TouchableOpacity, Image } from 'react-native';
+import ProductCardSettingsModal from './modal/ProductCardSettingsModal';
+import ProductCardEditModal from './modal/ProductCardEditModal';
 
-const ProductCardOrder = ({ price, setProductCardCounter }) => {
-
+const ProductCardOrder = ({ item, price, setProductCardCounter, index, onItemUpdated }) => {
+    // Инициализируем состояние чекбокса как не выбранное
     const [checked, setChecked] = useState(false);
+    // Состояние для модальных окон
+    const [settingsModalVisible, setSettingsModalVisible] = useState(false);
+    const [editModalVisible, setEditModalVisible] = useState(false);
+    
+    // Не обновляем счетчик при монтировании компонента,
+    // так как изначально все товары не выбраны
 
     const onChecked = () => {
+        // Получаем актуальное количество товара
+        const itemCount = parseInt(item?.count || item?.to_cart_count || 1);
+        // Получаем актуальную цену за все количество товара
+        const totalItemPrice = price * itemCount;
+        
         if (checked) {
+            // Снимаем выделение с товара и вычитаем его цену из общей суммы
             setProductCardCounter(prev => ({
-                totalPrice: prev.totalPrice - price,
+                totalPrice: prev.totalPrice - totalItemPrice,
                 count: prev.count - 1,
             }));
             setChecked(false);
         } else {
+            // Выделяем товар и добавляем его цену к общей сумме
             setProductCardCounter(prev => ({
-                totalPrice: prev.totalPrice + price,
+                totalPrice: prev.totalPrice + totalItemPrice,
                 count: prev.count + 1,
             }));
             setChecked(true);
         }
-
     }
     
+    // Определение статуса наличия
+    const getAvailabilityStatus = () => {
+        if (!item) return { text: 'Нет в наличии', color: '#EB5757', bgColor: '#EB57571A' };
+        
+        const quantity = parseInt(item.count) || 0;
+        const time = parseInt(item.time) || 0;
+        
+        if (quantity > 0 && time === 0) {
+            return { 
+                text: `В наличии — ${quantity} шт.`, 
+                color: '#27AE60',
+                bgColor: '#27AE601A'
+            };
+        } else if (time === 0) {
+            return { 
+                text: 'В наличии', 
+                color: '#27AE60',
+                bgColor: '#27AE601A'
+            };
+        } else {
+            return { 
+                text: `Доставка ${time} ${time === 1 ? 'день' : time < 5 ? 'дня' : 'дней'}`, 
+                color: '#F2994A',
+                bgColor: '#F2994A1A'
+            };
+        }
+    };
+    
+    // Открытие модального окна редактирования
+    const openEditModal = () => {
+        setEditModalVisible(true);
+    };
+    
+    // Обработчик обновления товара
+    const handleItemUpdated = () => {
+        if (onItemUpdated) {
+            onItemUpdated();
+        }
+    };
+    
+    const availability = getAvailabilityStatus();
+    
+    // Форматирование количества
+    const formatQuantity = () => {
+        const count = item?.count || item?.to_cart_count || 1;
+        return `${count} шт.`;
+    };
 
     return (
         <View style={styles.order}>
@@ -31,17 +92,28 @@ const ProductCardOrder = ({ price, setProductCardCounter }) => {
                         {checked && <Text style={styles.checkmark}>✓</Text>}
                     </View>
                 </Pressable>
-                <View>
-                    <Text style={styles.orderTitle}>Масляной фильтр</Text>
-                    <Text style={styles.orderTitle2}>Mahle/Knecht</Text>
+                <View style={{flex: 1}}>
+                    <Text style={styles.orderTitle}>{item?.name || 'Масляной фильтр'}</Text>
+                    <Text style={styles.orderTitle2}>{item?.brand || 'Mahle/Knecht'}</Text>
                 </View>
+                <TouchableOpacity 
+                    style={styles.settingsButton}
+                    onPress={() => setSettingsModalVisible(true)}
+                >
+                    <Image 
+                        source={require('@assets/images/menu_icon.png')}
+                        style={styles.settingsIcon}
+                    />
+                </TouchableOpacity>
             </View>
             <View style={styles.orderBuyer}>
                 <Text style={styles.orderBuyerStatus}>Поставщик</Text>
-                <Text style={styles.orderBuyerName}>ООО "ПАРТКОМ"</Text>
+                <Text style={styles.orderBuyerName}>{item?.deliverer || 'ООО "ПАРТКОМ"'}</Text>
             </View>
-            <View style={styles.orderStatus}>
-                <Text style={styles.orderStatusText}>В наличии — 7 шт.</Text>
+            <View style={[styles.orderStatus, { backgroundColor: availability.bgColor }]}>
+                <Text style={[styles.orderStatusText, { color: availability.color }]}>
+                    {availability.text}
+                </Text>
             </View>
             <View style={styles.orderBorder}></View>
             <View style={styles.orderParam}>
@@ -65,7 +137,7 @@ const ProductCardOrder = ({ price, setProductCardCounter }) => {
                     Количество
                 </Text>
                 <Text style={styles.orderParamText}>
-                    1 шт.
+                    {formatQuantity()}
                 </Text>
             </View>
             <View style={[styles.orderBorder, {marginTop: 16}]}></View>
@@ -74,9 +146,27 @@ const ProductCardOrder = ({ price, setProductCardCounter }) => {
                     Итого
                 </Text>
                 <Text style={styles.orderParamText}>
-                    {price} ₽
+                    {price * (item?.count || item?.to_cart_count || 1)} ₽
                 </Text>
             </View>
+            
+            {/* Модальное окно настроек */}
+            <ProductCardSettingsModal 
+                visible={settingsModalVisible}
+                setVisible={setSettingsModalVisible}
+                setEditModalOpen={openEditModal}
+                itemIndex={index}
+                onItemDeleted={handleItemUpdated}
+            />
+            
+            {/* Модальное окно редактирования */}
+            <ProductCardEditModal 
+                visible={editModalVisible}
+                onClose={() => setEditModalVisible(false)}
+                item={item}
+                itemIndex={index}
+                onItemUpdated={handleItemUpdated}
+            />
         </View>
     );
 }
@@ -87,13 +177,10 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         padding: 16,
     },
-
-    // HEADER
-
     orderHeader: {
-        flexDirection: 'row'
+        flexDirection: 'row',
+        alignItems: 'flex-start'
     },
-
     orderTitle: {
         fontFamily: 'Roboto',
         fontWeight: 'bold',
@@ -164,39 +251,42 @@ const styles = StyleSheet.create({
         opacity: 0.7
     },
     orderParamText: {
-        
         fontFamily: 'Roboto',
         fontSize: 16,
         fontWeight: 'bold',
         color: '#333333',
         letterSpacing: 0
     },
-
-    // ГАЛОЧКА
-
     wrapper: {
         paddingTop: 3,
         marginRight: 15
-      },
-      box: {
+    },
+    box: {
         width: 20,
         height: 20,
         borderRadius: 4,
         borderWidth: 2,
-        borderColor: '#2F80ED', // синий цвет
+        borderColor: '#2F80ED',
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#ffffff',
-      },
-      checkedBox: {
+    },
+    checkedBox: {
         backgroundColor: '#1a73e8',
-      },
-      checkmark: {
+    },
+    checkmark: {
         color: 'white',
         fontSize: 14,
         fontWeight: 'bold',
         lineHeight: 16,
-      },
+    },
+    settingsButton: {
+        padding: 5,
+    },
+    settingsIcon: {
+        width: 24,
+        height: 24,
+    }
 })
 
 export default ProductCardOrder;

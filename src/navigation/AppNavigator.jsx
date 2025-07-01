@@ -50,20 +50,121 @@ const AppContent = () => {
           drawerItemStyle: { display: 'none' },
         }}
       />
-      <Drawer.Screen name="MainPage" component={MainScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})}  />
-      <Drawer.Screen name="Profile" component={ProfileScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})}  initialParams={{ aboutMeButton: true }}/>
-      <Drawer.Screen name="Users" component={UsersScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
-      <Drawer.Screen name="Sites" component={SitesScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
-      <Drawer.Screen name="UsersWithHomeButtons" component={ProfileScreen} options={({ navigation }) => ({header: () => <View><Header navigation={navigation} /><GoBackHeader goTo={"Users"} contractor={false}/></View>, drawerItemStyle: {display: 'none'}})} initialParams={{ aboutMeButton: false}}/>
-      <Drawer.Screen name="ContractorsWithHomeButtons" component={ProfileScreen} options={({ navigation }) => ({header: () => <View><Header navigation={navigation} /><GoBackHeader goTo={"Contractors"} contractor={true}/></View>, drawerItemStyle: {display: 'none'}})} initialParams={{ aboutMeButton: false}}/>
-      <Drawer.Screen name="Contractors" component={ContractorScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
-      <Drawer.Screen name="ProductCard" component={ProductCardScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
-      <Drawer.Screen name="Site" component={SiteScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />, drawerItemStyle: {display: 'none'}})} />
-      <Drawer.Screen name="Search detail" component={SearchDetailScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
-      <Drawer.Screen name="Found detail" component={FoundDetailScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
-      <Drawer.Screen name="OrderPlacing" component={OrderPlacingScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />, drawerItemStyle: {display: 'none'}})} />
-      <Drawer.Screen name="Orders" component={OrdersScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />
-      <Drawer.Screen name="OrderDescription" component={OrderDescriptionScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />, drawerItemStyle: {display: 'none'}})} />
+      <Drawer.Screen 
+        name="MainPage" 
+        component={MainScreen} 
+        options={({ navigation }) => ({
+          header: () => <Header navigation={navigation} />,
+          title: "Главная"
+        })}  
+      />
+      <Drawer.Screen 
+        name="Profile" 
+        component={ProfileScreen} 
+        options={({ navigation }) => ({
+          header: () => <Header navigation={navigation} />,
+          title: "Профиль"
+        })}  
+        initialParams={{ aboutMeButton: true }}
+      />
+      <Drawer.Screen 
+        name="Users" 
+        component={UsersScreen} 
+        options={({ navigation }) => ({
+          header: () => <Header navigation={navigation} />,
+          title: "Пользователи"
+        })} 
+      />
+      <Drawer.Screen 
+        name="Sites" 
+        component={SitesScreen} 
+        options={({ navigation }) => ({
+          header: () => <Header navigation={navigation} />,
+          title: "Сайты"
+        })} 
+      />
+      <Drawer.Screen 
+        name="UsersWithHomeButtons" 
+        component={ProfileScreen} 
+        options={({ navigation }) => ({
+          header: () => <View><Header navigation={navigation} /><GoBackHeader goTo={"Users"} contractor={false}/></View>, 
+          drawerItemStyle: {display: 'none'}
+        })} 
+        initialParams={{ aboutMeButton: false}}
+      />
+      <Drawer.Screen 
+        name="ContractorsWithHomeButtons" 
+        component={ProfileScreen} 
+        options={({ navigation }) => ({
+          header: () => <View><Header navigation={navigation} /><GoBackHeader goTo={"Contractors"} contractor={true}/></View>, 
+          drawerItemStyle: {display: 'none'}
+        })} 
+        initialParams={{ aboutMeButton: false}}
+      />
+      <Drawer.Screen 
+        name="Contractors" 
+        component={ContractorScreen} 
+        options={({ navigation }) => ({
+          header: () => <Header navigation={navigation} />,
+          title: "Контрагенты"
+        })} 
+      />
+      <Drawer.Screen 
+        name="ProductCard" 
+        component={ProductCardScreen} 
+        options={({ navigation }) => ({
+          header: () => <Header navigation={navigation} />,
+          title: "Корзина"
+        })} 
+      />
+      <Drawer.Screen 
+        name="Site" 
+        component={SiteScreen} 
+        options={({ navigation }) => ({
+          header: () => <Header navigation={navigation} />, 
+          drawerItemStyle: {display: 'none'}
+        })} 
+      />
+      <Drawer.Screen 
+        name="Search detail" 
+        component={SearchDetailScreen} 
+        options={({ navigation }) => ({
+          header: () => <Header navigation={navigation} />,
+          title: "Поиск детали"
+        })} 
+      />
+      <Drawer.Screen 
+        name="Found detail" 
+        component={FoundDetailScreen} 
+        options={({ navigation }) => ({
+          header: () => <Header navigation={navigation} />,
+          drawerItemStyle: {display: 'none'}
+        })} 
+      />
+      <Drawer.Screen 
+        name="OrderPlacing" 
+        component={OrderPlacingScreen} 
+        options={({ navigation }) => ({
+          header: () => <Header navigation={navigation} />, 
+          drawerItemStyle: {display: 'none'}
+        })} 
+      />
+      <Drawer.Screen 
+        name="Orders" 
+        component={OrdersScreen} 
+        options={({ navigation }) => ({
+          header: () => <Header navigation={navigation} />,
+          title: "Заказы"
+        })} 
+      />
+      <Drawer.Screen 
+        name="OrderDescription" 
+        component={OrderDescriptionScreen} 
+        options={({ navigation }) => ({
+          header: () => <Header navigation={navigation} />, 
+          drawerItemStyle: {display: 'none'}
+        })} 
+      />
 
       {/* Не сделано */}
       {/* <Drawer.Screen name="Корзина" component={UsersScreen} options={({ navigation }) => ({header: () => <Header navigation={navigation} />})} />

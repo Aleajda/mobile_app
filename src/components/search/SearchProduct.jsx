@@ -1,7 +1,11 @@
-import React from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, Image, TouchableOpacity, Alert } from 'react-native';
+import BasketApi from '../../api/BasketApi';
+import Toast from 'react-native-toast-message';
 
-const SearchProduct = ({ item = {} }) => {
+const SearchProduct = ({ item = {}, onAddToBasket, onBasketUpdated }) => {
+    const [isAddingToBasket, setIsAddingToBasket] = useState(false);
+    
     // Форматирование цены
     const formatPrice = (price) => {
         if (!price) return '0 ₽';
@@ -43,9 +47,74 @@ const SearchProduct = ({ item = {} }) => {
     
     const availability = getAvailabilityStatus();
 
+    // Функция для показа уведомления
+    const showToast = (message) => {
+        Toast.show({
+            type: 'customToast',
+            text1: message || 'Добавлено в корзину',
+            position: 'top',
+            visibilityTime: 2000,
+            autoHide: true,
+            topOffset: 60,
+        });
+    };
+
+    // Функция добавления товара в корзину
+    const handleAddToBasket = async () => {
+        if (isAddingToBasket) return;
+        
+        setIsAddingToBasket(true);
+        
+        try {
+            // Подготавливаем данные для запроса
+            const detailData = {
+                my_code: item.my_code || "",
+                ean13: item.ean13 || "",
+                article: item.article || "",
+                brand: item.brand || "",
+                name: item.name || "",
+                cost: item.cost || item.price || 0,
+                count: item.count || 0,
+                mcount: item.mcount || 0,
+                time: item.time || 0,
+                deliverer: item.pl_name || item.supplier || "Основной",
+                deliverer_id: item.deliverer_id || 3,
+                is_excise: item.is_excise || 0,
+                deliverer_type: item.deliverer_type || "sklad",
+                detail_id: item.id || item.detail_id || 0,
+                brand_id: item.brand_id || 0,
+                price: item.price || item.sale_price || 0,
+                to_cart_count: 1,
+                comment: ""
+            };
+            
+            const result = await BasketApi.addToBasket(detailData);
+            
+            if (result && result.status === 'ok') {
+                showToast("Товар добавлен в корзину");
+                
+                // Если передан колбэк, вызываем его
+                if (onAddToBasket) {
+                    onAddToBasket();
+                }
+            } else {
+                Alert.alert("Ошибка", "Не удалось добавить товар в корзину");
+            }
+        } catch (error) {
+            console.error("Ошибка при добавлении в корзину:", error);
+            Alert.alert("Ошибка", "Произошла ошибка при добавлении товара в корзину");
+        } finally {
+            setIsAddingToBasket(false);
+        }
+    };
+
     return (
         <View style={styles.order}>
-            <TouchableOpacity style={styles.productCardContainer}>
+            <TouchableOpacity 
+                style={styles.productCardContainer} 
+                onPress={handleAddToBasket}
+                disabled={isAddingToBasket}
+            >
                 <Image style={styles.productCard} source={require("@assets/images/basket_filled_24px.png")}/>
             </TouchableOpacity>
             <View style={styles.textContainer}>

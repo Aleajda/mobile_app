@@ -1,7 +1,33 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Image, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import BasketApi, { basketUpdateEvent } from '../../api/BasketApi';
 
 const Header = ({navigation}) => {
+  const [basketCount, setBasketCount] = useState(0);
+
+  // Загрузка количества товаров в корзине при монтировании компонента
+  useEffect(() => {
+    loadBasketCount();
+    
+    // Подписываемся на событие обновления корзины
+    const unsubscribe = basketUpdateEvent.addListener(loadBasketCount);
+    
+    // Отписываемся при размонтировании компонента
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  // Функция загрузки количества товаров в корзине
+  const loadBasketCount = async () => {
+    try {
+      const count = await BasketApi.getBasketCount();
+      setBasketCount(count);
+    } catch (error) {
+      console.error('Ошибка при загрузке количества товаров в корзине:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
         <TouchableOpacity onPress={() => navigation.openDrawer()}><Image style={styles.menuIcon} source={require('@assets/images/menu_icon.png')}/></TouchableOpacity>
@@ -14,7 +40,7 @@ const Header = ({navigation}) => {
             <TouchableOpacity onPress={() => navigation.navigate('ProductCard')}>
             <View style={styles.productCardContainer}>
                 <Image style={styles.productCardIcon} source={require('@assets/images/basket_filled_24px.png')}/>
-                <Text style={styles.productCardCount}>2</Text>
+                <Text style={styles.productCardCount}>{basketCount}</Text>
             </View>
             </TouchableOpacity>
         </View>

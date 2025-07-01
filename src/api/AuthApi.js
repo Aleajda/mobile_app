@@ -18,7 +18,7 @@ export default AuthApi = {
                     headers: {
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest',
-                        'Cookie': sessionId ? `PHPSESSID=${sessionId}` : ''
+                        'Cookie': sessionId ? `SORT1SESSID=${sessionId}` : ''
                     }
                 }
             );
@@ -66,7 +66,7 @@ export default AuthApi = {
                     headers: {
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest',
-                        'Cookie': sessionId ? `PHPSESSID=${sessionId}` : ''
+                        'Cookie': sessionId ? `SORT1SESSID=${sessionId}` : ''
                     }
                 }
             );
@@ -110,7 +110,7 @@ export default AuthApi = {
                     headers: {
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest',
-                        'Cookie': sessionId ? `PHPSESSID=${sessionId}` : ''
+                        'Cookie': sessionId ? `SORT1SESSID=${sessionId}` : ''
                     }
                 }
             );

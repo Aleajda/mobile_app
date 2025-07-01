@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Modal,
   View,
@@ -8,140 +8,176 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
-  ScrollView
+  ScrollView,
+  Alert,
+  Image
 } from 'react-native';
+import BasketApi from '../../../api/BasketApi';
+import Toast from 'react-native-toast-message';
 
-export default function ProductCardEditModal({ visible, onClose}) {
+export default function ProductCardEditModal({ visible, onClose, item, itemIndex, onItemUpdated }) {
   const [price, setPrice] = useState('');
   const [quantity, setQuantity] = useState(1);
+  const [isUpdating, setIsUpdating] = useState(false);
+  
+  // Инициализация состояния при открытии модального окна
+  useEffect(() => {
+    if (visible && item) {
+      setPrice(item.price ? String(item.price) : '');
+      setQuantity(item.count || item.to_cart_count || 1);
+    }
+  }, [visible, item]);
 
+  // Функция для показа уведомления
+  const showToast = (message) => {
+    Toast.show({
+      type: 'customToast',
+      text1: message || 'Товар обновлен',
+      position: 'top',
+      visibilityTime: 2000,
+      autoHide: true,
+      topOffset: 60,
+    });
+  };
+
+  // Очистка поля цены
   const clearPrice = () => setPrice('');
+  
+  // Обработчик сохранения изменений
+  const handleSave = async () => {
+    if (isUpdating) return;
+    
+    try {
+      setIsUpdating(true);
+      
+      // Проверка валидности данных
+      const priceValue = price ? parseFloat(price) : undefined;
+      
+      // Подготавливаем данные для обновления
+      const updatedItem = {
+        quantity: quantity,
+        price: priceValue
+      };
+      
+      // Вызываем API для обновления товара
+      const result = await BasketApi.updateBasketItem(itemIndex, updatedItem);
+      
+      if (result && result.status === 'ok') {
+        showToast('Товар успешно обновлен');
+        
+        // Вызываем колбэк для обновления родительского компонента
+        if (onItemUpdated) {
+          onItemUpdated();
+        }
+        
+        // Закрываем модальное окно
+        onClose();
+      } else {
+        Alert.alert("Ошибка", "Не удалось обновить товар");
+      }
+    } catch (error) {
+      console.error("Ошибка при обновлении товара:", error);
+      Alert.alert("Ошибка", "Произошла ошибка при обновлении товара");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   return (
-    // <Modal visible={visible} animationType="slide" transparent>
-    //   <KeyboardAvoidingView
-    //     style={styles.container}
-    //     behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    //   >
-    //     <View style={styles.modal}>
-    //       {/* Header */}
-    //       <View style={styles.header}>
-    //         <Text style={styles.title}>Ред.-ть товар</Text>
-    //         <TouchableOpacity onPress={onClose}>
-    //           <Text style={styles.cancel}>Отменить</Text>
-    //         </TouchableOpacity>
-    //       </View>
-
-    //       {/* Content */}
-    //       <View style={styles.content}>
-    //         <Text style={styles.label}>Продать за</Text>
-    //         <View style={styles.inputRow}>
-    //           <TextInput
-    //             style={styles.input}
-    //             value={price}
-    //             onChangeText={setPrice}
-    //             keyboardType="numeric"
-    //             placeholder="0"
-    //           />
-    //           {price.length > 0 && (
-    //             <TouchableOpacity onPress={clearPrice} style={styles.clearButton}>
-    //               <Text style={styles.clearText}>×</Text>
-    //             </TouchableOpacity>
-    //           )}
-    //         </View>
-
-    //         <Text style={styles.label}>Количество</Text>
-    //         <View style={styles.counter}>
-    //           <TouchableOpacity
-    //             onPress={() => setQuantity(q => Math.max(1, q - 1))}
-    //             style={styles.counterButton}
-    //           >
-    //             <Text style={styles.counterText}>−</Text>
-    //           </TouchableOpacity>
-    //           <Text style={styles.quantity}>{quantity}</Text>
-    //           <TouchableOpacity
-    //             onPress={() => setQuantity(q => q + 1)}
-    //             style={styles.counterButton}
-    //           >
-    //             <Text style={styles.counterText}>+</Text>
-    //           </TouchableOpacity>
-    //         </View>
-    //       </View>
-
-    //       {/* Save Button */}
-    //       <TouchableOpacity style={styles.saveButton} onPress={onClose}>
-    //         <Text style={styles.saveText}>Сохранить</Text>
-    //       </TouchableOpacity>
-    //     </View>
-    //   </KeyboardAvoidingView>
-    // </Modal>
     <Modal visible={visible} animationType="slide" transparent>
-            <View style={styles.modalContainer}>
-                <View style={styles.modalContent}>
-                    <View style={styles.header}>
-                        <Text style={styles.headerText}>
-                            Ред.-ть товар
-                        </Text>
-                        <TouchableOpacity onPress={() => onClose()}>
-                            <Text style={styles.headerClose}>
-                                Отменить
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                    <ScrollView style={styles.mainContent}>
-                              {/* Content */}
-                        <View style={styles.content}>
-                            <Text style={styles.label1}>Продать за</Text>
-                            <View style={styles.inputRow}>
-                            <TextInput
-                                style={styles.input}
-                                value={price}
-                                onChangeText={setPrice}
-                                keyboardType="numeric"
-                                placeholder="0"
-                            />
-                            {price.length > 0 && (
-                                <TouchableOpacity onPress={clearPrice} style={styles.clearButton}>
-                                <Text style={styles.clearText}>×</Text>
-                                </TouchableOpacity>
-                            )}
-                            </View>
-                            <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                              <Text style={styles.label}>Количество</Text>
-                              <View style={styles.counter}>
-                              <TouchableOpacity
-                                  onPress={() => setQuantity(q => Math.max(1, q - 1))}
-                                  style={styles.counterButton}
-                              >
-                                  <Text style={styles.counterText}>−</Text>
-                              </TouchableOpacity>
-                              <View style={styles.quantityContainer}>
-                                <Text style={styles.quantity}>{quantity}</Text>
-                              </View>
-                              <TouchableOpacity
-                                  onPress={() => setQuantity(q => q + 1)}
-                                  style={styles.counterButton}
-                              >
-                                  <Text style={styles.counterText}>+</Text>
-                              </TouchableOpacity>
-                              </View>
-                            </View>
-                        </View>
-                    </ScrollView>
-                    <View style={styles.footer}>
-                        <TouchableOpacity onPress={() => onClose()}>
-                            <View style={styles.buttonContainer}>
-                                <Text style={styles.buttonText}>
-                                    Сохранить
-                                </Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <View style={styles.header}>
+            <Text style={styles.headerText}>
+              Ред.-ть товар
+            </Text>
+            <TouchableOpacity onPress={onClose}>
+              <Text style={styles.headerClose}>
+                Отменить
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView style={styles.mainContent}>
+            <View style={styles.content}>
+              <Text style={styles.label1}>Продать за</Text>
+              <View style={styles.inputRow}>
+                <TextInput
+                  style={styles.input}
+                  value={price}
+                  onChangeText={setPrice}
+                  keyboardType="numeric"
+                  placeholder="0"
+                />
+                {price.length > 0 && (
+                  <TouchableOpacity onPress={clearPrice} style={styles.clearButton}>
+                    <Text style={styles.clearText}>×</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+              <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                <Text style={styles.label}>Количество</Text>
+                <View style={styles.counter}>
+                  <TouchableOpacity
+                    onPress={() => setQuantity(q => Math.max(1, q - 1))}
+                    style={styles.counterButton}
+                  >
+                    <Text style={styles.counterText}>−</Text>
+                  </TouchableOpacity>
+                  <View style={styles.quantityContainer}>
+                    <Text style={styles.quantity}>{quantity}</Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => setQuantity(q => q + 1)}
+                    style={styles.counterButton}
+                  >
+                    <Text style={styles.counterText}>+</Text>
+                  </TouchableOpacity>
                 </View>
+              </View>
             </View>
-        </Modal>
+          </ScrollView>
+          <View style={styles.footer}>
+            <TouchableOpacity onPress={handleSave} disabled={isUpdating}>
+              <View style={styles.buttonContainer}>
+                <Text style={styles.buttonText}>
+                  Сохранить
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+      <Toast config={toastConfig}/>
+    </Modal>
   );
 }
+
+const toastConfig = {
+  customToast: ({ text1, text2, ...rest }) => (
+    <View
+      style={{
+        backgroundColor: '#1c1c1c',
+        borderRadius: 16,
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '80%'
+      }}
+    >
+      <Image
+        source={require('@assets/images/check_16px.png')}
+        style={{ width: 16, height: 16, marginRight: 10 }}
+      />
+      <View>
+        <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 15 }}>{text1}</Text>
+        {text2 ? (
+          <Text style={{ color: '#aaa', fontSize: 13 }}>{text2}</Text>
+        ) : null}
+      </View>
+    </View>
+  ),
+};
 
 const styles = StyleSheet.create({
 //    container: {

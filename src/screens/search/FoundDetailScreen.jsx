@@ -4,6 +4,7 @@ import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import OriginalBlock from '../../components/search/OriginalBlock';
 import AnalogBlock from '../../components/search/AnalogBlock';
 import SearchApi from '../../api/SearchApi';
+import BasketApi, { basketUpdateEvent } from '../../api/BasketApi';
 import { useFocusEffect } from '@react-navigation/native';
 
 
@@ -25,6 +26,16 @@ const FoundDetailScreen = ({ navigation, route }) => {
     const [searchController, setSearchController] = useState(null);
     const [itemsCount, setItemsCount] = useState({ originals: 0, analogs: 0 });
     
+    // Запускаем поиск при загрузке экрана
+    useEffect(() => {
+        return () => {
+            // Останавливаем поиск при размонтировании компонента
+            if (searchController) {
+                searchController.stopSearch();
+            }
+        };
+    }, []);
+    
     // Функция для очистки данных
     const clearSearchData = () => {
         if (searchController) {
@@ -35,16 +46,6 @@ const FoundDetailScreen = ({ navigation, route }) => {
         setItemsCount({ originals: 0, analogs: 0 });
         setIsSearching(false);
     };
-    
-    // Запускаем поиск при загрузке экрана
-    useEffect(() => {
-        return () => {
-            // Останавливаем поиск при размонтировании компонента
-            if (searchController) {
-                searchController.stopSearch();
-            }
-        };
-    }, []);
     
     // Применяем фильтр по доставке к результатам
     useEffect(() => {
@@ -302,10 +303,9 @@ const FoundDetailScreen = ({ navigation, route }) => {
                     </Text>
                 </TouchableOpacity>
             </View>
-            
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
 
@@ -471,7 +471,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8
-  }
+  },
+
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loaderText: {
+    fontFamily: 'Roboto',
+    fontSize: 16,
+    color: '#333333',
+    marginTop: 8,
+  },
 
 })
 

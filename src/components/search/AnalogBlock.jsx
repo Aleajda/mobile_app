@@ -7,13 +7,13 @@ const AnalogBlock = ({ navigation, searchResult }) => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [detailModalVisible, setDetailModalVisible] = useState(false);
     
-    // Получаем аналоги из результатов поиска
-    const getAnalogs = () => {
+    // Получаем данные из результатов поиска
+    const getItems = () => {
         if (!searchResult || !searchResult.analogs) return [];
         return searchResult.analogs;
     };
     
-    const analogs = getAnalogs();
+    const analogs = getItems();
     
     const handleItemPress = (item) => {
         setSelectedItem(item);
@@ -24,43 +24,38 @@ const AnalogBlock = ({ navigation, searchResult }) => {
         setDetailModalVisible(false);
         setSelectedItem(null);
     };
-    
-    const renderItem = ({ item }) => (
-        <TouchableOpacity 
-            onPress={() => handleItemPress(item)}
-        >
-            <SearchProduct item={item} />
-        </TouchableOpacity>
-    );
+
+    // Если нет результатов, показываем сообщение
+    if (!analogs || analogs.length === 0) {
+        return (
+            <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>Аналоги не найдены</Text>
+            </View>
+        );
+    }
 
     return (
         <View style={{marginBottom: 32}}>
-            {analogs.length > 0 ? (
-                <>
-                    <View style={styles.header}>
-                        <Text style={styles.title}>
-                            Аналоги
-                        </Text>
-                        <Text style={styles.description}>
-                            найденные аналоги от других производителей
-                        </Text>
-                    </View>
-                    
-                    <FlatList
-                        data={analogs}
-                        renderItem={renderItem}
-                        keyExtractor={(item, index) => item.id ? `analog-${item.id}` : `analog-${item.article}-${item.brand}-${index}`}
-                        scrollEnabled={false}
-                        ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
-                    />
-                </>
-            ) : (
-                <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyText}>
-                        Пока не найдено аналогов
-                    </Text>
-                </View>
-            )}
+            <View style={styles.header}>
+                <Text style={styles.title}>
+                    Аналоги
+                </Text>
+                <Text style={styles.description}>
+                    найденные аналоги от других производителей
+                </Text>
+            </View>
+            
+                            <FlatList
+                data={analogs}
+                renderItem={({ item }) => (
+                    <TouchableOpacity onPress={() => handleItemPress(item)}>
+                        <SearchProduct item={item} />
+                    </TouchableOpacity>
+                )}
+                keyExtractor={(item, index) => item.id ? `analog-${item.id}` : `analog-${item.article}-${item.brand}-${index}`}
+                scrollEnabled={false}
+                ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
+            />
             
             {selectedItem && (
                 <DetailModal

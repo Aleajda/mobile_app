@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, FlatList } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, FlatList, ScrollView } from 'react-native';
 import SearchProduct from './SearchProduct';
 import DetailModal from './modal/DetailModal';
 
@@ -24,43 +24,38 @@ const OriginalBlock = ({ navigation, searchResult, article, brand }) => {
         setDetailModalVisible(false);
         setSelectedItem(null);
     };
-    
-    const renderItem = ({ item }) => (
-        <TouchableOpacity 
-            onPress={() => handleItemPress(item)}
-        >
-            <SearchProduct item={item} />
-        </TouchableOpacity>
-    );
+
+    // Если нет результатов, показываем сообщение
+    if (!items || items.length === 0) {
+        return (
+            <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>Оригинальные детали не найдены</Text>
+            </View>
+        );
+    }
 
     return (
         <View style={{marginBottom: 32}}>
-            {items.length > 0 ? (
-                <>
-                    <View style={styles.header}>
-                        <Text style={styles.title}>
-                            Оригинальные детали
-                        </Text>
-                        <Text style={styles.description}>
-                            найденные оригинальные детали
-                        </Text>
-                    </View>
-                    
-                    <FlatList
-                        data={items}
-                        renderItem={renderItem}
-                        keyExtractor={(item, index) => item.id ? `original-${item.id}` : `original-${item.article}-${item.brand}-${index}`}
-                        scrollEnabled={false}
-                        ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
-                    />
-                </>
-            ) : (
-                <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyText}>
-                        Пока не найдено оригинальных деталей
-                    </Text>
-                </View>
-            )}
+            <View style={styles.header}>
+                <Text style={styles.title}>
+                    Оригинальные детали
+                </Text>
+                <Text style={styles.description}>
+                    найденные оригинальные детали
+                </Text>
+            </View>
+            
+                            <FlatList
+                data={items}
+                renderItem={({ item }) => (
+                    <TouchableOpacity onPress={() => handleItemPress(item)}>
+                        <SearchProduct item={item} />
+                    </TouchableOpacity>
+                )}
+                keyExtractor={(item, index) => item.id ? `original-${item.id}` : `original-${item.article}-${item.brand}-${index}`}
+                scrollEnabled={false}
+                ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
+            />
             
             {selectedItem && (
                 <DetailModal

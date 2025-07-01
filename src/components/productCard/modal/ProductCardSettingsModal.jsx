@@ -7,13 +7,73 @@ import {
     TouchableOpacity,
     TouchableWithoutFeedback,
     View,
+    Alert
 } from "react-native";
+import BasketApi from "../../../api/BasketApi";
+import Toast from 'react-native-toast-message';
 
-
-
-const ProductCardSettingsModal = ({ visible, setVisible, setEditModalOpen }) => {
-
-
+const ProductCardSettingsModal = ({ visible, setVisible, setEditModalOpen, itemIndex, onItemDeleted }) => {
+    const [isDeleting, setIsDeleting] = useState(false);
+    
+    // Функция для показа уведомления
+    const showToast = (message) => {
+        Toast.show({
+            type: 'customToast',
+            text1: message || 'Товар удален из корзины',
+            position: 'top',
+            visibilityTime: 2000,
+            autoHide: true,
+            topOffset: 60,
+        });
+    };
+    
+    // Обработчик удаления товара
+    const handleDeleteItem = async () => {
+        if (isDeleting) return;
+        
+        // Запрашиваем подтверждение
+        Alert.alert(
+            "Удаление товара",
+            "Вы уверены, что хотите удалить этот товар из корзины?",
+            [
+                {
+                    text: "Отмена",
+                    style: "cancel"
+                },
+                {
+                    text: "Удалить",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            setIsDeleting(true);
+                            
+                            // Вызываем API для удаления товара
+                            const result = await BasketApi.removeFromBasket(itemIndex);
+                            
+                            if (result && result.status === 'ok') {
+                                showToast('Товар удален из корзины');
+                                
+                                // Закрываем модальное окно
+                                setVisible(false);
+                                
+                                // Вызываем колбэк для обновления родительского компонента
+                                if (onItemDeleted) {
+                                    onItemDeleted();
+                                }
+                            } else {
+                                Alert.alert("Ошибка", "Не удалось удалить товар из корзины");
+                            }
+                        } catch (error) {
+                            console.error("Ошибка при удалении товара:", error);
+                            Alert.alert("Ошибка", "Произошла ошибка при удалении товара");
+                        } finally {
+                            setIsDeleting(false);
+                        }
+                    }
+                }
+            ]
+        );
+    };
 
     return (
         <Modal visible={visible} animationType="fade" transparent>
@@ -22,7 +82,10 @@ const ProductCardSettingsModal = ({ visible, setVisible, setEditModalOpen }) => 
             </TouchableWithoutFeedback>
             <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
-                    <TouchableOpacity onPress={setEditModalOpen}>
+                    <TouchableOpacity onPress={() => {
+                        setVisible(false);
+                        setEditModalOpen();
+                    }}>
                         <View
                             style={[
                                 styles.blockContainer,
@@ -38,7 +101,7 @@ const ProductCardSettingsModal = ({ visible, setVisible, setEditModalOpen }) => 
                             </Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={handleDeleteItem} disabled={isDeleting}>
                         <View
                             style={[styles.blockContainer, { flexDirection: 'row' }]}
                         >
@@ -50,8 +113,36 @@ const ProductCardSettingsModal = ({ visible, setVisible, setEditModalOpen }) => 
                     </TouchableOpacity>
                 </View>
             </View>
+            <Toast config={toastConfig}/>
         </Modal>
     );
+};
+
+const toastConfig = {
+  customToast: ({ text1, text2, ...rest }) => (
+    <View
+      style={{
+        backgroundColor: '#1c1c1c',
+        borderRadius: 16,
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '80%'
+      }}
+    >
+      <Image
+        source={require('@assets/images/check_16px.png')}
+        style={{ width: 16, height: 16, marginRight: 10 }}
+      />
+      <View>
+        <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 15 }}>{text1}</Text>
+        {text2 ? (
+          <Text style={{ color: '#aaa', fontSize: 13 }}>{text2}</Text>
+        ) : null}
+      </View>
+    </View>
+  ),
 };
 
 const styles = StyleSheet.create({
