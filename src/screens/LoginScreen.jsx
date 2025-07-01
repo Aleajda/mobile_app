@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity} from "react-native";
 
-import { StyleSheet, StatusBar } from "react-native";
+import { StyleSheet } from "react-native";
 import PoliticModal from "../components/PoliticModal";
 import AuthApi from "../api/AuthApi";
+import { useAuth } from "../api/AuthContext";
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -12,6 +13,7 @@ const LoginScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { login, isAuthenticated } = useAuth();
   
   // Поля для регистрации
   const [name, setName] = useState("");
@@ -21,15 +23,28 @@ const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [mphone, setMphone] = useState("");
 
+  // Редирект если пользователь уже авторизован
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Profile' }],
+      });
+    }
+  }, [isAuthenticated, navigation]);
+
   const handleLogin = async () => {
     if (username && password) {
       setLoading(true);
       setError("");
       
       try {
-        const sessionId = await AuthApi.login(username, password);
-        if (sessionId) {
-          navigation.navigate("MainPage", { username });
+        const success = await login(username, password);
+        if (success) {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Profile', params: { username } }],
+          });
         } else {
           setError("Ошибка авторизации. Проверьте логин и пароль.");
         }
@@ -74,12 +89,9 @@ const LoginScreen = ({ navigation }) => {
       setLoading(false);
     }
   };
-  
-  StatusBar.setBarStyle("dark-content");
 
   return (
     <View style={styles.container}>
-         <StatusBar barStyle='light-content' backgroundColor="#1E1E1E" />
       <View style={styles.header}>
         <View style={styles.brandContainer}>
           <Text style={styles.brand}>Sort1.pro</Text>

@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, FlatList } from 'react-native';
 import SearchProduct from './SearchProduct';
+import DetailModal from './modal/DetailModal';
 
 const OriginalBlock = ({ navigation, searchResult, article, brand }) => {
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [detailModalVisible, setDetailModalVisible] = useState(false);
+    
     // Получаем данные из результатов поиска
     const getItems = () => {
         if (!searchResult || !searchResult.items) return [];
@@ -11,13 +15,19 @@ const OriginalBlock = ({ navigation, searchResult, article, brand }) => {
     
     const items = getItems();
     
+    const handleItemPress = (item) => {
+        setSelectedItem(item);
+        setDetailModalVisible(true);
+    };
+    
+    const handleCloseDetail = () => {
+        setDetailModalVisible(false);
+        setSelectedItem(null);
+    };
+    
     const renderItem = ({ item }) => (
         <TouchableOpacity 
-            onPress={() => navigation.navigate("Detail", { 
-                detailData: item,
-                article: article,
-                brand: brand
-            })}
+            onPress={() => handleItemPress(item)}
         >
             <SearchProduct item={item} />
         </TouchableOpacity>
@@ -50,6 +60,17 @@ const OriginalBlock = ({ navigation, searchResult, article, brand }) => {
                         Пока не найдено оригинальных деталей
                     </Text>
                 </View>
+            )}
+            
+            {selectedItem && (
+                <DetailModal
+                    navigation={navigation}
+                    detailData={selectedItem}
+                    article={article}
+                    brand={brand}
+                    visible={detailModalVisible}
+                    onClose={handleCloseDetail}
+                />
             )}
         </View>
     );

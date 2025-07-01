@@ -3,6 +3,7 @@ import AppNavigator from "./src/navigation/AppNavigator";
 import { Text, View } from "react-native";
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
+import StatusBarConfig from "./src/components/StatusBarConfig";
 
 export default function App() {
 
@@ -18,7 +19,12 @@ export default function App() {
     }, [loaded, error]);
   
     if (!loaded && !error) {
-      <View><Text>Loading...</Text></View>;
+      return (
+        <View>
+          <StatusBarConfig />
+          <Text>Loading...</Text>
+        </View>
+      );
     }
 
 
@@ -26,5 +32,10 @@ export default function App() {
   Text.defaultProps.style = { fontFamily: "Emblema" };
 
 
-  return <AppNavigator />;
+  return (
+    <>
+      <StatusBarConfig />
+      <AppNavigator />
+    </>
+  );
 }

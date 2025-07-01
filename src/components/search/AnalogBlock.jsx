@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Text, FlatList, TouchableOpacity } from 'react-native';
 import SearchProduct from './SearchProduct';
+import DetailModal from './modal/DetailModal';
 
 const AnalogBlock = ({ navigation, searchResult }) => {
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [detailModalVisible, setDetailModalVisible] = useState(false);
+    
     // Получаем аналоги из результатов поиска
     const getAnalogs = () => {
         if (!searchResult || !searchResult.analogs) return [];
@@ -11,13 +15,19 @@ const AnalogBlock = ({ navigation, searchResult }) => {
     
     const analogs = getAnalogs();
     
+    const handleItemPress = (item) => {
+        setSelectedItem(item);
+        setDetailModalVisible(true);
+    };
+    
+    const handleCloseDetail = () => {
+        setDetailModalVisible(false);
+        setSelectedItem(null);
+    };
+    
     const renderItem = ({ item }) => (
         <TouchableOpacity 
-            onPress={() => navigation.navigate("Detail", { 
-                detailData: item,
-                article: item.article,
-                brand: item.brand
-            })}
+            onPress={() => handleItemPress(item)}
         >
             <SearchProduct item={item} />
         </TouchableOpacity>
@@ -50,6 +60,17 @@ const AnalogBlock = ({ navigation, searchResult }) => {
                         Пока не найдено аналогов
                     </Text>
                 </View>
+            )}
+            
+            {selectedItem && (
+                <DetailModal
+                    navigation={navigation}
+                    detailData={selectedItem}
+                    article={selectedItem.article}
+                    brand={selectedItem.brand}
+                    visible={detailModalVisible}
+                    onClose={handleCloseDetail}
+                />
             )}
         </View>
     );

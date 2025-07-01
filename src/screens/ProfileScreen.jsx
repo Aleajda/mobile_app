@@ -9,7 +9,7 @@ import EditRoleModal from "../components/myProfile/modal/EditRoleModal";
 import EditPasswordModal from "../components/myProfile/modal/EditPasswordModal";
 import AboutContractorBlock from "../components/myProfile/contractors/AboutContractorBlock";
 import ContractorAddressBlock from "../components/myProfile/contractors/ContractorAddressBlock";
-
+import { useAuth } from "../api/AuthContext";
 import ContractorOrders from "../components/myProfile/contractors/ContractorOrders";
 import ContractorContractBlock from "../components/myProfile/contractors/ContractorContractBlock";
 import ContractorCarBlock from "../components/myProfile/contractors/ContractorCarBlock";
@@ -19,14 +19,25 @@ import ContractorCheckBlock from "../components/myProfile/contractors/Contractor
 
 
 
-const MyProfileScreen = ({ route }) => {
+const MyProfileScreen = ({ route, navigation }) => {
 
   const [activeButton, setActiveButton] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [changeInfoModalOpen, setChangeInfoModalOpen] = useState(false);
   const [changeRoleModalOpen, setChangeRoleModalOpen] = useState(false);
   const [changePasswordModalOpen, setChangePasswordModalOpen] = useState(false);
-  const { aboutMeButton, role, username, tabs } = route.params;
+  const { aboutMeButton, role, username, tabs } = route.params || { aboutMeButton: true };
+  const { isAuthenticated, userData } = useAuth();
+  
+  // Проверка авторизации
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
+    }
+  }, [isAuthenticated, navigation]);
 
   const renderContent = () => {
     if (role === 'Контрагент') {
@@ -67,7 +78,7 @@ const MyProfileScreen = ({ route }) => {
         <View style={styles.nameAndRoleContainer}>
           <View style={styles.nameContainer}>
             <Text style={styles.name}>
-              {username ? username : 'Рустам Кутлубаев'}
+              {userData?.username || username || 'Рустам Кутлубаев'}
             </Text>
             <View style={[styles.openDropDown, aboutMeButton ? null : { display: 'none' }]} >
               <TouchableOpacity onPress={() => setModalOpen(true)}>
