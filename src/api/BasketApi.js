@@ -229,57 +229,20 @@ export default BasketApi = {
     },
     
     /**
-     * Обновляет товар в корзине
-     * @param {number} index Индекс товара в корзине
-     * @param {Object} updatedItem Обновленные данные товара
+     * Сохраняет корзину с обновленными данными
+     * @param {Array} basketDetails Массив товаров в корзине
      * @returns {Promise<Object>} Результат операции
      */
-    async updateBasketItem(index, updatedItem) {
+    async saveBasket(basketDetails) {
         try {
             const sessionId = await this.getSessionId();
             
-            // Получаем текущие товары в корзине
-            const basketDetails = await this.getBasketDetails();
-            
-            if (!basketDetails || !basketDetails[index]) {
-                return { status: 'error', message: 'Товар не найден' };
-            }
-            
-            const originalItem = basketDetails[index];
-            const itemId = originalItem.id || originalItem.detail_id;
-            
-            if (!itemId) {
-                return { status: 'error', message: 'Не удалось определить ID товара' };
-            }
-            
-            // Подготавливаем данные для запроса
-            const requestData = {
-                action: "save_basket_detail",
-                my_code: originalItem.my_code || "",
-                ean13: originalItem.ean13 || "",
-                article: originalItem.article || "",
-                brand: originalItem.brand || "",
-                name: originalItem.name || "",
-                cost: originalItem.cost || 0,
-                count: originalItem.count || 0,
-                mcount: originalItem.mcount || 0,
-                time: originalItem.time || 0,
-                deliverer: originalItem.deliverer || "Основной",
-                deliverer_id: originalItem.deliverer_id || 0,
-                is_excise: originalItem.is_excise || 0,
-                deliverer_type: originalItem.deliverer_type || "sklad",
-                detail_id: itemId,
-                brand_id: originalItem.brand_id || 0,
-                price: updatedItem.price !== undefined ? updatedItem.price : originalItem.price,
-                to_cart_count: updatedItem.quantity !== undefined ? 
-                    (updatedItem.quantity - originalItem.count) : // Если указано конкретное количество
-                    (updatedItem.increment ? 1 : -1), // Если указано только направление изменения
-                comment: originalItem.comment || ""
-            };
-            
             const response = await axios.post(
                 process.env.EXPO_PUBLIC_API_URL,
-                requestData,
+                { 
+                    action: "save_basket",
+                    basket_details: basketDetails
+                },
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -289,16 +252,87 @@ export default BasketApi = {
                 }
             );
             
-            console.log('Ответ updateBasketItem:', response.data);
+            console.log('Ответ saveBasket:', response.data);
             
             if (response.data && response.data.status === 'ok') {
                 // Вызываем событие обновления корзины
                 basketUpdateEvent.emit();
                 return { status: 'ok' };
             } else {
-                console.error('Ошибка при обновлении товара в корзине:', response.data);
-                return { status: 'error', message: 'Не удалось обновить товар в корзине' };
+                console.error('Ошибка при сохранении корзины:', response.data);
+                return { status: 'error', message: 'Не удалось сохранить корзину' };
             }
+        } catch (error) {
+            console.error('Ошибка при сохранении корзины:', error);
+            return { status: 'error', message: error.message };
+        }
+    },
+    
+    /**
+     * Обновляет товар в корзине
+     * @param {number} index Индекс товара в корзине
+     * @param {Object} updatedItem Обновленные данные товара (price - цена продажи, quantity - новое количество)
+     * @returns {Promise<Object>} Результат операции
+     */
+    async updateBasketItem(index, updatedItem) {
+        try {
+            // Получаем текущие товары в корзине
+            const basketDetails = await this.getBasketDetails();
+            
+            if (!basketDetails || !basketDetails[index]) {
+                return { status: 'error', message: 'Товар не найден' };
+            }
+            
+            const item = basketDetails[index];
+            
+            // Создаем копию товара для обновления
+            const updatedBasketItem = { ...item };
+            
+            // Обновляем цену продажи, если она указана
+            if (updatedItem.price !== undefined) {
+                updatedBasketItem.price = updatedItem.price.toString();
+            }
+            
+            // Обновляем количество с учетом максимально доступного количества
+            if (updatedItem.quantity !== undefined) {
+                const maxCount = parseInt(item.max_count || "9999");
+                
+                // Проверяем, не превышает ли новое количество максимально доступное
+                if (updatedItem.quantity > maxCount) {
+                    updatedItem.quantity = maxCount;
+                }
+                
+                // Проверяем, не меньше ли новое количество минимально допустимого (0)
+                if (updatedItem.quantity < 0) {
+                    updatedItem.quantity = 0;
+                }
+                
+                updatedBasketItem.count = updatedItem.quantity;
+                updatedBasketItem.old_count = item.count.toString();
+            } else if (updatedItem.increment !== undefined) {
+                // Если указано направление изменения (увеличение/уменьшение)
+                const maxCount = parseInt(item.max_count || "9999");
+                const currentCount = parseInt(item.count);
+                let newCount;
+                
+                if (updatedItem.increment) {
+                    // Увеличиваем количество на 1, но не больше максимального
+                    newCount = Math.min(currentCount + 1, maxCount);
+                } else {
+                    // Уменьшаем количество на 1, но не меньше 0
+                    newCount = Math.max(currentCount - 1, 0);
+                }
+                
+                updatedBasketItem.count = newCount;
+                updatedBasketItem.old_count = currentCount.toString();
+            }
+            
+            // Обновляем товар в массиве корзины
+            const newBasketDetails = [...basketDetails];
+            newBasketDetails[index] = updatedBasketItem;
+            
+            // Сохраняем обновленную корзину
+            return await this.saveBasket(newBasketDetails);
         } catch (error) {
             console.error('Ошибка при обновлении товара в корзине:', error);
             return { status: 'error', message: error.message };

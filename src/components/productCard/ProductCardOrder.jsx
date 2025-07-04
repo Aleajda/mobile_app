@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, Pressable, TouchableOpacity, Image } from 'reac
 import ProductCardSettingsModal from './modal/ProductCardSettingsModal';
 import ProductCardEditModal from './modal/ProductCardEditModal';
 
-const ProductCardOrder = ({ item, price, setProductCardCounter, index, onItemUpdated }) => {
+const ProductCardOrder = ({ item, price, price_dealer, setProductCardCounter, index, onItemUpdated }) => {
     // Инициализируем состояние чекбокса как не выбранное
     const [checked, setChecked] = useState(false);
     // Состояние для модальных окон
@@ -101,7 +101,7 @@ const ProductCardOrder = ({ item, price, setProductCardCounter, index, onItemUpd
                     onPress={() => setSettingsModalVisible(true)}
                 >
                     <Image 
-                        source={require('@assets/images/menu_icon.png')}
+                        source={require('@assets/images/drop_down.png')}
                         style={styles.settingsIcon}
                     />
                 </TouchableOpacity>
@@ -121,7 +121,7 @@ const ProductCardOrder = ({ item, price, setProductCardCounter, index, onItemUpd
                     Стоимость
                 </Text>
                 <Text style={styles.orderParamText}>
-                    {price} ₽
+                    {price_dealer} ₽
                 </Text>
             </View>
             <View style={styles.orderParam}>
@@ -284,8 +284,8 @@ const styles = StyleSheet.create({
         padding: 5,
     },
     settingsIcon: {
-        width: 24,
-        height: 24,
+        width: 32,
+        height: 32,
     }
 })
 

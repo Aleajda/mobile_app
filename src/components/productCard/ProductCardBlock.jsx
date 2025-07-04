@@ -101,6 +101,7 @@ const ProductCardBlock = ({ setProductCardCounter }) => {
                     key={`${item.id || item.detail_id || ''}-${index}`}
                     item={item}
                     price={parseFloat(item.price) || 0}
+                    price_dealer= {item.dealer_price}
                     setProductCardCounter={setProductCardCounter}
                     index={index}
                     onItemUpdated={handleItemUpdated}
