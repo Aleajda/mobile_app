@@ -1,40 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, Pressable, TouchableOpacity, Image } from 'react-native';
 import ProductCardSettingsModal from './modal/ProductCardSettingsModal';
 import ProductCardEditModal from './modal/ProductCardEditModal';
 
-const ProductCardOrder = ({ item, price, price_dealer, setProductCardCounter, index, onItemUpdated }) => {
-    // Инициализируем состояние чекбокса как не выбранное
-    const [checked, setChecked] = useState(false);
+const ProductCardOrder = ({ item, price, price_dealer, index, onItemUpdated, onSelect, isSelected }) => {
     // Состояние для модальных окон
     const [settingsModalVisible, setSettingsModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
     
-    // Не обновляем счетчик при монтировании компонента,
-    // так как изначально все товары не выбраны
-
-    const onChecked = () => {
-        // Получаем актуальное количество товара
-        const itemCount = parseInt(item?.count || item?.to_cart_count || 1);
-        // Получаем актуальную цену за все количество товара
-        const totalItemPrice = price * itemCount;
-        
-        if (checked) {
-            // Снимаем выделение с товара и вычитаем его цену из общей суммы
-            setProductCardCounter(prev => ({
-                totalPrice: prev.totalPrice - totalItemPrice,
-                count: prev.count - 1,
-            }));
-            setChecked(false);
-        } else {
-            // Выделяем товар и добавляем его цену к общей сумме
-            setProductCardCounter(prev => ({
-                totalPrice: prev.totalPrice + totalItemPrice,
-                count: prev.count + 1,
-            }));
-            setChecked(true);
+    // Обработчик выбора товара
+    const handleCheck = () => {
+        const itemId = item.id || item.detail_id;
+        if (onSelect && itemId) {
+            onSelect(itemId, !isSelected);
         }
-    }
+    };
     
     // Определение статуса наличия
     const getAvailabilityStatus = () => {
@@ -87,9 +67,9 @@ const ProductCardOrder = ({ item, price, price_dealer, setProductCardCounter, in
     return (
         <View style={styles.order}>
             <View style={styles.orderHeader}>
-                <Pressable onPress={() => onChecked()} style={styles.wrapper}>
-                    <View style={[styles.box, checked && styles.checkedBox]}>
-                        {checked && <Text style={styles.checkmark}>✓</Text>}
+                <Pressable onPress={handleCheck} style={styles.wrapper}>
+                    <View style={[styles.box, isSelected && styles.checkedBox]}>
+                        {isSelected && <Text style={styles.checkmark}>✓</Text>}
                     </View>
                 </Pressable>
                 <View style={{flex: 1}}>
@@ -253,40 +233,37 @@ const styles = StyleSheet.create({
     orderParamText: {
         fontFamily: 'Roboto',
         fontSize: 16,
-        fontWeight: 'bold',
         color: '#333333',
-        letterSpacing: 0
+        fontWeight: 'bold',
     },
     wrapper: {
-        paddingTop: 3,
-        marginRight: 15
+        marginRight: 12,
+        marginTop: 2,
     },
     box: {
         width: 20,
         height: 20,
-        borderRadius: 4,
         borderWidth: 2,
         borderColor: '#2F80ED',
-        alignItems: 'center',
+        borderRadius: 4,
         justifyContent: 'center',
-        backgroundColor: '#ffffff',
+        alignItems: 'center',
     },
     checkedBox: {
-        backgroundColor: '#1a73e8',
+        backgroundColor: '#2F80ED',
     },
     checkmark: {
         color: 'white',
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: 'bold',
-        lineHeight: 16,
     },
     settingsButton: {
-        padding: 5,
+        padding: 4,
     },
     settingsIcon: {
-        width: 32,
-        height: 32,
-    }
-})
+        width: 24,
+        height: 24,
+    },
+});
 
 export default ProductCardOrder;

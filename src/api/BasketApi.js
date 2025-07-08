@@ -337,5 +337,45 @@ export default BasketApi = {
             console.error('Ошибка при обновлении товара в корзине:', error);
             return { status: 'error', message: error.message };
         }
+    },
+
+    /**
+     * Удаляет несколько товаров из корзины одновременно
+     * @param {Array} detailIds Массив идентификаторов товаров для удаления
+     * @returns {Promise<Object>} Результат операции
+     */
+    async removeMultipleFromBasket(detailIds) {
+        try {
+            const sessionId = await this.getSessionId();
+            
+            const response = await axios.post(
+                process.env.EXPO_PUBLIC_API_URL,
+                { 
+                    action: "delete_basket_details",
+                    details: detailIds.map(id => ({ id }))
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Cookie': sessionId ? `SORT1SESSID=${sessionId}` : ''
+                    }
+                }
+            );
+            
+            console.log('Ответ removeMultipleFromBasket:', response.data);
+            
+            if (response.data && response.data.status === 'ok') {
+                // Вызываем событие обновления корзины
+                basketUpdateEvent.emit();
+                return { status: 'ok' };
+            } else {
+                console.error('Ошибка при удалении товаров из корзины:', response.data);
+                return { status: 'error', message: 'Не удалось удалить товары из корзины' };
+            }
+        } catch (error) {
+            console.error('Ошибка при удалении товаров из корзины:', error);
+            return { status: 'error', message: error.message };
+        }
     }
 } 

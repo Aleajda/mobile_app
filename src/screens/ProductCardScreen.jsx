@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, RefreshControl } from "react-native";
 import ProductCardBlock from "../components/productCard/ProductCardBlock";
 import ProductCardSettingsModal from "../components/productCard/modal/ProductCardSettingsModal";
 import ProductCardEditModal from "../components/productCard/modal/ProductCardEditModal";
+import ProductCardActionsModal from "../components/productCard/modal/ProductCardActionsModal";
 import BasketApi, { basketUpdateEvent } from "../api/BasketApi";
 
 const ProductCardScreen = ({ navigation }) => {
@@ -10,6 +11,11 @@ const ProductCardScreen = ({ navigation }) => {
     const [productCardCounter, setProductCardCounter] = useState({ count: 0, totalPrice: 0 });
     const [visible, setVisible] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+    const [hasItems, setHasItems] = useState(false);
+    const [actionsModalVisible, setActionsModalVisible] = useState(false);
+    
+    // Создаем ref для доступа к методам ProductCardBlock
+    const productCardBlockRef = useRef(null);
 
     // Функция для обновления данных корзины
     const onRefresh = useCallback(async () => {
@@ -24,6 +30,31 @@ const ProductCardScreen = ({ navigation }) => {
         }
     }, []);
 
+    // Проверка наличия товаров в корзине
+    useEffect(() => {
+        const checkBasketItems = async () => {
+            try {
+                const items = await BasketApi.getBasketDetails();
+                setHasItems(Array.isArray(items) && items.length > 0);
+            } catch (error) {
+                console.error('Ошибка при проверке товаров в корзине:', error);
+                setHasItems(false);
+            }
+        };
+        
+        checkBasketItems();
+        
+        // Подписываемся на событие обновления корзины
+        const unsubscribe = basketUpdateEvent.addListener(() => {
+            checkBasketItems();
+        });
+        
+        // Отписываемся при размонтировании компонента
+        return () => {
+            unsubscribe();
+        };
+    }, []);
+
     // Форматирование цены
     const formatPrice = (price) => {
         if (!price) return '0 ₽';
@@ -34,6 +65,41 @@ const ProductCardScreen = ({ navigation }) => {
             maximumFractionDigits: 0
         }).format(price);
     };
+    
+    // Обработчик открытия модального окна действий
+    const handleActionsPress = () => {
+        setActionsModalVisible(true);
+    };
+    
+    // Получение выбранных товаров
+    const getSelectedItems = () => {
+        if (productCardBlockRef.current && productCardBlockRef.current.getSelectedItemIds) {
+            return productCardBlockRef.current.getSelectedItemIds();
+        }
+        return [];
+    };
+    
+    // Выбор всех товаров
+    const handleSelectAll = () => {
+        if (productCardBlockRef.current && productCardBlockRef.current.handleSelectAll) {
+            productCardBlockRef.current.handleSelectAll();
+        }
+    };
+    
+    // Отмена выбора всех товаров
+    const handleUnselectAll = () => {
+        if (productCardBlockRef.current && productCardBlockRef.current.handleUnselectAll) {
+            productCardBlockRef.current.handleUnselectAll();
+        }
+    };
+    
+    // Проверка, все ли товары выбраны
+    const isAllSelected = () => {
+        if (productCardBlockRef.current && productCardBlockRef.current.isAllSelected) {
+            return productCardBlockRef.current.isAllSelected();
+        }
+        return false;
+    };
 
     return (
         <View style={styles.container}>
@@ -43,27 +109,28 @@ const ProductCardScreen = ({ navigation }) => {
                         Корзина
                     </Text>
                     <View style={styles.searchContainer}>
-                        <TouchableOpacity onPress={null}>
+                        <TouchableOpacity onPress={() => navigation.navigate("Search detail")}>
                             <Image style={styles.searchIcon} source={require('@assets/images/search_32px.png')} />
                         </TouchableOpacity>
                     </View>
                 </View>
-                <View style={styles.headerInfo}>
-                    <View style={styles.headerInfoSelected}>
-                        <Text style={styles.headerInfoSelectedText}>Выбраны</Text>
-                        <View style={styles.headerInfoSelectedCountContainer}>
-                            <Text style={styles.headerInfoSelectedCount}>{productCardCounter.count}</Text>
+                {hasItems && (
+                    <View style={styles.headerInfo}>
+                        <View style={styles.headerInfoSelected}>
+                            <Text style={styles.headerInfoSelectedText}>Выбраны</Text>
+                            <View style={styles.headerInfoSelectedCountContainer}>
+                                <Text style={styles.headerInfoSelectedCount}>{productCardCounter.count}</Text>
+                            </View>
                         </View>
+                        <TouchableOpacity onPress={handleActionsPress}>
+                            <View style={styles.actionButton}>
+                                <Text style={styles.actionButtonText}>
+                                    Действия
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
                     </View>
-                    <TouchableOpacity onPress={() => setVisible(true)}>
-                        <View style={styles.actionButton}>
-                            <Text style={styles.actionButtonText}>
-                                Действия
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
-
+                )}
             </View>
             <View style={styles.main}>
                 <ScrollView 
@@ -79,32 +146,43 @@ const ProductCardScreen = ({ navigation }) => {
                 >
                     <ProductCardBlock 
                         key={refreshing ? 'refreshing' : 'not-refreshing'} 
-                        setProductCardCounter={setProductCardCounter} 
+                        setProductCardCounter={setProductCardCounter}
+                        ref={productCardBlockRef}
                     />
                 </ScrollView>
             </View>
-            <View style={styles.footer}>
-                <View style={styles.footerContainer}>
-                    <View style={styles.footerContainerText}>
-                        <Text style={styles.footerContainerTextCounter}>
-                            {productCardCounter.count} товаров на сумму
-                        </Text>
-                        <Text style={styles.footerContainerTextPrice}>
-                            {formatPrice(productCardCounter.totalPrice)}
-                        </Text>
-                    </View>
-                    <TouchableOpacity onPress={() => navigation.navigate("OrderPlacing")}>
-                        <View style={styles.rightButtonContainer}>
-                            <Text style={styles.rightButtonText}>
-                                Оформить заказ
+            {hasItems && (
+                <View style={styles.footer}>
+                    <View style={styles.footerContainer}>
+                        <View style={styles.footerContainerText}>
+                            <Text style={styles.footerContainerTextCounter}>
+                                {productCardCounter.count} товаров на сумму
+                            </Text>
+                            <Text style={styles.footerContainerTextPrice}>
+                                {formatPrice(productCardCounter.totalPrice)}
                             </Text>
                         </View>
-                    </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate("OrderPlacing")}>
+                            <View style={styles.rightButtonContainer}>
+                                <Text style={styles.rightButtonText}>
+                                    Оформить заказ
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
+            )}
 
             <ProductCardEditModal visible={modalOpen} onClose={() => setModalOpen(false)}/>
             <ProductCardSettingsModal setEditModalOpen={() => setModalOpen(true)} visible={visible} setVisible={setVisible}/>
+            <ProductCardActionsModal 
+                visible={actionsModalVisible} 
+                setVisible={setActionsModalVisible}
+                selectedItems={getSelectedItems()}
+                onSelectAll={handleSelectAll}
+                onUnselectAll={handleUnselectAll}
+                isAllSelected={isAllSelected()}
+            />
         </View>
     );
 };
