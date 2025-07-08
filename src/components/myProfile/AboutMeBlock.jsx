@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
         fontStyle: "Roboto",
         fontSize: 16,
         color: "#333333",
-        fontWeight: 'bold',
+        fontWeight: '600',
         marginBottom: 4,
     },
     mainInfoBlockText: {

@@ -3,14 +3,28 @@ import { StyleSheet, Text, TouchableOpacity, View, FlatList, ScrollView } from '
 import SearchProduct from './SearchProduct';
 import DetailModal from './modal/DetailModal';
 
-const OriginalBlock = ({ navigation, searchResult, article, brand }) => {
+// Функция для удаления специальных символов из строки
+const removeSpecialChars = (str) => {
+    if (!str) return '';
+    return str.replace(/[\s+\.\/_&\-#]/g, '').toUpperCase();
+};
+
+const OriginalBlock = ({ navigation, searchResult, article, brand, brandId }) => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [detailModalVisible, setDetailModalVisible] = useState(false);
     
-    // Получаем данные из результатов поиска
+    // Получаем данные из результатов поиска и фильтруем их по новой логике
     const getItems = () => {
         if (!searchResult || !searchResult.items) return [];
-        return searchResult.items;
+        
+        // Применяем логику фильтрации оригиналов: 
+        // Оригинал это когда артикул совпадает И (бренд совпадает ИЛИ ID бренда совпадает)
+        return searchResult.items.filter(item => 
+            item && item.article && article && 
+            removeSpecialChars(item.article) === removeSpecialChars(article) && 
+            ((item.brand && brand && removeSpecialChars(item.brand) === removeSpecialChars(brand)) || 
+             (item.brand_id && brandId && item.brand_id === brandId))
+        );
     };
     
     const items = getItems();

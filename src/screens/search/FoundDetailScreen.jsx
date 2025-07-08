@@ -9,9 +9,14 @@ import { useFocusEffect } from '@react-navigation/native';
 import SearchProduct from '../../components/search/SearchProduct';
 import DetailModal from '../../components/search/modal/DetailModal';
 
+// Функция для удаления специальных символов из строки
+const removeSpecialChars = (str) => {
+    if (!str) return '';
+    return str.replace(/[\s+\.\/_&\-#]/g, '').toUpperCase();
+};
 
 // Компонент для отображения товаров на складе
-const WarehouseBlock = ({ navigation, searchResult, article, brand }) => {
+const WarehouseBlock = ({ navigation, searchResult, article, brand, brandId }) => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [detailModalVisible, setDetailModalVisible] = useState(false);
     
@@ -244,15 +249,17 @@ const FoundDetailScreen = ({ navigation, route }) => {
             if (skladDetails.length > 0) {
                 // Разделяем результаты на оригиналы и аналоги
                 const originals = skladDetails.filter(item => 
-                    item && item.brand && 
-                    brand && 
-                    item.brand.toUpperCase() === brand.toUpperCase()
+                    item && item.article && brand &&
+                    removeSpecialChars(item.article) === removeSpecialChars(article) && 
+                    (removeSpecialChars(item.brand) === removeSpecialChars(brand) || 
+                     (item.brand_id && brandId && item.brand_id === brandId))
                 );
                 
                 const analogs = skladDetails.filter(item => 
-                    item && item.brand && 
-                    brand && 
-                    item.brand.toUpperCase() !== brand.toUpperCase()
+                    !(item && item.article && brand &&
+                    removeSpecialChars(item.article) === removeSpecialChars(article) && 
+                    (removeSpecialChars(item.brand) === removeSpecialChars(brand) || 
+                     (item.brand_id && brandId && item.brand_id === brandId)))
                 );
                 
                 console.log('Найдено оригиналов на складе:', originals.length);
@@ -340,10 +347,16 @@ const FoundDetailScreen = ({ navigation, route }) => {
                 if (result && result.items) {
                     // Разделяем результаты на оригиналы и аналоги
                     const originals = result.items.filter(item => 
-                        item.brand && item.brand.toUpperCase() === brand.toUpperCase()
+                        item.article && item.brand && 
+                        removeSpecialChars(item.article) === removeSpecialChars(article) && 
+                        (removeSpecialChars(item.brand) === removeSpecialChars(brand) || 
+                         (item.brand_id && brandId && item.brand_id === brandId))
                     );
                     const analogs = result.items.filter(item => 
-                        item.brand && item.brand.toUpperCase() !== brand.toUpperCase()
+                        !(item.article && item.brand && 
+                        removeSpecialChars(item.article) === removeSpecialChars(article) && 
+                        (removeSpecialChars(item.brand) === removeSpecialChars(brand) || 
+                         (item.brand_id && brandId && item.brand_id === brandId)))
                     );
                     
                     // Сортируем по цене (от меньшей к большей)
@@ -405,6 +418,7 @@ const FoundDetailScreen = ({ navigation, route }) => {
                     searchResult={{ items: filteredResults.items }} 
                     article={article}
                     brand={brand}
+                    brandId={brandId}
                 />
             );
         } else if (activeButton === 2) {
@@ -412,6 +426,9 @@ const FoundDetailScreen = ({ navigation, route }) => {
                 <AnalogBlock 
                     navigation={navigation} 
                     searchResult={{ analogs: filteredResults.analogs }}
+                    article={article}
+                    brand={brand}
+                    brandId={brandId}
                 />
             );
         } else if (activeButton === 3) {
@@ -432,6 +449,7 @@ const FoundDetailScreen = ({ navigation, route }) => {
                     searchResult={{ items: warehouseData.all }} 
                     article={article}
                     brand={brand}
+                    brandId={brandId}
                 />
             );
         }
