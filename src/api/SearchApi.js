@@ -61,25 +61,30 @@ export default SearchApi = {
      */
     async searchByArticle(article, brand, brandId) {
         try {
+            console.log('Вызов searchByArticle с параметрами:', { article, brand, brandId });
             const sessionId = await this.getSessionId();
+            
+            const requestData = { 
+                show_price: "on",
+                article: article.toUpperCase(),
+                brand: brand,
+                brand_id: brandId,
+                brands: brand,
+                detail_id: "",
+                request_id: "",
+                zakaz_detail_id: "0",
+                zakaz_id: "0",
+                market_zakaz_id: "0",
+                zakaz_detail_count: "0",
+                filter_text: "",
+                action: "search_by_article"
+            };
+            
+            console.log('Отправляемые данные searchByArticle:', requestData);
             
             const response = await axios.post(
                 process.env.EXPO_PUBLIC_API_URL,
-                { 
-                    show_price: "on",
-                    article: article.toUpperCase(),
-                    brand: brand,
-                    brand_id: brandId,
-                    brands: brand,
-                    detail_id: "",
-                    request_id: "",
-                    zakaz_detail_id: "0",
-                    zakaz_id: "0",
-                    market_zakaz_id: "0",
-                    zakaz_detail_count: "0",
-                    filter_text: "",
-                    action: "search_by_article"
-                },
+                requestData,
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -89,16 +94,37 @@ export default SearchApi = {
                 }
             );
             
-            console.log('Ответ searchByArticle:', response.data);
+            console.log('Статус ответа searchByArticle:', response.status);
             
-            if (response.data.status === 'ok') {
+            if (response.data) {
+                // Проверяем наличие поля sklad_details
+                if (response.data.sklad_details && Array.isArray(response.data.sklad_details)) {
+                    console.log('Получены данные склада, количество:', response.data.sklad_details.length);
+                    
+                    // Если есть данные, выводим первый элемент для отладки
+                    if (response.data.sklad_details.length > 0) {
+                        console.log('Пример данных со склада:', 
+                            JSON.stringify(response.data.sklad_details[0], null, 2));
+                    }
+                } else {
+                    console.log('Поле sklad_details отсутствует или не является массивом');
+                }
+                
                 return response.data;
             } else {
-                console.error('Ошибка при поиске по артикулу:', response.data);
+                console.error('Ошибка при поиске по артикулу, пустой ответ');
                 return null;
             }
         } catch (error) {
             console.error('Ошибка при поиске по артикулу:', error);
+            if (error.response) {
+                console.error('Данные ответа:', error.response.data);
+                console.error('Статус ответа:', error.response.status);
+            } else if (error.request) {
+                console.error('Запрос был сделан, но ответ не получен:', error.request);
+            } else {
+                console.error('Ошибка при настройке запроса:', error.message);
+            }
             return null;
         }
     },

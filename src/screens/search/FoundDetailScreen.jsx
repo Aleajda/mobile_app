@@ -1,11 +1,115 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ScrollView, Text, ActivityIndicator } from 'react-native';
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View, FlatList } from 'react-native';
 import OriginalBlock from '../../components/search/OriginalBlock';
 import AnalogBlock from '../../components/search/AnalogBlock';
 import SearchApi from '../../api/SearchApi';
 import BasketApi, { basketUpdateEvent } from '../../api/BasketApi';
 import { useFocusEffect } from '@react-navigation/native';
+import SearchProduct from '../../components/search/SearchProduct';
+import DetailModal from '../../components/search/modal/DetailModal';
+
+
+// Компонент для отображения товаров на складе
+const WarehouseBlock = ({ navigation, searchResult, article, brand }) => {
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [detailModalVisible, setDetailModalVisible] = useState(false);
+    
+    // Получаем данные из результатов поиска
+    const getItems = () => {
+        if (!searchResult || !searchResult.items) return [];
+        return searchResult.items;
+    };
+    
+    const items = getItems();
+    
+    const handleItemPress = (item) => {
+        setSelectedItem(item);
+        setDetailModalVisible(true);
+    };
+    
+    const handleCloseDetail = () => {
+        setDetailModalVisible(false);
+        setSelectedItem(null);
+    };
+
+    // Если нет результатов, показываем сообщение
+    if (!items || items.length === 0) {
+        return (
+            <View style={warehouseStyles.emptyContainer}>
+                <Text style={warehouseStyles.emptyText}>Товары на складе не найдены</Text>
+            </View>
+        );
+    }
+
+    return (
+        <View style={{marginBottom: 32}}>
+            <View style={warehouseStyles.header}>
+                <Text style={warehouseStyles.title}>
+                    Склад
+                </Text>
+                <Text style={warehouseStyles.description}>
+                    найденные детали на складе
+                </Text>
+            </View>
+            
+            <FlatList
+                data={items}
+                renderItem={({ item }) => (
+                    <TouchableOpacity onPress={() => handleItemPress(item)}>
+                        <SearchProduct item={item} />
+                    </TouchableOpacity>
+                )}
+                keyExtractor={(item, index) => item.id ? `warehouse-${item.id}` : `warehouse-${item.article}-${item.brand}-${index}`}
+                scrollEnabled={false}
+                ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
+            />
+            
+            {selectedItem && (
+                <DetailModal
+                    navigation={navigation}
+                    detailData={selectedItem}
+                    article={article}
+                    brand={brand}
+                    visible={detailModalVisible}
+                    onClose={handleCloseDetail}
+                />
+            )}
+        </View>
+    );
+};
+
+// Стили для компонента WarehouseBlock (копия стилей из OriginalBlock)
+const warehouseStyles = StyleSheet.create({
+    header: {
+        marginBottom: 16
+    },
+    title: {
+        fontFamily: 'Roboto',
+        fontWeight: 'bold',
+        fontSize: 16,
+        color: '#333333'
+    },
+    description: {
+        fontFamily: 'Roboto',
+        fontSize: 16,
+        color: '#333333',
+        opacity: 0.7
+    },
+    emptyContainer: {
+        padding: 16,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    emptyText: {
+        fontFamily: 'Roboto',
+        fontSize: 16,
+        color: '#828282',
+        textAlign: 'center',
+    },
+});
 
 
 const FoundDetailScreen = ({ navigation, route }) => {
@@ -15,6 +119,9 @@ const FoundDetailScreen = ({ navigation, route }) => {
     const [activeButton, setActiveButton] = useState(1);
     // Добавляем состояние для фильтра доставки: null - без фильтра, 0 - в наличии, 1-3 - до 3 дней, 4-7 - 3-7 дней
     const [deliveryFilter, setDeliveryFilter] = useState("all");
+    // Состояние для хранения данных со склада
+    const [warehouseData, setWarehouseData] = useState({ items: [], analogs: [] });
+    const [isLoadingWarehouse, setIsLoadingWarehouse] = useState(false);
     
     // Получаем параметры из навигации
     const { article, brand, brandId, detailId } = route.params || {};
@@ -24,7 +131,7 @@ const FoundDetailScreen = ({ navigation, route }) => {
     const [searchResults, setSearchResults] = useState({ items: [], analogs: [] });
     const [filteredResults, setFilteredResults] = useState({ items: [], analogs: [] });
     const [searchController, setSearchController] = useState(null);
-    const [itemsCount, setItemsCount] = useState({ originals: 0, analogs: 0 });
+    const [itemsCount, setItemsCount] = useState({ originals: 0, analogs: 0, warehouse: 0 });
     
     // Запускаем поиск при загрузке экрана
     useEffect(() => {
@@ -43,7 +150,7 @@ const FoundDetailScreen = ({ navigation, route }) => {
         }
         setSearchResults({ items: [], analogs: [] });
         setFilteredResults({ items: [], analogs: [] });
-        setItemsCount({ originals: 0, analogs: 0 });
+        setItemsCount({ originals: 0, analogs: 0, warehouse: itemsCount.warehouse });
         setIsSearching(false);
     };
     
@@ -84,12 +191,18 @@ const FoundDetailScreen = ({ navigation, route }) => {
         });
         
         // Обновляем счетчики
-        setItemsCount({
+        setItemsCount(prevCounts => ({
+            ...prevCounts,
             originals: filteredItems.length,
             analogs: filteredAnalogs.length
-        });
+        }));
         
     }, [searchResults, deliveryFilter]);
+    
+    // Загружаем данные со склада при первой загрузке
+    useEffect(() => {
+        loadWarehouseData();
+    }, [article, brand, brandId]);
     
     // Запускаем поиск при фокусе на экране и очищаем при потере фокуса
     useFocusEffect(
@@ -105,6 +218,93 @@ const FoundDetailScreen = ({ navigation, route }) => {
             };
         }, [article, brand, brandId, detailId]) // Зависимости для перезапуска поиска при изменении параметров
     );
+    
+    // Функция для загрузки данных со склада
+    const loadWarehouseData = async () => {
+        setIsLoadingWarehouse(true);
+        try {
+            const result = await SearchApi.searchByArticle(article, brand, brandId);
+            
+            console.log('Получен ответ от search_by_article');
+            
+            // Проверяем наличие поля sklad_details в ответе
+            let skladDetails = [];
+            
+            if (result && result.sklad_details && Array.isArray(result.sklad_details)) {
+                skladDetails = result.sklad_details;
+                console.log('Найдено товаров на складе:', skladDetails.length);
+                
+                if (skladDetails.length > 0) {
+                    console.log('Пример товара со склада:', JSON.stringify(skladDetails[0], null, 2));
+                }
+            } else {
+                console.log('Поле sklad_details отсутствует или не является массивом');
+            }
+            
+            if (skladDetails.length > 0) {
+                // Разделяем результаты на оригиналы и аналоги
+                const originals = skladDetails.filter(item => 
+                    item && item.brand && 
+                    brand && 
+                    item.brand.toUpperCase() === brand.toUpperCase()
+                );
+                
+                const analogs = skladDetails.filter(item => 
+                    item && item.brand && 
+                    brand && 
+                    item.brand.toUpperCase() !== brand.toUpperCase()
+                );
+                
+                console.log('Найдено оригиналов на складе:', originals.length);
+                console.log('Найдено аналогов на складе:', analogs.length);
+                
+                // Объединяем все товары для отображения на складе без сортировки
+                const allItems = [...originals, ...analogs];
+                
+                console.log('Всего товаров для отображения на складе:', allItems.length);
+                
+                setWarehouseData({
+                    items: originals,
+                    analogs: analogs,
+                    all: allItems
+                });
+                
+                // Обновляем счетчик товаров на складе
+                setItemsCount(prevCounts => ({
+                    ...prevCounts,
+                    warehouse: allItems.length
+                }));
+            } else {
+                console.log('Нет товаров на складе');
+                // Устанавливаем пустые массивы, чтобы показать сообщение "не найдены"
+                setWarehouseData({
+                    items: [],
+                    analogs: [],
+                    all: []
+                });
+                
+                setItemsCount(prevCounts => ({
+                    ...prevCounts,
+                    warehouse: 0
+                }));
+            }
+        } catch (error) {
+            console.error('Ошибка при загрузке данных со склада:', error);
+            // В случае ошибки также устанавливаем пустые массивы
+            setWarehouseData({
+                items: [],
+                analogs: [],
+                all: []
+            });
+            
+            setItemsCount(prevCounts => ({
+                ...prevCounts,
+                warehouse: 0
+            }));
+        } finally {
+            setIsLoadingWarehouse(false);
+        }
+    };
     
     // Обработчик изменения фильтра доставки
     const handleDeliveryFilterChange = (newFilter) => {
@@ -122,7 +322,11 @@ const FoundDetailScreen = ({ navigation, route }) => {
         setIsSearching(true);
         setSearchResults({ items: [], analogs: [] });
         setFilteredResults({ items: [], analogs: [] });
-        setItemsCount({ originals: 0, analogs: 0 });
+        setItemsCount(prevCounts => ({
+            ...prevCounts,
+            originals: 0,
+            analogs: 0
+        }));
         
         const controller = SearchApi.searchContinuous(
             article.toUpperCase(),
@@ -192,6 +396,49 @@ const FoundDetailScreen = ({ navigation, route }) => {
         navigation.navigate("Search detail");
     };
 
+    // Рендер контента в зависимости от активной кнопки
+    const renderContent = () => {
+        if (activeButton === 1) {
+            return (
+                <OriginalBlock 
+                    navigation={navigation} 
+                    searchResult={{ items: filteredResults.items }} 
+                    article={article}
+                    brand={brand}
+                />
+            );
+        } else if (activeButton === 2) {
+            return (
+                <AnalogBlock 
+                    navigation={navigation} 
+                    searchResult={{ analogs: filteredResults.analogs }}
+                />
+            );
+        } else if (activeButton === 3) {
+            // Для вкладки "На складе"
+            if (isLoadingWarehouse) {
+                return (
+                    <View style={styles.loaderContainer}>
+                        <ActivityIndicator size="large" color="#2F80ED" />
+                        <Text style={styles.loaderText}>Загрузка данных со склада...</Text>
+                    </View>
+                );
+            }
+            
+            // Показываем все товары со склада
+            return (
+                <WarehouseBlock 
+                    navigation={navigation} 
+                    searchResult={{ items: warehouseData.all }} 
+                    article={article}
+                    brand={brand}
+                />
+            );
+        }
+        
+        return null;
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -239,6 +486,18 @@ const FoundDetailScreen = ({ navigation, route }) => {
                     </View>
                 </ScrollView>
                 <View style={styles.headerSwitchButtons}>
+                    <TouchableOpacity onPress={() => setActiveButton(3)}>
+                        <View style={[styles.headerSwitchButtonContainer, activeButton == 3 ? styles.activeHeaderSwitchButtonContainer : null]}>
+                            <Text style={[styles.headerSwitchButton, activeButton == 3 ? styles.activeHeaderSwitchButton : null]}>
+                                На складе
+                            </Text>
+                            <View style={[styles.countContainer, activeButton == 3 ? styles.activeCountContainer : null]}>
+                                <Text style={[styles.count, activeButton == 3 ? styles.activeCount : null]}>
+                                    {itemsCount.warehouse}
+                                </Text>
+                            </View>
+                        </View>
+                    </TouchableOpacity>
                     <TouchableOpacity onPress={() => setActiveButton(1)}>
                         <View style={[styles.headerSwitchButtonContainer, activeButton == 1 ? styles.activeHeaderSwitchButtonContainer : null]}>
                             <Text style={[styles.headerSwitchButton, activeButton == 1 ? styles.activeHeaderSwitchButton : null]}>
@@ -267,39 +526,31 @@ const FoundDetailScreen = ({ navigation, route }) => {
             </View>
             <View style={styles.main}>
                 <ScrollView style={{ width: '100%', paddingTop: 16 }} showsVerticalScrollIndicator={false}>
-                    {activeButton == 1 
-                    ? <OriginalBlock 
-                        navigation={navigation} 
-                        searchResult={{ items: filteredResults.items }} 
-                        article={article}
-                        brand={brand}
-                      />
-                    : activeButton == 2
-                    ? <AnalogBlock 
-                        navigation={navigation} 
-                        searchResult={{ analogs: filteredResults.analogs }}
-                      />
-                    : null
-                    }
+                    {renderContent()}
                 </ScrollView>
             </View>
         
             <View style={styles.footer}>
-                {isSearching ? (
+                {isSearching && activeButton !== 3 ? (
                     <View style={styles.searchingContainer}>
                         <ActivityIndicator size="small" color="#2F80ED" />
                         <Text style={styles.footerTitle}>Ищем...</Text>
                     </View>
                 ) : (
-                    <Text style={styles.footerTitle}>Поиск завершен</Text>
+                    <Text style={styles.footerTitle}>
+                        {activeButton === 3 ? "Данные со склада" : "Поиск завершен"}
+                    </Text>
                 )}
                 
                 <TouchableOpacity 
                     style={styles.saveButton} 
-                    onPress={isSearching ? stopSearch : startSearch}
+                    onPress={activeButton === 3 ? loadWarehouseData : (isSearching ? stopSearch : startSearch)}
                 >
                     <Text style={styles.saveText}>
-                        {isSearching ? "Остановить поиск" : "Повторить поиск"}
+                        {activeButton === 3 
+                            ? "Обновить данные" 
+                            : (isSearching ? "Остановить поиск" : "Повторить поиск")
+                        }
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -477,12 +728,27 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingVertical: 32
   },
   loaderText: {
     fontFamily: 'Roboto',
     fontSize: 16,
     color: '#333333',
     marginTop: 8,
+  },
+  
+  emptyContainer: {
+    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    fontFamily: 'Roboto',
+    fontSize: 16,
+    color: '#828282',
+    textAlign: 'center',
   },
 
 })
