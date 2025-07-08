@@ -485,44 +485,46 @@ const FoundDetailScreen = ({ navigation, route }) => {
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
-                <View style={styles.headerSwitchButtons}>
-                    <TouchableOpacity onPress={() => setActiveButton(3)}>
-                        <View style={[styles.headerSwitchButtonContainer, activeButton == 3 ? styles.activeHeaderSwitchButtonContainer : null]}>
-                            <Text style={[styles.headerSwitchButton, activeButton == 3 ? styles.activeHeaderSwitchButton : null]}>
-                                На складе
-                            </Text>
-                            <View style={[styles.countContainer, activeButton == 3 ? styles.activeCountContainer : null]}>
-                                <Text style={[styles.count, activeButton == 3 ? styles.activeCount : null]}>
-                                    {itemsCount.warehouse}
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.headerSwitchButtonsScroll}>
+                    <View style={styles.headerSwitchButtons}>
+                        <TouchableOpacity onPress={() => setActiveButton(3)}>
+                            <View style={[styles.headerSwitchButtonContainer, activeButton == 3 ? styles.activeHeaderSwitchButtonContainer : null]}>
+                                <Text style={[styles.headerSwitchButton, activeButton == 3 ? styles.activeHeaderSwitchButton : null]}>
+                                    На складе
                                 </Text>
+                                <View style={[styles.countContainer, activeButton == 3 ? styles.activeCountContainer : null]}>
+                                    <Text style={[styles.count, activeButton == 3 ? styles.activeCount : null]}>
+                                        {itemsCount.warehouse}
+                                    </Text>
+                                </View>
                             </View>
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setActiveButton(1)}>
-                        <View style={[styles.headerSwitchButtonContainer, activeButton == 1 ? styles.activeHeaderSwitchButtonContainer : null]}>
-                            <Text style={[styles.headerSwitchButton, activeButton == 1 ? styles.activeHeaderSwitchButton : null]}>
-                                Оригиналов
-                            </Text>
-                            <View style={[styles.countContainer, activeButton == 1 ? styles.activeCountContainer : null]}>
-                                <Text style={[styles.count, activeButton == 1 ? styles.activeCount : null]}>
-                                    {itemsCount.originals}
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setActiveButton(1)}>
+                            <View style={[styles.headerSwitchButtonContainer, activeButton == 1 ? styles.activeHeaderSwitchButtonContainer : null]}>
+                                <Text style={[styles.headerSwitchButton, activeButton == 1 ? styles.activeHeaderSwitchButton : null]}>
+                                    Оригиналов
                                 </Text>
+                                <View style={[styles.countContainer, activeButton == 1 ? styles.activeCountContainer : null]}>
+                                    <Text style={[styles.count, activeButton == 1 ? styles.activeCount : null]}>
+                                        {itemsCount.originals}
+                                    </Text>
+                                </View>
                             </View>
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setActiveButton(2)}>
-                        <View style={[styles.headerSwitchButtonContainer, activeButton == 2 ? styles.activeHeaderSwitchButtonContainer : null]}>
-                            <Text style={[styles.headerSwitchButton, activeButton == 2 ? styles.activeHeaderSwitchButton : null]}>
-                                Аналогов
-                            </Text>
-                            <View style={[styles.countContainer, activeButton == 2 ? styles.activeCountContainer : null]}>
-                                <Text style={[styles.count, activeButton == 2 ? styles.activeCount : null]}>
-                                    {itemsCount.analogs}
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setActiveButton(2)}>
+                            <View style={[styles.headerSwitchButtonContainer, activeButton == 2 ? styles.activeHeaderSwitchButtonContainer : null]}>
+                                <Text style={[styles.headerSwitchButton, activeButton == 2 ? styles.activeHeaderSwitchButton : null]}>
+                                    Аналогов
                                 </Text>
+                                <View style={[styles.countContainer, activeButton == 2 ? styles.activeCountContainer : null]}>
+                                    <Text style={[styles.count, activeButton == 2 ? styles.activeCount : null]}>
+                                        {itemsCount.analogs}
+                                    </Text>
+                                </View>
                             </View>
-                        </View>
-                    </TouchableOpacity>
-                </View>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
             </View>
             <View style={styles.main}>
                 <ScrollView style={{ width: '100%', paddingTop: 16 }} showsVerticalScrollIndicator={false}>
@@ -635,30 +637,34 @@ const styles = StyleSheet.create({
 
 
     // SWITCHES
+    headerSwitchButtonsScroll: {
+        marginBottom: 8
+    },
     headerSwitchButtons: {
         flexDirection: 'row',
-        gap: 16
-      },
-      activeHeaderSwitchButtonContainer: {
+        gap: 16,
+        paddingRight: 16
+    },
+    activeHeaderSwitchButtonContainer: {
         borderBottomWidth: 2,
         borderBottomColor: '#2F80ED'
-      },
-      activeHeaderSwitchButton: {
+    },
+    activeHeaderSwitchButton: {
         color: '#2F80ED'
-      },
-      headerSwitchButtonContainer: {
+    },
+    headerSwitchButtonContainer: {
         flexDirection: 'row',
         paddingTop: 8,
         paddingBottom: 8,
         alignItems: 'flex-end'
-      },
-      headerSwitchButton: {
+    },
+    headerSwitchButton: {
         fontFamily: 'Roboto',
         fontSize: 16,
         fontWeight: 'bold',
         color: '#333333'
-      },
-      countContainer: {
+    },
+    countContainer: {
         borderRadius: 16,
         backgroundColor: '#3333331A',
         width: 19,
@@ -667,19 +673,19 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         
         marginLeft: 4
-      },
-      activeCountContainer: {
+    },
+    activeCountContainer: {
         backgroundColor: '#2F80ED33'
-      },
-      count: {
+    },
+    count: {
         fontFamily: 'Roboto',
         color: '#333333',
         fontWeight: 'bold',
         fontSize: 12,
-      },
-      activeCount: {
+    },
+    activeCount: {
         color: '#2F80ED'
-      },
+    },
 
 
     main: {

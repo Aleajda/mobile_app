@@ -132,13 +132,24 @@ const SearchProduct = ({ item = {}, onAddToBasket, onBasketUpdated }) => {
             </View>
             <View style={styles.orderBorder}></View>
             
-            <View style={styles.orderParam}>
-                <Text style={styles.orderParamTitle}>
-                    Стоимость
-                </Text>
-                <Text style={styles.orderParamText}>
-                    {formatPrice(item.price || item.sale_price || item.cost)}
-                </Text>
+            <View style={styles.orderParamContainer}>
+                <View style={styles.orderParam}>
+                    <Text style={styles.orderParamTitle}>
+                        Стоимость
+                    </Text>
+                    <Text style={styles.orderParamText}>
+                        {formatPrice(item.price || item.sale_price || item.cost)}
+                    </Text>
+                </View>
+                
+                <View style={styles.orderParam}>
+                    <Text style={styles.orderParamTitle}>
+                        Количество
+                    </Text>
+                    <Text style={styles.orderParamText}>
+                        {parseInt(item.count) || 0} шт.
+                    </Text>
+                </View>
             </View>
             
         </View>
@@ -222,10 +233,13 @@ const styles = StyleSheet.create({
         borderColor: '#E0E0E0',
         borderStyle: 'dashed',
     },
-    orderParam: {
+    orderParamContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginTop: 16,
+    },
+    orderParam: {
+        flexDirection: 'column',
     },
     orderParamTitle: {
         fontFamily: 'Roboto',

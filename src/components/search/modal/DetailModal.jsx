@@ -151,6 +151,7 @@ const DetailModal = ({ navigation, detailData, article, brand, visible = false, 
                                 <InfoRow label="Артикул" value={detailData?.article || article || 'Н/Д'} />
                                 <InfoRow label="Бренд" value={detailData?.brand || brand || 'Н/Д'} />
                                 <InfoRow label="Наименование" value={detailData?.name || 'Н/Д'} />
+                                <InfoRow label="Количество" value={`${detailData?.count || '0'} шт.`} />
                                 <InfoRow label="Срок доставки" value={detailData?.time || '0'} />
                                 <InfoRow label="Тип" value={detailData?.type || 'Склад'} />
                                 <InfoRow label="Поставщик" value={detailData?.pl_name || detailData?.supplier || 'Основной'} />
