@@ -28,6 +28,21 @@ const WarehouseBlock = ({ navigation, searchResult, article, brand, brandId }) =
     
     const items = getItems();
     
+    // Разделяем на оригиналы и аналоги
+    const originals = items.filter(item => 
+        item.article && item.brand && 
+        removeSpecialChars(item.article) === removeSpecialChars(article) && 
+        (removeSpecialChars(item.brand) === removeSpecialChars(brand) || 
+         (item.brand_id && brandId && item.brand_id === brandId))
+    );
+    
+    const analogs = items.filter(item => 
+        !(item.article && item.brand && 
+        removeSpecialChars(item.article) === removeSpecialChars(article) && 
+        (removeSpecialChars(item.brand) === removeSpecialChars(brand) || 
+         (item.brand_id && brandId && item.brand_id === brandId)))
+    );
+    
     const handleItemPress = (item) => {
         setSelectedItem(item);
         setDetailModalVisible(true);
@@ -47,6 +62,28 @@ const WarehouseBlock = ({ navigation, searchResult, article, brand, brandId }) =
         );
     }
 
+    // Функция для рендеринга списка товаров
+    const renderItemsList = (itemsList, title) => {
+        if (!itemsList || itemsList.length === 0) return null;
+        
+        return (
+            <View style={warehouseStyles.section}>
+                <Text style={warehouseStyles.sectionTitle}>{title}</Text>
+                <FlatList
+                    data={itemsList}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity onPress={() => handleItemPress(item)}>
+                            <SearchProduct item={item} />
+                        </TouchableOpacity>
+                    )}
+                    keyExtractor={(item, index) => item.id ? `warehouse-${title}-${item.id}` : `warehouse-${title}-${item.article}-${item.brand}-${index}`}
+                    scrollEnabled={false}
+                    ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
+                />
+            </View>
+        );
+    };
+
     return (
         <View style={{marginBottom: 32}}>
             <View style={warehouseStyles.header}>
@@ -58,17 +95,8 @@ const WarehouseBlock = ({ navigation, searchResult, article, brand, brandId }) =
                 </Text>
             </View>
             
-            <FlatList
-                data={items}
-                renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => handleItemPress(item)}>
-                        <SearchProduct item={item} />
-                    </TouchableOpacity>
-                )}
-                keyExtractor={(item, index) => item.id ? `warehouse-${item.id}` : `warehouse-${item.article}-${item.brand}-${index}`}
-                scrollEnabled={false}
-                ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
-            />
+            {renderItemsList(originals, "Оригиналы")}
+            {renderItemsList(analogs, "Аналоги")}
             
             {selectedItem && (
                 <DetailModal
@@ -114,6 +142,16 @@ const warehouseStyles = StyleSheet.create({
         color: '#828282',
         textAlign: 'center',
     },
+    section: {
+        marginBottom: 16,
+    },
+    sectionTitle: {
+        fontFamily: 'Roboto',
+        fontWeight: 'bold',
+        fontSize: 16,
+        color: '#333333',
+        marginBottom: 8,
+    },
 });
 
 
@@ -138,6 +176,9 @@ const FoundDetailScreen = ({ navigation, route }) => {
     const [searchController, setSearchController] = useState(null);
     const [itemsCount, setItemsCount] = useState({ originals: 0, analogs: 0, warehouse: 0 });
     
+    // Добавляем состояния для накопления всех результатов поиска
+    const [allSearchResults, setAllSearchResults] = useState({ items: [], analogs: [] });
+    
     // Запускаем поиск при загрузке экрана
     useEffect(() => {
         return () => {
@@ -155,13 +196,14 @@ const FoundDetailScreen = ({ navigation, route }) => {
         }
         setSearchResults({ items: [], analogs: [] });
         setFilteredResults({ items: [], analogs: [] });
+        setAllSearchResults({ items: [], analogs: [] }); // Очищаем накопленные результаты
         setItemsCount({ originals: 0, analogs: 0, warehouse: itemsCount.warehouse });
         setIsSearching(false);
     };
     
     // Применяем фильтр по доставке к результатам
     useEffect(() => {
-        if (!searchResults.items && !searchResults.analogs) return;
+        if (!allSearchResults.items && !allSearchResults.analogs) return;
         
         // Функция для фильтрации по времени доставки
         const filterByDelivery = (items) => {
@@ -185,24 +227,42 @@ const FoundDetailScreen = ({ navigation, route }) => {
             });
         };
         
+        // Сортировка по цене (от меньшей к большей)
+        const sortByPrice = (a, b) => {
+            const priceA = parseFloat(a.price || a.sale_price || a.cost || 0);
+            const priceB = parseFloat(b.price || b.sale_price || b.cost || 0);
+            return priceA - priceB;
+        };
+        
         // Применяем фильтр к оригиналам и аналогам
-        const filteredItems = filterByDelivery(searchResults.items || []);
-        const filteredAnalogs = filterByDelivery(searchResults.analogs || []);
+        const filteredItems = filterByDelivery(allSearchResults.items || []);
+        const filteredAnalogs = filterByDelivery(allSearchResults.analogs || []);
+        
+        // Сортируем и берем топ-10
+        const sortedItems = [...filteredItems].sort(sortByPrice).slice(0, 10);
+        const sortedAnalogs = [...filteredAnalogs].sort(sortByPrice).slice(0, 10);
+        
+        console.log('Всего накоплено оригиналов:', allSearchResults.items.length);
+        console.log('Всего накоплено аналогов:', allSearchResults.analogs.length);
+        console.log('После фильтрации оригиналов:', filteredItems.length);
+        console.log('После фильтрации аналогов:', filteredAnalogs.length);
+        console.log('Топ-10 оригиналов по цене:', sortedItems.length);
+        console.log('Топ-10 аналогов по цене:', sortedAnalogs.length);
         
         // Обновляем отфильтрованные результаты
         setFilteredResults({
-            items: filteredItems,
-            analogs: filteredAnalogs
+            items: sortedItems,
+            analogs: sortedAnalogs
         });
         
-        // Обновляем счетчики
+        // Обновляем счетчики (показываем максимум 10 для отображения)
         setItemsCount(prevCounts => ({
             ...prevCounts,
-            originals: filteredItems.length,
-            analogs: filteredAnalogs.length
+            originals: Math.min(10, filteredItems.length),
+            analogs: Math.min(10, filteredAnalogs.length)
         }));
         
-    }, [searchResults, deliveryFilter]);
+    }, [allSearchResults, deliveryFilter]);
     
     // Загружаем данные со склада при первой загрузке
     useEffect(() => {
@@ -265,21 +325,16 @@ const FoundDetailScreen = ({ navigation, route }) => {
                 console.log('Найдено оригиналов на складе:', originals.length);
                 console.log('Найдено аналогов на складе:', analogs.length);
                 
-                // Объединяем все товары для отображения на складе без сортировки
-                const allItems = [...originals, ...analogs];
-                
-                console.log('Всего товаров для отображения на складе:', allItems.length);
-                
                 setWarehouseData({
                     items: originals,
                     analogs: analogs,
-                    all: allItems
+                    all: skladDetails
                 });
                 
                 // Обновляем счетчик товаров на складе
                 setItemsCount(prevCounts => ({
                     ...prevCounts,
-                    warehouse: allItems.length
+                    warehouse: skladDetails.length
                 }));
             } else {
                 console.log('Нет товаров на складе');
@@ -329,6 +384,7 @@ const FoundDetailScreen = ({ navigation, route }) => {
         setIsSearching(true);
         setSearchResults({ items: [], analogs: [] });
         setFilteredResults({ items: [], analogs: [] });
+        setAllSearchResults({ items: [], analogs: [] }); // Очищаем накопленные результаты
         setItemsCount(prevCounts => ({
             ...prevCounts,
             originals: 0,
@@ -359,23 +415,36 @@ const FoundDetailScreen = ({ navigation, route }) => {
                          (item.brand_id && brandId && item.brand_id === brandId)))
                     );
                     
-                    // Сортируем по цене (от меньшей к большей)
-                    const sortByPrice = (a, b) => {
-                        const priceA = parseFloat(a.price || a.sale_price || a.cost || 0);
-                        const priceB = parseFloat(b.price || b.sale_price || b.cost || 0);
-                        return priceA - priceB;
-                    };
+                    // Добавляем новые результаты к накопленным, избегая дубликатов
+                    setAllSearchResults(prevResults => {
+                        // Функция для проверки наличия элемента в массиве по id или комбинации article+brand
+                        const isItemInArray = (item, array) => {
+                            return array.some(existingItem => 
+                                (item.id && existingItem.id && item.id === existingItem.id) || 
+                                (item.article && item.brand && existingItem.article && existingItem.brand &&
+                                 item.article === existingItem.article && item.brand === existingItem.brand)
+                            );
+                        };
+                        
+                        // Добавляем только новые элементы
+                        const newOriginals = originals.filter(item => !isItemInArray(item, prevResults.items));
+                        const newAnalogs = analogs.filter(item => !isItemInArray(item, prevResults.analogs));
+                        
+                        console.log('Получено новых оригиналов:', originals.length);
+                        console.log('Добавлено новых уникальных оригиналов:', newOriginals.length);
+                        console.log('Получено новых аналогов:', analogs.length);
+                        console.log('Добавлено новых уникальных аналогов:', newAnalogs.length);
+                        
+                        return {
+                            items: [...prevResults.items, ...newOriginals],
+                            analogs: [...prevResults.analogs, ...newAnalogs]
+                        };
+                    });
                     
-                    // Сортируем и ограничиваем до 10 элементов
-                    const sortedOriginals = [...originals].sort(sortByPrice).slice(0, 10);
-                    const sortedAnalogs = [...analogs].sort(sortByPrice).slice(0, 10);
-                    
-                    console.log('Оригиналов (всего/отображено):', originals.length, '/', sortedOriginals.length);
-                    console.log('Аналогов (всего/отображено):', analogs.length, '/', sortedAnalogs.length);
-                    
+                    // Сохраняем последние полученные результаты для отображения прогресса
                     setSearchResults({
-                        items: sortedOriginals,
-                        analogs: sortedAnalogs
+                        items: originals,
+                        analogs: analogs
                     });
                 }
             },
@@ -442,7 +511,7 @@ const FoundDetailScreen = ({ navigation, route }) => {
                 );
             }
             
-            // Показываем все товары со склада
+            // Показываем товары со склада, разделенные на оригиналы и аналоги
             return (
                 <WarehouseBlock 
                     navigation={navigation} 
