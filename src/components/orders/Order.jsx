@@ -2,20 +2,69 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 
-const Order = () => {
-
+const Order = ({ order }) => {
     const navigation = useNavigation();
+    
+    // Форматирование даты
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        
+        const date = new Date(dateString);
+        const day = date.getDate();
+        const month = date.toLocaleString('ru', { month: 'short' });
+        const year = date.getFullYear().toString().slice(2);
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        
+        return `${day} ${month} ${year} в ${hours}:${minutes}`;
+    };
+    
+    // Получение статуса заказа
+    const getStatusText = (statusCode) => {
+        const statuses = {
+            '11': 'Новый',
+            '12': 'В обработке',
+            '70': 'Отгружен',
+            '201': 'Завершен',
+            // Добавьте другие статусы по мере необходимости
+        };
+        
+        return statuses[statusCode] || 'Новый';
+    };
+    
+    // Определение цвета статуса
+    const getStatusColor = (statusCode) => {
+        const colors = {
+            '11': { bg: '#27AE601A', text: '#27AE60' },
+            '12': { bg: '#F2C94C1A', text: '#F2C94C' },
+            '70': { bg: '#2F80ED1A', text: '#2F80ED' },
+            '201': { bg: '#9B51E01A', text: '#9B51E0' },
+            // Добавьте другие статусы по мере необходимости
+        };
+        
+        return colors[statusCode] || { bg: '#27AE601A', text: '#27AE60' };
+    };
+    
+    // Если данные заказа не переданы, возвращаем пустой компонент
+    if (!order) return null;
+    
+    const statusColor = getStatusColor(order.status);
 
     return (
-        <TouchableOpacity style={styles.order} onPress={() => navigation.navigate("OrderDescription")}>
-            <Text style={styles.orderTitle}>№65520</Text>
+        <TouchableOpacity 
+            style={styles.order} 
+            onPress={() => navigation.navigate("OrderDescription", { orderId: order.id })}
+        >
+            <Text style={styles.orderTitle}>№{order.id || '—'}</Text>
             <Text style={styles.orderTitle2}>Заказ</Text>
             <View style={styles.orderBuyer}>
                 <Text style={styles.orderBuyerStatus}>Покупатель</Text>
-                <Text style={styles.orderBuyerName}>Айнур Зарипов</Text>
+                <Text style={styles.orderBuyerName}>{order.company_name || 'Не указан'}</Text>
             </View>
-            <View style={styles.orderStatus}>
-                <Text style={styles.orderStatusText}>Новый</Text>
+            <View style={[styles.orderStatus, { backgroundColor: statusColor.bg }]}>
+                <Text style={[styles.orderStatusText, { color: statusColor.text }]}>
+                    {getStatusText(order.status)}
+                </Text>
             </View>
             <View style={styles.orderBorder}></View>
             <View style={styles.orderParam}>
@@ -23,7 +72,7 @@ const Order = () => {
                     Дата создания
                 </Text>
                 <Text style={styles.orderParamText}>
-                    8 Окт 22 в 15:37
+                    {formatDate(order.create_date)}
                 </Text>
             </View>
             <View style={styles.orderParam}>
@@ -31,7 +80,7 @@ const Order = () => {
                     Сумма
                 </Text>
                 <Text style={styles.orderParamText}>
-                    1 760 ₽
+                    {order.zakaz_sum ? `${Number(order.zakaz_sum).toLocaleString('ru-RU')} ₽` : '0 ₽'}
                 </Text>
             </View>
             <View style={styles.orderParam}>
@@ -39,7 +88,7 @@ const Order = () => {
                     Оплачено
                 </Text>
                 <Text style={styles.orderParamText}>
-                    1 760 ₽
+                    {order.oplachen === "1" ? (order.pay_sum ? `${Number(order.pay_sum).toLocaleString('ru-RU')} ₽` : order.zakaz_sum ? `${Number(order.zakaz_sum).toLocaleString('ru-RU')} ₽` : '0 ₽') : '0 ₽'}
                 </Text>
             </View>
         </TouchableOpacity>
