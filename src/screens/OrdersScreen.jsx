@@ -14,14 +14,21 @@ const OrdersScreen = () => {
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState("thisMonth");
 
-    // Функция получения данных о заказах без фильтрации
-    const fetchOrders = async () => {
+    // Функция получения данных о заказах с фильтрацией
+    const fetchOrders = async (filter = {}) => {
         try {
             setError(null);
             setLoading(true);
             
-            // Получаем все заказы без фильтрации по датам
-            const response = await getOrders();
+            // Параметры запроса
+            const params = {};
+            
+            // Добавляем даты, если они указаны в фильтре
+            if (filter.startDate) params.dateFrom = filter.startDate;
+            if (filter.endDate) params.dateTo = filter.endDate;
+            
+            // Получаем заказы с фильтрацией
+            const response = await getOrders(params);
             
             // Выводим результат в консоль
             console.log('Ответ API заказов:', JSON.stringify(response, null, 2));
@@ -44,22 +51,117 @@ const OrdersScreen = () => {
         }
     };
 
+    // Функция для получения дат текущего месяца
+    const getCurrentMonthDates = () => {
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        
+        return {
+            startDate: firstDay.toISOString().split('T')[0],
+            endDate: lastDay.toISOString().split('T')[0]
+        };
+    };
+
+    // Функция для получения дат прошлого месяца
+    const getLastMonthDates = () => {
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        const lastDay = new Date(today.getFullYear(), today.getMonth(), 0);
+        
+        return {
+            startDate: firstDay.toISOString().split('T')[0],
+            endDate: lastDay.toISOString().split('T')[0]
+        };
+    };
+
+    // Функция для форматирования даты в читаемый вид
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        
+        const date = new Date(dateString);
+        const day = date.getDate();
+        const month = date.getMonth() + 1;
+        
+        return `${day < 10 ? '0' + day : day}.${month < 10 ? '0' + month : month}`;
+    };
+
+    // Обработка изменения вкладки
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+        
+        let dateRange = {};
+        
+        if (tab === "thisMonth") {
+            dateRange = getCurrentMonthDates();
+        } else if (tab === "lastMonth") {
+            dateRange = getLastMonthDates();
+        } else if (tab === "custom") {
+            dateRange = selectedRange;
+        }
+        
+        // Обновляем выбранный диапазон, если это не пользовательский
+        if (tab !== "custom") {
+            setSelectedRange(dateRange);
+        }
+        
+        // Загружаем заказы с новым фильтром
+        fetchOrders(dateRange);
+    };
+
+    // Обработка закрытия модального окна выбора дат
+    const handleDateModalClose = () => {
+        setModalVisible(false);
+        
+        // Если выбраны обе даты, применяем фильтр
+        if (selectedRange.startDate && selectedRange.endDate) {
+            setActiveTab("custom");
+            fetchOrders(selectedRange);
+        }
+    };
+
     // Загрузка данных при первом рендере
     useEffect(() => {
-        fetchOrders();
+        // При первой загрузке применяем фильтр текущего месяца
+        const thisMonthDates = getCurrentMonthDates();
+        setSelectedRange(thisMonthDates);
+        fetchOrders(thisMonthDates);
     }, []);
 
     // Обновление данных при возврате на экран
     useFocusEffect(
         useCallback(() => {
-            fetchOrders();
-        }, [])
+            // При возврате на экран используем текущий активный фильтр
+            if (activeTab === "thisMonth") {
+                const dates = getCurrentMonthDates();
+                fetchOrders(dates);
+            } else if (activeTab === "lastMonth") {
+                const dates = getLastMonthDates();
+                fetchOrders(dates);
+            } else if (activeTab === "custom" && selectedRange.startDate && selectedRange.endDate) {
+                fetchOrders(selectedRange);
+            } else {
+                fetchOrders();
+            }
+        }, [activeTab, selectedRange])
     );
 
     // Обработка обновления списка (pull-to-refresh)
     const onRefresh = () => {
         setRefreshing(true);
-        fetchOrders();
+        
+        // При обновлении используем текущий активный фильтр
+        if (activeTab === "thisMonth") {
+            const dates = getCurrentMonthDates();
+            fetchOrders(dates);
+        } else if (activeTab === "lastMonth") {
+            const dates = getLastMonthDates();
+            fetchOrders(dates);
+        } else if (activeTab === "custom" && selectedRange.startDate && selectedRange.endDate) {
+            fetchOrders(selectedRange);
+        } else {
+            fetchOrders();
+        }
     };
 
     return (
@@ -80,14 +182,14 @@ const OrdersScreen = () => {
                                 <Image style={styles.tabIcon} source={require('@assets/images/arrow_down.png')} />
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => handleTabChange("thisMonth")}>
                             <View style={[styles.tab, activeTab === "thisMonth" && styles.tabActive]}>
                                 <Text style={[styles.tabText, activeTab === "thisMonth" && styles.tabTextActive]}>
                                     Этот месяц
                                 </Text>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => handleTabChange("lastMonth")}>
                             <View style={[styles.tab, activeTab === "lastMonth" && styles.tabActive]}>
                                 <Text style={[styles.tabText, activeTab === "lastMonth" && styles.tabTextActive]}>
                                     Прошлый месяц
@@ -99,7 +201,7 @@ const OrdersScreen = () => {
                                 <View style={[styles.tab, styles.tabActive]}>
                                     <Text style={[styles.tabText, styles.tabTextActive]}>
                                         {selectedRange.startDate && selectedRange.endDate ? 
-                                            `${selectedRange.startDate} - ${selectedRange.endDate}` : 
+                                            `${formatDate(selectedRange.startDate)} - ${formatDate(selectedRange.endDate)}` : 
                                             'Выберите даты'}
                                     </Text>
                                 </View>
@@ -150,7 +252,7 @@ const OrdersScreen = () => {
 
             <DateRangeModal
                 visible={modalVisible}
-                onClose={() => setModalVisible(false)}
+                onClose={handleDateModalClose}
                 selectedRange={selectedRange}
                 setSelectedRange={setSelectedRange}
             />
