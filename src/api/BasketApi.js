@@ -78,7 +78,10 @@ export default BasketApi = {
                 return null;
             }
         } catch (error) {
-            console.error('Ошибка при добавлении в корзину:', error);
+            // Если это не ошибка авторизации, обрабатываем как обычно
+            if (!error.isAuthError) {
+                console.error('Ошибка при добавлении в корзину:', error);
+            }
             return null;
         }
     },
@@ -114,7 +117,10 @@ export default BasketApi = {
                 return 0;
             }
         } catch (error) {
-            console.error('Ошибка при получении количества товаров в корзине:', error);
+            // Если это не ошибка авторизации, обрабатываем как обычно
+            if (!error.isAuthError) {
+                console.error('Ошибка при получении количества товаров в корзине:', error);
+            }
             return 0;
         }
     },
@@ -159,7 +165,10 @@ export default BasketApi = {
                 return [];
             }
         } catch (error) {
-            console.error('Ошибка при получении списка товаров в корзине:', error);
+            // Если это не ошибка авторизации, обрабатываем как обычно
+            if (!error.isAuthError) {
+                console.error('Ошибка при получении списка товаров в корзине:', error);
+            }
             return [];
         }
     },
@@ -223,7 +232,10 @@ export default BasketApi = {
                 return { status: 'error', message: 'Не удалось удалить товар из корзины' };
             }
         } catch (error) {
-            console.error('Ошибка при удалении товара из корзины:', error);
+            // Если это не ошибка авторизации, обрабатываем как обычно
+            if (!error.isAuthError) {
+                console.error('Ошибка при удалении товара из корзины:', error);
+            }
             return { status: 'error', message: error.message };
         }
     },
@@ -263,7 +275,10 @@ export default BasketApi = {
                 return { status: 'error', message: 'Не удалось сохранить корзину' };
             }
         } catch (error) {
-            console.error('Ошибка при сохранении корзины:', error);
+            // Если это не ошибка авторизации, обрабатываем как обычно
+            if (!error.isAuthError) {
+                console.error('Ошибка при сохранении корзины:', error);
+            }
             return { status: 'error', message: error.message };
         }
     },
@@ -334,7 +349,10 @@ export default BasketApi = {
             // Сохраняем обновленную корзину
             return await this.saveBasket(newBasketDetails);
         } catch (error) {
-            console.error('Ошибка при обновлении товара в корзине:', error);
+            // Если это не ошибка авторизации, обрабатываем как обычно
+            if (!error.isAuthError) {
+                console.error('Ошибка при обновлении товара в корзине:', error);
+            }
             return { status: 'error', message: error.message };
         }
     },
@@ -374,8 +392,11 @@ export default BasketApi = {
                 return { status: 'error', message: 'Не удалось удалить товары из корзины' };
             }
         } catch (error) {
-            console.error('Ошибка при удалении товаров из корзины:', error);
+            // Если это не ошибка авторизации, обрабатываем как обычно
+            if (!error.isAuthError) {
+                console.error('Ошибка при удалении товаров из корзины:', error);
+            }
             return { status: 'error', message: error.message };
         }
     }
-} 
+};

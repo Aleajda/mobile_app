@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import LoginScreen from '../screens/LoginScreen';
@@ -19,12 +19,18 @@ import OrderPlacingScreen from '../screens/OrderPlacingScreen';
 import OrdersScreen from '../screens/OrdersScreen';
 import OrderDescriptionScreen from '../screens/OrderDescriptionScreen';
 import { AuthProvider, useAuth } from '../api/AuthContext';
+import { setNavigationRef, setupAxiosInterceptors } from '../api/ApiMiddleware';
 
 
 const Drawer = createDrawerNavigator();
 
 const AppContent = () => {
   const { isAuthenticated, isLoading } = useAuth();
+  
+  // Инициализируем перехватчики axios при монтировании компонента
+  useEffect(() => {
+    setupAxiosInterceptors();
+  }, []);
   
   if (isLoading) {
     return (
@@ -180,8 +186,17 @@ const AppContent = () => {
 };
 
 const AppNavigator = () => {
+  const navigationRef = useRef(null);
+  
+  // Устанавливаем navigationRef для использования в middleware
+  useEffect(() => {
+    if (navigationRef.current) {
+      setNavigationRef(navigationRef.current);
+    }
+  }, [navigationRef.current]);
+  
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <AuthProvider>
         <AppContent />
       </AuthProvider>

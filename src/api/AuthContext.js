@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthApi from './AuthApi';
+import { redirectToLogin } from './ApiMiddleware';
 
 const AuthContext = createContext();
 
@@ -56,8 +57,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Метод для обработки ошибок аутентификации
+  const handleAuthError = () => {
+    setIsAuthenticated(false);
+    setUserData(null);
+    redirectToLogin();
+  };
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isLoading, userData, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, isLoading, userData, login, logout, handleAuthError }}>
       {children}
     </AuthContext.Provider>
   );

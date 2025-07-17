@@ -47,7 +47,10 @@ export default SearchApi = {
                 return null;
             }
         } catch (error) {
-            console.error('Ошибка при получении брендов:', error);
+            // Если это не ошибка авторизации, обрабатываем как обычно
+            if (!error.isAuthError) {
+                console.error('Ошибка при получении брендов:', error);
+            }
             return null;
         }
     },
@@ -116,14 +119,17 @@ export default SearchApi = {
                 return null;
             }
         } catch (error) {
-            console.error('Ошибка при поиске по артикулу:', error);
-            if (error.response) {
-                console.error('Данные ответа:', error.response.data);
-                console.error('Статус ответа:', error.response.status);
-            } else if (error.request) {
-                console.error('Запрос был сделан, но ответ не получен:', error.request);
-            } else {
-                console.error('Ошибка при настройке запроса:', error.message);
+            // Если это не ошибка авторизации, обрабатываем как обычно
+            if (!error.isAuthError) {
+                console.error('Ошибка при поиске по артикулу:', error);
+                if (error.response) {
+                    console.error('Данные ответа:', error.response.data);
+                    console.error('Статус ответа:', error.response.status);
+                } else if (error.request) {
+                    console.error('Запрос был сделан, но ответ не получен:', error.request);
+                } else {
+                    console.error('Ошибка при настройке запроса:', error.message);
+                }
             }
             return null;
         }
@@ -181,7 +187,10 @@ export default SearchApi = {
                 return null;
             }
         } catch (error) {
-            console.error('Ошибка при поиске деталей:', error);
+            // Если это не ошибка авторизации, обрабатываем как обычно
+            if (!error.isAuthError) {
+                console.error('Ошибка при поиске деталей:', error);
+            }
             return null;
         }
     },
@@ -304,4 +313,4 @@ export default SearchApi = {
     async getSessionId() {
         return await AsyncStorage.getItem('sessionId');
     }
-} 
+}; 
