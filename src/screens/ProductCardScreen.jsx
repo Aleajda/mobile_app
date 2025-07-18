@@ -5,6 +5,7 @@ import ProductCardSettingsModal from "../components/productCard/modal/ProductCar
 import ProductCardEditModal from "../components/productCard/modal/ProductCardEditModal";
 import ProductCardActionsModal from "../components/productCard/modal/ProductCardActionsModal";
 import BasketApi, { basketUpdateEvent } from "../api/BasketApi";
+import Toast from 'react-native-toast-message';
 
 const ProductCardScreen = ({ navigation }) => {
     const [modalOpen, setModalOpen] = useState(false);
@@ -17,6 +18,18 @@ const ProductCardScreen = ({ navigation }) => {
     
     // Создаем ref для доступа к методам ProductCardBlock
     const productCardBlockRef = useRef(null);
+
+    // Функция для показа Toast-уведомления
+    const showToast = (message) => {
+        Toast.show({
+            type: 'customToast',
+            text1: message || 'Уведомление',
+            position: 'top',
+            visibilityTime: 2000,
+            autoHide: true,
+            topOffset: 60,
+        });
+    };
 
     // Функция для обновления данных корзины
     const onRefresh = useCallback(async () => {
@@ -116,8 +129,8 @@ const ProductCardScreen = ({ navigation }) => {
     const handleOrderPress = () => {
         const selectedItems = getSelectedItemsForOrder();
         if (selectedItems.length === 0) {
-            // Если нет выбранных товаров, показываем уведомление или предупреждение
-            alert('Выберите товары для оформления заказа');
+            // Если нет выбранных товаров, показываем уведомление
+            showToast('Выберите товары для оформления заказа');
         } else {
             navigation.navigate("OrderPlacing", { items: selectedItems });
         }
@@ -371,4 +384,4 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#FFFFFF',
     },
-})
+});

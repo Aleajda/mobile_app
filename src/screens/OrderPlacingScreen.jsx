@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
 import ProductCardOrder from "../components/productCard/ProductCardOrder";
 import SearchProduct from "../components/search/SearchProduct";
 import OrderPlacingProduct from "../components/orderPlacing/OrderPlacingProduct";
@@ -7,6 +7,7 @@ import ChangeAddressModal from "../components/orderPlacing/modal/ChangeAddressMo
 import SearchClientModal from "../components/orderPlacing/modal/SearchClientModal";
 import ContractModal from "../components/orderPlacing/modal/ContractModal";
 import BasketApi, { basketUpdateEvent } from "../api/BasketApi";
+import Toast from 'react-native-toast-message';
 
 const OrderPlacingScreen = ({ route, navigation }) => {
   const [addressModalOpen, setAddressModalOpen] = useState(false);
@@ -20,6 +21,18 @@ const OrderPlacingScreen = ({ route, navigation }) => {
   const [orderItems, setOrderItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Показ Toast-уведомления
+  const showToast = (message) => {
+    Toast.show({
+      type: 'customToast',
+      text1: message || 'Заказ успешно оформлен',
+      position: 'top',
+      visibilityTime: 2000,
+      autoHide: true,
+      topOffset: 60,
+    });
+  };
 
   // Получаем товары из параметров навигации
   useEffect(() => {
@@ -135,7 +148,7 @@ const OrderPlacingScreen = ({ route, navigation }) => {
       detail_id: item.detail_id || "",
       brand_id: item.brand_id || "",
       article: item.article || "",
-      brand: item.brand_name || "",
+      brand: item.brand_name || item.brand || "",
       name: item.name || "",
       sort1_id: item.sort1_id || "",
       sort1_sreqid: item.sort1_sreqid || "",
@@ -193,19 +206,19 @@ const OrderPlacingScreen = ({ route, navigation }) => {
   const handlePlaceOrder = async () => {
     // Проверяем, выбран ли клиент
     if (!selectedClient) {
-      Alert.alert('Ошибка', 'Выберите клиента');
+      showToast('Выберите клиента');
       return;
     }
     
     // Проверяем, нужен ли договор для данного клиента
     if (selectedClient.company_id && selectedClient.company_id !== '-1' && !selectedContract) {
-      Alert.alert('Ошибка', 'Выберите договор');
+      showToast('Выберите договор');
       return;
     }
 
     // Проверяем, выбран ли склад
     if (!selectedSklad) {
-      Alert.alert('Ошибка', 'Выберите склад');
+      showToast('Выберите склад');
       return;
     }
 
@@ -223,23 +236,19 @@ const OrderPlacingScreen = ({ route, navigation }) => {
         await BasketApi.clearBasket();
         
         // Показываем сообщение об успешном оформлении
-        Alert.alert(
-          'Успешно',
-          `Заказ №${response.zakaz_id} успешно оформлен`,
-          [
-            { 
-              text: 'OK', 
-              onPress: () => navigation.navigate("Orders") 
-            }
-          ]
-        );
+        showToast(`Заказ №${response.zakaz_id} успешно оформлен`);
+        
+        // Переходим на экран заказов
+        setTimeout(() => {
+          navigation.navigate("Orders");
+        }, 500);
       } else {
         // Показываем сообщение об ошибке
-        Alert.alert('Ошибка', 'Не удалось оформить заказ');
+        showToast('Не удалось оформить заказ');
       }
     } catch (error) {
       console.error('Error placing order:', error);
-      Alert.alert('Ошибка', 'Произошла ошибка при оформлении заказа');
+      showToast('Произошла ошибка при оформлении заказа');
     } finally {
       setIsSubmitting(false);
     }

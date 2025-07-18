@@ -23,10 +23,10 @@ const toastConfig = {
         source={require('./assets/images/check_16px.png')}
         style={{ width: 16, height: 16, marginRight: 10 }}
       />
-      <View>
-        <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 15 }}>{text1}</Text>
+      <View style={{flex: 1}}>
+        <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 15}}>{text1}</Text>
         {text2 ? (
-          <Text style={{ color: '#aaa', fontSize: 13 }}>{text2}</Text>
+          <Text style={{ color: '#aaa', fontSize: 13}}>{text2}</Text>
         ) : null}
       </View>
     </View>
