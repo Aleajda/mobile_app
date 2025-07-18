@@ -18,13 +18,17 @@ const OrderPlacingProduct = ({ item }) => {
         }).format(price);
     };
 
+    // Получаем бренд из данных (может быть в поле brand или brand_name)
+    const getBrand = () => {
+        if (item.brand_name) return item.brand_name;
+        if (item.brand) return item.brand;
+        return 'Бренд не указан';
+    };
+
     return (
         <View style={styles.order}>
-            <TouchableOpacity style={styles.productCardContainer}>
-                <Image style={styles.productCard} source={require("@assets/images/drop_down.png")}/>
-            </TouchableOpacity>
             <Text style={styles.orderTitle}>{item.name || 'Товар без названия'}</Text>
-            <Text style={styles.orderTitle2}>{item.brand_name || 'Бренд не указан'}</Text>
+            <Text style={styles.orderTitle2}>{getBrand()}</Text>
             <View style={styles.orderBuyer}>
                 <Text style={styles.orderBuyerStatus}>Поставщик</Text>
                 <Text style={styles.orderBuyerName}>{item.company_name || 'Не указан'}</Text>
@@ -53,15 +57,6 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         padding: 16,
         position: 'relative'
-    },
-    productCardContainer: {
-        position: 'absolute',
-        top: 20,
-        right: 20
-    },
-    productCard: {
-        width: 32,
-        height: 32,
     },
     orderTitle: {
         fontFamily: 'Roboto',
