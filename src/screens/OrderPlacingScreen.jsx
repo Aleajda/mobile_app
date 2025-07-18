@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from "react-native";
 import ProductCardOrder from "../components/productCard/ProductCardOrder";
 import SearchProduct from "../components/search/SearchProduct";
 import OrderPlacingProduct from "../components/orderPlacing/OrderPlacingProduct";
 import ChangeAddressModal from "../components/orderPlacing/modal/ChangeAddressModal";
 import SearchClientModal from "../components/orderPlacing/modal/SearchClientModal";
 import ContractModal from "../components/orderPlacing/modal/ContractModal";
-import BasketApi from "../api/BasketApi";
+import BasketApi, { basketUpdateEvent } from "../api/BasketApi";
 
 const OrderPlacingScreen = ({ route, navigation }) => {
   const [addressModalOpen, setAddressModalOpen] = useState(false);
@@ -19,6 +19,7 @@ const OrderPlacingScreen = ({ route, navigation }) => {
   const [contractsLoading, setContractsLoading] = useState(false);
   const [orderItems, setOrderItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Получаем товары из параметров навигации
   useEffect(() => {
@@ -31,7 +32,18 @@ const OrderPlacingScreen = ({ route, navigation }) => {
     }
   }, [route.params]);
 
+  // Устанавливаем клиента "Себе на склад" по умолчанию при первой загрузке
   useEffect(() => {
+    // Создаем клиента "Себе на склад" по умолчанию
+    const defaultClient = {
+      id: -1,
+      name: 'Себе на склад',
+      company_id: '-1'
+    };
+    
+    setSelectedClient(defaultClient);
+    
+    // Загружаем склад по умолчанию
     loadDefaultSklad();
   }, []);
 
@@ -114,23 +126,123 @@ const OrderPlacingScreen = ({ route, navigation }) => {
     setSelectedContract(contract);
   };
 
+  // Подготовка данных для отправки заказа
+  const prepareOrderData = () => {
+    // Формируем массив товаров для заказа
+    const details = orderItems.map(item => ({
+      id: item.id,
+      basket_id: item.basket_id || "",
+      detail_id: item.detail_id || "",
+      brand_id: item.brand_id || "",
+      article: item.article || "",
+      brand: item.brand_name || "",
+      name: item.name || "",
+      sort1_id: item.sort1_id || "",
+      sort1_sreqid: item.sort1_sreqid || "",
+      max_count: item.max_count || "",
+      count: item.count || "1",
+      old_count: item.old_count || "0",
+      min_count: item.min_count || "0",
+      multiplicity: item.multiplicity || "1",
+      price: item.price || "0",
+      dealer_price: item.dealer_price || "0",
+      time: item.time || "0",
+      status: item.status || "1",
+      deliverer_type: item.deliverer_type || "1",
+      deliverer_id: item.deliverer_id || "0",
+      deliverer_online_profile_id: item.deliverer_online_profile_id || "0",
+      create_date: item.create_date || "",
+      update_date: item.update_date || "",
+      comment: item.comment || "",
+      checked: item.checked || "1",
+      fast_sale: item.fast_sale || "0",
+      ean13: item.ean13 || "",
+      my_code: item.my_code || "",
+      document_detail_id: item.document_detail_id || "0",
+      imported_from_user_id: item.imported_from_user_id || "0",
+      is_excise: item.is_excise || "0",
+      is_marking: item.is_marking || "0",
+      session_id: item.session_id || "",
+      deliverer_name: item.deliverer_name || null,
+      sklad_name: item.sklad_name || "",
+      pricelist_name: item.pricelist_name || null,
+      company_name: item.company_name || "",
+      company_id: item.company_id || "",
+      sklad_id: item.sklad_id || "",
+      city_name: item.city_name || "",
+      imported_from_user_name: item.imported_from_user_name || null,
+      imported_from_user_lastname: item.imported_from_user_lastname || null
+    }));
+
+    // Формируем данные заказа
+    return {
+      details: details,
+      company_id: selectedClient ? selectedClient.company_id : "",
+      company_dogovor_id: selectedContract ? selectedContract.id : 0,
+      delivery_type: 1, // Самовывоз
+      delivery_address: selectedSklad ? selectedSklad.address : "",
+      delivery_type_id: selectedSklad ? selectedSklad.id : "",
+      payment_type: 1, // Наличные
+      sum: totalPrice,
+      zakaz_cashback_discount: "0",
+      car_id: null
+    };
+  };
+
   // Обработчик нажатия на кнопку "Оформить заказ"
-  const handlePlaceOrder = () => {
-    // Здесь будет логика оформления заказа
+  const handlePlaceOrder = async () => {
     // Проверяем, выбран ли клиент
     if (!selectedClient) {
-      alert('Выберите клиента');
+      Alert.alert('Ошибка', 'Выберите клиента');
       return;
     }
     
     // Проверяем, нужен ли договор для данного клиента
     if (selectedClient.company_id && selectedClient.company_id !== '-1' && !selectedContract) {
-      alert('Выберите договор');
+      Alert.alert('Ошибка', 'Выберите договор');
       return;
     }
-    
-    // Переходим на экран заказов после успешного оформления
-    navigation.navigate("Orders");
+
+    // Проверяем, выбран ли склад
+    if (!selectedSklad) {
+      Alert.alert('Ошибка', 'Выберите склад');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      
+      // Подготавливаем данные заказа
+      const orderData = prepareOrderData();
+      
+      // Отправляем запрос на оформление заказа
+      const response = await BasketApi.saveZakaz(orderData);
+      
+      if (response && response.status === "ok" && response.zakaz_id) {
+        // Очищаем корзину
+        await BasketApi.clearBasket();
+        
+        // Показываем сообщение об успешном оформлении
+        Alert.alert(
+          'Успешно',
+          `Заказ №${response.zakaz_id} успешно оформлен`,
+          [
+            { 
+              text: 'OK', 
+              onPress: () => navigation.navigate("Orders") 
+            }
+          ]
+        );
+      } else {
+        // Показываем сообщение об ошибке
+        Alert.alert('Ошибка', 'Не удалось оформить заказ');
+      }
+    } catch (error) {
+      console.error('Error placing order:', error);
+      Alert.alert('Ошибка', 'Произошла ошибка при оформлении заказа');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -236,11 +348,18 @@ const OrderPlacingScreen = ({ route, navigation }) => {
                         {formatPrice(totalPrice)}
                     </Text>
                 </View>
-                <TouchableOpacity onPress={handlePlaceOrder}>
-                    <View style={styles.rightButtonContainer}>
-                        <Text style={styles.rightButtonText}>
+                <TouchableOpacity 
+                  onPress={handlePlaceOrder} 
+                  disabled={isSubmitting || orderItems.length === 0}
+                >
+                    <View style={isSubmitting ? styles.rightButtonContainerDisabled : styles.rightButtonContainer}>
+                        {isSubmitting ? (
+                          <ActivityIndicator size="small" color="#FFFFFF" />
+                        ) : (
+                          <Text style={styles.rightButtonText}>
                             Оформить заказ
-                        </Text>
+                          </Text>
+                        )}
                     </View>
                 </TouchableOpacity>
             </View>
@@ -473,16 +592,21 @@ const styles = StyleSheet.create({
         height: 32,
         paddingHorizontal: 12,
         justifyContent: 'center',
-        // borderColor: '#2F80ED99',
-        // borderWidth: 1,
         backgroundColor: '#2F80ED',
         borderRadius: 8
-      },
-      rightButtonText: {
+    },
+    rightButtonContainerDisabled: {
+        height: 32,
+        paddingHorizontal: 12,
+        justifyContent: 'center',
+        backgroundColor: '#BDBDBD',
+        borderRadius: 8
+    },
+    rightButtonText: {
         fontFamily: 'Roboto',
         fontSize: 16,
         fontWeight: 'bold',
         color: '#FFFFFF',
-      },
+    },
 
 });

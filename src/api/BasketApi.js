@@ -447,6 +447,33 @@ const BasketApi = {
             console.error("Error getting company dogovors:", error);
             throw error;
         }
+    },
+
+    saveZakaz: async (orderData) => {
+        try {
+            const response = await ApiMiddleware.post({
+                data: {
+                    ...orderData,
+                    action: "save_zakaz"
+                }
+            });
+            
+            return response;
+        } catch (error) {
+            console.error("Error saving zakaz:", error);
+            throw error;
+        }
+    },
+
+    clearBasket: async () => {
+        try {
+            // Вызываем событие обновления корзины
+            basketUpdateEvent.emit();
+            return { status: "ok" };
+        } catch (error) {
+            console.error("Error clearing basket:", error);
+            throw error;
+        }
     }
 };
 
