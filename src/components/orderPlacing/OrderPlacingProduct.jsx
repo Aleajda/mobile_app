@@ -1,20 +1,36 @@
 import React from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 
-const OrderPlacingProduct = () => {
+const OrderPlacingProduct = ({ item }) => {
+    // Проверяем, есть ли данные товара
+    if (!item) {
+        return null;
+    }
+
+    // Форматирование цены
+    const formatPrice = (price) => {
+        if (!price) return '0 ₽';
+        return new Intl.NumberFormat('ru-RU', {
+            style: 'currency',
+            currency: 'RUB',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(price);
+    };
+
     return (
         <View style={styles.order}>
             <TouchableOpacity style={styles.productCardContainer}>
                 <Image style={styles.productCard} source={require("@assets/images/drop_down.png")}/>
             </TouchableOpacity>
-            <Text style={styles.orderTitle}>Масляной фильтр</Text>
-            <Text style={styles.orderTitle2}>Mahle/Knecht</Text>
+            <Text style={styles.orderTitle}>{item.name || 'Товар без названия'}</Text>
+            <Text style={styles.orderTitle2}>{item.brand_name || 'Бренд не указан'}</Text>
             <View style={styles.orderBuyer}>
                 <Text style={styles.orderBuyerStatus}>Поставщик</Text>
-                <Text style={styles.orderBuyerName}>ООО "ПАРТКОМ"</Text>
+                <Text style={styles.orderBuyerName}>{item.company_name || 'Не указан'}</Text>
             </View>
             <View style={styles.orderStatus}>
-                <Text style={styles.orderStatusText}>В наличии — 7 шт.</Text>
+                <Text style={styles.orderStatusText}>Количество — {item.count || 0} шт.</Text>
             </View>
             <View style={styles.orderBorder}></View>
             
@@ -23,7 +39,7 @@ const OrderPlacingProduct = () => {
                     Стоимость
                 </Text>
                 <Text style={styles.orderParamText}>
-                    1 600 ₽
+                    {formatPrice(parseFloat(item.price) * parseInt(item.count))}
                 </Text>
             </View>
             

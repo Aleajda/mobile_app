@@ -17,6 +17,19 @@ const OrderPlacingScreen = ({ route, navigation }) => {
   const [selectedContract, setSelectedContract] = useState(null);
   const [loading, setLoading] = useState(true);
   const [contractsLoading, setContractsLoading] = useState(false);
+  const [orderItems, setOrderItems] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
+
+  // Получаем товары из параметров навигации
+  useEffect(() => {
+    if (route.params && route.params.items) {
+      setOrderItems(route.params.items);
+      calculateTotalPrice(route.params.items);
+    } else {
+      // Если товары не переданы, возвращаемся на экран корзины
+      navigation.goBack();
+    }
+  }, [route.params]);
 
   useEffect(() => {
     loadDefaultSklad();
@@ -30,6 +43,30 @@ const OrderPlacingScreen = ({ route, navigation }) => {
       setSelectedContract(null);
     }
   }, [selectedClient]);
+
+  // Расчет общей стоимости товаров
+  const calculateTotalPrice = (items) => {
+    if (!Array.isArray(items)) return;
+    
+    const total = items.reduce((sum, item) => {
+      const price = parseFloat(item.price) || 0;
+      const count = parseInt(item.count) || 0;
+      return sum + (price * count);
+    }, 0);
+    
+    setTotalPrice(total);
+  };
+
+  // Форматирование цены
+  const formatPrice = (price) => {
+    if (!price) return '0 ₽';
+    return new Intl.NumberFormat('ru-RU', {
+      style: 'currency',
+      currency: 'RUB',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(price);
+  };
 
   const loadDefaultSklad = async () => {
     try {
@@ -75,6 +112,25 @@ const OrderPlacingScreen = ({ route, navigation }) => {
 
   const handleSelectContract = (contract) => {
     setSelectedContract(contract);
+  };
+
+  // Обработчик нажатия на кнопку "Оформить заказ"
+  const handlePlaceOrder = () => {
+    // Здесь будет логика оформления заказа
+    // Проверяем, выбран ли клиент
+    if (!selectedClient) {
+      alert('Выберите клиента');
+      return;
+    }
+    
+    // Проверяем, нужен ли договор для данного клиента
+    if (selectedClient.company_id && selectedClient.company_id !== '-1' && !selectedContract) {
+      alert('Выберите договор');
+      return;
+    }
+    
+    // Переходим на экран заказов после успешного оформления
+    navigation.navigate("Orders");
   };
 
   return (
@@ -152,8 +208,16 @@ const OrderPlacingScreen = ({ route, navigation }) => {
                 Товары
             </Text>
             <View style={styles.productsContainer}>
-                <OrderPlacingProduct/>
-                <OrderPlacingProduct/>
+                {orderItems.length > 0 ? (
+                  orderItems.map((item) => (
+                    <OrderPlacingProduct 
+                      key={item.id} 
+                      item={item}
+                    />
+                  ))
+                ) : (
+                  <Text style={styles.emptyText}>Нет товаров для оформления</Text>
+                )}
             </View>
         </View>
 
@@ -166,13 +230,13 @@ const OrderPlacingScreen = ({ route, navigation }) => {
             <View style={styles.footerContainer}>
                 <View style={styles.footerContainerText}>
                     <Text style={styles.footerContainerTextCounter}>
-                        Итого 1 товар на сумму
+                        Итого {orderItems.length} {getItemsCountText(orderItems.length)} на сумму
                     </Text>
                     <Text style={styles.footerContainerTextPrice}>
-                        1760 ₽
+                        {formatPrice(totalPrice)}
                     </Text>
                 </View>
-                <TouchableOpacity onPress={() => navigation.navigate("Orders")}>
+                <TouchableOpacity onPress={handlePlaceOrder}>
                     <View style={styles.rightButtonContainer}>
                         <Text style={styles.rightButtonText}>
                             Оформить заказ
@@ -202,6 +266,26 @@ const OrderPlacingScreen = ({ route, navigation }) => {
       />
     </View>
   );
+};
+
+// Функция для правильного склонения слова "товар"
+const getItemsCountText = (count) => {
+  const lastDigit = count % 10;
+  const lastTwoDigits = count % 100;
+  
+  if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
+    return 'товаров';
+  }
+  
+  if (lastDigit === 1) {
+    return 'товар';
+  }
+  
+  if (lastDigit >= 2 && lastDigit <= 4) {
+    return 'товара';
+  }
+  
+  return 'товаров';
 };
 
 export default OrderPlacingScreen;
@@ -345,6 +429,15 @@ const styles = StyleSheet.create({
   },
   productsContainer: {
     gap: 4
+  },
+  emptyText: {
+    fontFamily: 'Roboto',
+    fontSize: 16,
+    color: '#828282',
+    textAlign: 'center',
+    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
   },
 
 

@@ -13,6 +13,7 @@ const ProductCardScreen = ({ navigation }) => {
     const [refreshing, setRefreshing] = useState(false);
     const [hasItems, setHasItems] = useState(false);
     const [actionsModalVisible, setActionsModalVisible] = useState(false);
+    const [basketItems, setBasketItems] = useState([]);
     
     // Создаем ref для доступа к методам ProductCardBlock
     const productCardBlockRef = useRef(null);
@@ -35,10 +36,12 @@ const ProductCardScreen = ({ navigation }) => {
         const checkBasketItems = async () => {
             try {
                 const items = await BasketApi.getBasketDetails();
+                setBasketItems(items);
                 setHasItems(Array.isArray(items) && items.length > 0);
             } catch (error) {
                 console.error('Ошибка при проверке товаров в корзине:', error);
                 setHasItems(false);
+                setBasketItems([]);
             }
         };
         
@@ -99,6 +102,25 @@ const ProductCardScreen = ({ navigation }) => {
             return productCardBlockRef.current.isAllSelected();
         }
         return false;
+    };
+
+    // Получение выбранных товаров для оформления заказа
+    const getSelectedItemsForOrder = () => {
+        const selectedIds = getSelectedItems();
+        if (!selectedIds.length) return [];
+        
+        return basketItems.filter(item => selectedIds.includes(item.id));
+    };
+
+    // Обработчик нажатия на кнопку "Оформить заказ"
+    const handleOrderPress = () => {
+        const selectedItems = getSelectedItemsForOrder();
+        if (selectedItems.length === 0) {
+            // Если нет выбранных товаров, показываем уведомление или предупреждение
+            alert('Выберите товары для оформления заказа');
+        } else {
+            navigation.navigate("OrderPlacing", { items: selectedItems });
+        }
     };
 
     return (
@@ -162,12 +184,14 @@ const ProductCardScreen = ({ navigation }) => {
                                 {formatPrice(productCardCounter.totalPrice)}
                             </Text>
                         </View>
-                        <TouchableOpacity onPress={() => navigation.navigate("OrderPlacing")}>
-                            <View style={styles.rightButtonContainer}>
-                                <Text style={styles.rightButtonText}>
-                                    Оформить заказ
-                                </Text>
-                            </View>
+                        <TouchableOpacity 
+                            onPress={handleOrderPress}
+                            disabled={productCardCounter.count === 0}
+                            style={productCardCounter.count === 0 ? styles.rightButtonContainerDisabled : styles.rightButtonContainer}
+                        >
+                            <Text style={styles.rightButtonText}>
+                                Оформить заказ
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -331,15 +355,20 @@ const styles = StyleSheet.create({
         height: 32,
         paddingHorizontal: 12,
         justifyContent: 'center',
-        // borderColor: '#2F80ED99',
-        // borderWidth: 1,
         backgroundColor: '#2F80ED',
         borderRadius: 8
-      },
-      rightButtonText: {
+    },
+    rightButtonContainerDisabled: {
+        height: 32,
+        paddingHorizontal: 12,
+        justifyContent: 'center',
+        backgroundColor: '#BDBDBD',
+        borderRadius: 8
+    },
+    rightButtonText: {
         fontFamily: 'Roboto',
         fontSize: 16,
         fontWeight: 'bold',
         color: '#FFFFFF',
-      },
+    },
 })
