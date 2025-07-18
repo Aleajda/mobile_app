@@ -431,6 +431,22 @@ const BasketApi = {
             console.error("Error getting delivery sklads:", error);
             throw error;
         }
+    },
+
+    getCompanyDogovors: async (companyId) => {
+        try {
+            const response = await ApiMiddleware.post({
+                data: {
+                    company_id: companyId,
+                    action: "get_company_dogovors"
+                }
+            });
+            
+            return response;
+        } catch (error) {
+            console.error("Error getting company dogovors:", error);
+            throw error;
+        }
     }
 };
 

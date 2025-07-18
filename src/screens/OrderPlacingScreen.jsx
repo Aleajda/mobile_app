@@ -5,18 +5,31 @@ import SearchProduct from "../components/search/SearchProduct";
 import OrderPlacingProduct from "../components/orderPlacing/OrderPlacingProduct";
 import ChangeAddressModal from "../components/orderPlacing/modal/ChangeAddressModal";
 import SearchClientModal from "../components/orderPlacing/modal/SearchClientModal";
+import ContractModal from "../components/orderPlacing/modal/ContractModal";
 import BasketApi from "../api/BasketApi";
 
 const OrderPlacingScreen = ({ route, navigation }) => {
   const [addressModalOpen, setAddressModalOpen] = useState(false);
   const [searchClientModalOpen, setSearchClientModalOpen] = useState(false);
+  const [contractModalOpen, setContractModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState(null);
   const [selectedSklad, setSelectedSklad] = useState(null);
+  const [selectedContract, setSelectedContract] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [contractsLoading, setContractsLoading] = useState(false);
 
   useEffect(() => {
     loadDefaultSklad();
   }, []);
+
+  // Загружаем договоры при выборе клиента
+  useEffect(() => {
+    if (selectedClient && selectedClient.company_id && selectedClient.company_id !== '-1') {
+      loadClientContracts(selectedClient.company_id);
+    } else {
+      setSelectedContract(null);
+    }
+  }, [selectedClient]);
 
   const loadDefaultSklad = async () => {
     try {
@@ -33,12 +46,35 @@ const OrderPlacingScreen = ({ route, navigation }) => {
     }
   };
 
+  const loadClientContracts = async (companyId) => {
+    try {
+      setContractsLoading(true);
+      const response = await BasketApi.getCompanyDogovors(companyId);
+      
+      if (response && response.status === "ok" && response.dogovors && response.dogovors.length > 0) {
+        // Автоматически выбираем первый договор
+        setSelectedContract(response.dogovors[0]);
+      } else {
+        setSelectedContract(null);
+      }
+    } catch (error) {
+      console.error('Error loading client contracts:', error);
+      setSelectedContract(null);
+    } finally {
+      setContractsLoading(false);
+    }
+  };
+
   const handleSelectClient = (client) => {
     setSelectedClient(client);
   };
 
   const handleSelectSklad = (sklad) => {
     setSelectedSklad(sklad);
+  };
+
+  const handleSelectContract = (contract) => {
+    setSelectedContract(contract);
   };
 
   return (
@@ -66,6 +102,29 @@ const OrderPlacingScreen = ({ route, navigation }) => {
             </View>
         </TouchableOpacity>
         
+        {/* Договор */}
+        {selectedClient && selectedClient.company_id && selectedClient.company_id !== '-1' && (
+          <TouchableOpacity onPress={() => setContractModalOpen(true)}>
+              <View style={styles.clientCard}>
+              <View style={styles.clientInfo}>
+                  <Text style={styles.clientName}>Договор №</Text>
+                  <Text style={styles.clientChoice}>
+                    {contractsLoading 
+                      ? 'Загрузка...' 
+                      : (selectedContract 
+                        ? selectedContract.num 
+                        : 'Нет доступных договоров')}
+                  </Text>
+              </View>
+              <TouchableOpacity>
+                  <Image
+                  style={styles.clientArrow}
+                  source={require('@assets/images/arrow_right.png')}
+                  />
+              </TouchableOpacity>
+              </View>
+          </TouchableOpacity>
+        )}
 
         {/* Способ доставки */}
         <View style={styles.deliveryCard}>
@@ -133,6 +192,13 @@ const OrderPlacingScreen = ({ route, navigation }) => {
         visible={searchClientModalOpen} 
         onClose={() => setSearchClientModalOpen(false)}
         onSelectClient={handleSelectClient}
+      />
+      <ContractModal 
+        visible={contractModalOpen} 
+        onClose={() => setContractModalOpen(false)}
+        onSelectContract={handleSelectContract}
+        selectedContractId={selectedContract ? selectedContract.id : ''}
+        companyId={selectedClient ? selectedClient.company_id : ''}
       />
     </View>
   );
