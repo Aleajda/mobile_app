@@ -23,6 +23,47 @@ export const redirectToLogin = () => {
   }
 };
 
+// API URL
+const API_URL = 'https://sort1.pro/api/index.php';
+
+// Создаем объект ApiMiddleware
+const ApiMiddleware = {
+  post: async ({ data }) => {
+    try {
+      // Получаем sessionId из AsyncStorage
+      const sessionId = await AsyncStorage.getItem('sessionId');
+      
+      // Настраиваем заголовки
+      const headers = {
+        'Content-Type': 'application/json',
+        'Accept': '*/*',
+        'X-Requested-With': 'XMLHttpRequest',
+      };
+      
+      // Если есть sessionId, добавляем его в куки
+      const config = {
+        headers,
+        withCredentials: true,
+      };
+      
+      if (sessionId) {
+        // Для React Native мы не можем напрямую управлять куками,
+        // поэтому добавляем sessionId в заголовок
+        headers['Cookie'] = `SORT1SESSID=${sessionId}`;
+      }
+      
+      // Выполняем запрос
+      const response = await axios.post(API_URL, data, config);
+      
+      // Возвращаем данные ответа
+      return response.data;
+    } catch (error) {
+      console.error('API request error:', error);
+      throw error;
+    }
+  }
+};
+
 // Создаем перехватчик ответов для axios
 export const setupAxiosInterceptors = () => {
   axios.interceptors.response.use(
@@ -91,3 +132,5 @@ export const handleFetchResponse = async (response) => {
   
   return data;
 }; 
+
+export default ApiMiddleware; 

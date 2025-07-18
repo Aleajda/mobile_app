@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import ApiMiddleware from "./ApiMiddleware";
 
 // Создаем событие для обновления корзины
 export const basketUpdateEvent = {
@@ -19,7 +20,7 @@ export const basketUpdateEvent = {
     }
 };
 
-export default BasketApi = {
+const BasketApi = {
     /**
      * Добавляет деталь в корзину
      * @param {Object} detail Объект с данными о детали
@@ -398,5 +399,24 @@ export default BasketApi = {
             }
             return { status: 'error', message: error.message };
         }
+    },
+
+    searchClients: async (searchText, page = 1) => {
+        try {
+            const response = await ApiMiddleware.post({
+                data: {
+                    search_clients_client_name: searchText,
+                    page: page,
+                    action: "get_clients"
+                }
+            });
+            
+            return response;
+        } catch (error) {
+            console.error("Error searching clients:", error);
+            throw error;
+        }
     }
 };
+
+export default BasketApi;

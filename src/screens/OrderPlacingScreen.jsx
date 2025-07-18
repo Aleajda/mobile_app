@@ -7,11 +7,13 @@ import ChangeAddressModal from "../components/orderPlacing/modal/ChangeAddressMo
 import SearchClientModal from "../components/orderPlacing/modal/SearchClientModal";
 
 const OrderPlacingScreen = ({ route, navigation }) => {
-
-
   const [addressModalOpen, setAddressModalOpen] = useState(false);
   const [searchClientModalOpen, setSearchClientModalOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState(null);
 
+  const handleSelectClient = (client) => {
+    setSelectedClient(client);
+  };
 
   return (
     <View style={styles.wrapper}>
@@ -25,7 +27,9 @@ const OrderPlacingScreen = ({ route, navigation }) => {
             <View style={styles.clientCard}>
             <View style={styles.clientInfo}>
                 <Text style={styles.clientName}>Клиент</Text>
-                <Text style={styles.clientChoice}>Выбор клиента</Text>
+                <Text style={styles.clientChoice}>
+                  {selectedClient ? selectedClient.name : 'Выбор клиента'}
+                </Text>
             </View>
             <TouchableOpacity>
                 <Image
@@ -94,7 +98,11 @@ const OrderPlacingScreen = ({ route, navigation }) => {
         </View>
 
       <ChangeAddressModal visible={addressModalOpen} onClose={() => setAddressModalOpen(false)}/>
-      <SearchClientModal visible={searchClientModalOpen} onClose={() => setSearchClientModalOpen(false)}/>
+      <SearchClientModal 
+        visible={searchClientModalOpen} 
+        onClose={() => setSearchClientModalOpen(false)}
+        onSelectClient={handleSelectClient}
+      />
     </View>
   );
 };
