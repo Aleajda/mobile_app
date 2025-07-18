@@ -1,18 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "react-native";
 import ProductCardOrder from "../components/productCard/ProductCardOrder";
 import SearchProduct from "../components/search/SearchProduct";
 import OrderPlacingProduct from "../components/orderPlacing/OrderPlacingProduct";
 import ChangeAddressModal from "../components/orderPlacing/modal/ChangeAddressModal";
 import SearchClientModal from "../components/orderPlacing/modal/SearchClientModal";
+import BasketApi from "../api/BasketApi";
 
 const OrderPlacingScreen = ({ route, navigation }) => {
   const [addressModalOpen, setAddressModalOpen] = useState(false);
   const [searchClientModalOpen, setSearchClientModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState(null);
+  const [selectedSklad, setSelectedSklad] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadDefaultSklad();
+  }, []);
+
+  const loadDefaultSklad = async () => {
+    try {
+      setLoading(true);
+      const response = await BasketApi.getDeliverySklads();
+      
+      if (response && response.status === "ok" && response.sklads && response.sklads.length > 0) {
+        setSelectedSklad(response.sklads[0]);
+      }
+    } catch (error) {
+      console.error('Error loading default sklad:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSelectClient = (client) => {
     setSelectedClient(client);
+  };
+
+  const handleSelectSklad = (sklad) => {
+    setSelectedSklad(sklad);
   };
 
   return (
@@ -53,7 +79,7 @@ const OrderPlacingScreen = ({ route, navigation }) => {
         <View style={styles.warehouseCard}>
           <Text style={styles.warehouseLabel}>Склад</Text>
           <Text style={styles.warehouseAddress}>
-            Россия, Республика Татарстан, Верхнеуслонский р-н, Иннополис, Спортивная ул, 136, кв 45
+            {selectedSklad ? selectedSklad.address : 'Загрузка...'}
           </Text>
           <View style={styles.warehouseDivider} />
           <TouchableOpacity style={styles.warehouseButton} onPress={() => setAddressModalOpen(true)}>
@@ -97,7 +123,12 @@ const OrderPlacingScreen = ({ route, navigation }) => {
             </View>
         </View>
 
-      <ChangeAddressModal visible={addressModalOpen} onClose={() => setAddressModalOpen(false)}/>
+      <ChangeAddressModal 
+        visible={addressModalOpen} 
+        onClose={() => setAddressModalOpen(false)}
+        onSelectSklad={handleSelectSklad}
+        selectedSkladId={selectedSklad ? selectedSklad.id : ''}
+      />
       <SearchClientModal 
         visible={searchClientModalOpen} 
         onClose={() => setSearchClientModalOpen(false)}

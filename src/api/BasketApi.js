@@ -416,6 +416,21 @@ const BasketApi = {
             console.error("Error searching clients:", error);
             throw error;
         }
+    },
+
+    getDeliverySklads: async () => {
+        try {
+            const response = await ApiMiddleware.post({
+                data: {
+                    action: "get_delivery_sklads"
+                }
+            });
+            
+            return response;
+        } catch (error) {
+            console.error("Error getting delivery sklads:", error);
+            throw error;
+        }
     }
 };
 
