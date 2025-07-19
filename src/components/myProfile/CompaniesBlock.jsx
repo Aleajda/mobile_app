@@ -1,10 +1,25 @@
 import React, { useState } from "react";
-import { Image, StyleSheet, TouchableOpacity, View, Text } from "react-native";
+import { Image, StyleSheet, TouchableOpacity, View, Text, ActivityIndicator } from "react-native";
 import DeleteCompanyModal from "./modal/DeleteCompanyModal";
 
-const CompaniesBlock = () => {
+const CompaniesBlock = ({ companies = [], loading = false }) => {
 
     const [visible, setVisible] = useState(false);
+    const [selectedCompany, setSelectedCompany] = useState(null);
+
+    const handleOpenDeleteModal = (company) => {
+        setSelectedCompany(company);
+        setVisible(true);
+    };
+
+    if (loading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#2F80ED" />
+                <Text style={styles.loadingText}>Загрузка компаний...</Text>
+            </View>
+        );
+    }
 
     return (
         <View>
@@ -13,48 +28,67 @@ const CompaniesBlock = () => {
                     <Text style={styles.addNewBtnText}>Привязать компанию</Text>
                 </View>
             </TouchableOpacity>
-            <View style={styles.companiesBlock}>
-                <View style={styles.companiesBlockText}>
-                    <Text style={styles.companiesBlockTitle}>ООО "ДЖЕТПАРТС"</Text>
-                    <Text style={styles.companiesBlockDescription}>123154, ГОРОД МОСКВА, НАБЕРЕЖНАЯ КАРАМЫШЕВСКАЯ, 56, 20</Text>
+            
+            {companies.length === 0 ? (
+                <View style={styles.noCompaniesContainer}>
+                    <Text style={styles.noCompaniesText}>Компании не найдены</Text>
                 </View>
-                <TouchableOpacity onPress={() => setVisible(true)}>
-                    <Image
-                        style={styles.editCompanyImage}
-                        source={require("../../../assets/images/drop_down.png")}
-                    />
-                </TouchableOpacity>
-            </View>
-            <View style={styles.companiesBlock}>
-                <View style={styles.companiesBlockText}>
-                    <Text style={styles.companiesBlockTitle}>ИП Кутлубаев Рустам Галиевич</Text>
-                    <Text style={styles.companiesBlockDescription}>г. Москва</Text>
-                </View>
-                <TouchableOpacity onPress={() => setVisible(true)}>
-                    <Image
-                        style={styles.editCompanyImage}
-                        source={require("../../../assets/images/drop_down.png")}
-                    />
-                </TouchableOpacity>
-            </View>
-            <View style={styles.companiesBlock}>
-                <View style={styles.companiesBlockText}>
-                    <Text style={styles.companiesBlockTitle}>ООО "ЗАФИР"</Text>
-                    <Text style={styles.companiesBlockDescription}>г. Казань, ул Гладилова, д 53</Text>
-                </View>
-                <TouchableOpacity onPress={() => setVisible(true)}>
-                    <Image
-                        style={styles.editCompanyImage}
-                        source={require("../../../assets/images/drop_down.png")}
-                    />
-                </TouchableOpacity>
-            </View>
-            <DeleteCompanyModal visible={visible} setVisible={setVisible}/>
+            ) : (
+                companies.map((company) => (
+                    <View key={company.id} style={styles.companiesBlock}>
+                        <View style={styles.companiesBlockText}>
+                            <Text style={styles.companiesBlockTitle}>
+                                {company.short_name || company.name}
+                            </Text>
+                            <Text style={styles.companiesBlockDescription}>
+                                {company.address}
+                            </Text>
+                        </View>
+                        <TouchableOpacity onPress={() => handleOpenDeleteModal(company)}>
+                            <Image
+                                style={styles.editCompanyImage}
+                                source={require("../../../assets/images/drop_down.png")}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                ))
+            )}
+            
+            <DeleteCompanyModal 
+                visible={visible} 
+                setVisible={setVisible} 
+                company={selectedCompany}
+            />
         </View>
     );
 };
 
 const styles = StyleSheet.create({
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    loadingText: {
+        marginTop: 10,
+        fontSize: 16,
+        color: '#333333',
+        fontFamily: 'Roboto',
+    },
+    noCompaniesContainer: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 16,
+        padding: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    noCompaniesText: {
+        fontFamily: 'Roboto',
+        fontSize: 16,
+        color: '#333333',
+        opacity: 0.7,
+    },
     addNewBtn: {
         height: 64,
         backgroundColor: '#FFFFFF',

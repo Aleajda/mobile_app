@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
-import { Image, Modal, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import { Image, Modal, StyleSheet, Text, TouchableWithoutFeedback, View, TouchableOpacity } from 'react-native';
 
-const DeleteCompanyModal = ({ visible, setVisible }) => {
+const DeleteCompanyModal = ({ visible, setVisible, company }) => {
+
+    if (!company) {
+        return null;
+    }
 
     return (
         <Modal visible={visible} animationType='fade' transparent>
@@ -10,10 +14,12 @@ const DeleteCompanyModal = ({ visible, setVisible }) => {
             </TouchableWithoutFeedback>
             <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
-                    <View style={[styles.blockContainer, {flexDirection: 'row'}]}>
-                        <Image style={styles.icon} source={require('@assets/images/delete_24px.png')}/>
-                        <Text style={styles.blockText}>Удалить компанию</Text>
-                    </View>
+                    <TouchableOpacity onPress={() => setVisible(false)}>
+                        <View style={[styles.blockContainer, {flexDirection: 'row'}]}>
+                            <Image style={styles.icon} source={require('@assets/images/delete_24px.png')}/>
+                            <Text style={styles.blockText}>Удалить компанию</Text>
+                        </View>
+                    </TouchableOpacity>
                 </View>
             </View>
         </Modal>
@@ -33,7 +39,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "flex-end",
         alignItems: "center",
-        // backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContent: {
         width: "100%",

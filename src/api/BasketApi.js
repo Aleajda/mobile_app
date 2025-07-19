@@ -29,7 +29,7 @@ const BasketApi = {
     async addToBasket(detail) {
         try {
             const sessionId = await this.getSessionId();
-            
+            console.log('detail', detail);
             const requestData = {
                 my_code: detail.my_code || "",
                 ean13: detail.ean13 || "",
@@ -109,18 +109,18 @@ const BasketApi = {
                 }
             );
             
-            console.log('Ответ getBasketCount:', response.data);
+            // console.log('Ответ getBasketCount:', response.data);
             
             if (response.data && response.data.status === 'ok') {
                 return response.data.details_count || 0;
             } else {
-                console.error('Ошибка при получении количества товаров в корзине:', response.data);
+                // console.error('Ошибка при получении количества товаров в корзине:', response.data);
                 return 0;
             }
         } catch (error) {
             // Если это не ошибка авторизации, обрабатываем как обычно
             if (!error.isAuthError) {
-                console.error('Ошибка при получении количества товаров в корзине:', error);
+                // console.error('Ошибка при получении количества товаров в корзине:', error);
             }
             return 0;
         }
@@ -148,7 +148,7 @@ const BasketApi = {
                 }
             );
             
-            console.log('Ответ getBasketDetails:', response.data);
+            // console.log('Ответ getBasketDetails:', response.data);
             
             if (response.data && response.data.status === 'ok') {
                 // Преобразуем данные, чтобы обеспечить совместимость
@@ -162,13 +162,13 @@ const BasketApi = {
                     to_cart_count: item.count ? parseInt(item.count) : 1
                 }));
             } else {
-                console.error('Ошибка при получении списка товаров в корзине:', response.data);
+                // console.error('Ошибка при получении списка товаров в корзине:', response.data);
                 return [];
             }
         } catch (error) {
             // Если это не ошибка авторизации, обрабатываем как обычно
             if (!error.isAuthError) {
-                console.error('Ошибка при получении списка товаров в корзине:', error);
+                // console.error('Ошибка при получении списка товаров в корзине:', error);
             }
             return [];
         }

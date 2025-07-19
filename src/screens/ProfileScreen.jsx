@@ -15,6 +15,7 @@ import ContractorContractBlock from "../components/myProfile/contractors/Contrac
 import ContractorCarBlock from "../components/myProfile/contractors/ContractorCarBlock";
 import ContractorAktBlock from "../components/myProfile/contractors/ContractorAktBlock";
 import ContractorCheckBlock from "../components/myProfile/contractors/ContractorCheckBlock copy";
+import { getMyCompanies } from "../api/ProfileApi";
 
 
 
@@ -26,6 +27,8 @@ const MyProfileScreen = ({ route, navigation }) => {
   const [changeInfoModalOpen, setChangeInfoModalOpen] = useState(false);
   const [changeRoleModalOpen, setChangeRoleModalOpen] = useState(false);
   const [changePasswordModalOpen, setChangePasswordModalOpen] = useState(false);
+  const [companies, setCompanies] = useState([]);
+  const [loading, setLoading] = useState(false);
   const { aboutMeButton, role, username, tabs } = route.params || { aboutMeButton: true };
   const { isAuthenticated, userData } = useAuth();
   
@@ -38,6 +41,25 @@ const MyProfileScreen = ({ route, navigation }) => {
       });
     }
   }, [isAuthenticated, navigation]);
+
+  // Загрузка списка компаний
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        setLoading(true);
+        const response = await getMyCompanies();
+        if (response.status === 'ok' && response.clients) {
+          setCompanies(response.clients);
+        }
+      } catch (error) {
+        console.error('Ошибка при загрузке компаний:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCompanies();
+  }, []);
 
   const renderContent = () => {
     if (role === 'Контрагент') {
@@ -64,7 +86,7 @@ const MyProfileScreen = ({ route, navigation }) => {
         case 1:
           return <AboutMeBlock />;
         default:
-          return <CompaniesBlock />;
+          return <CompaniesBlock companies={companies} loading={loading} />;
       }
     }
   };
