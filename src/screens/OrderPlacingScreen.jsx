@@ -210,11 +210,6 @@ const OrderPlacingScreen = ({ route, navigation }) => {
       return;
     }
     
-    // Проверяем, нужен ли договор для данного клиента
-    if (selectedClient.company_id && selectedClient.company_id !== '-1' && !selectedContract) {
-      showToast('Выберите договор');
-      return;
-    }
 
     // Проверяем, выбран ли склад
     if (!selectedSklad) {

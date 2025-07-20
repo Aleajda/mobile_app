@@ -47,8 +47,6 @@ const ApiMiddleware = {
       };
       
       if (sessionId) {
-        // Для React Native мы не можем напрямую управлять куками,
-        // поэтому добавляем sessionId в заголовок
         headers['Cookie'] = `SORT1SESSID=${sessionId}`;
       }
       
