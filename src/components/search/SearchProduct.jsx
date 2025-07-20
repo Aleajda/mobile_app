@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, Image, TouchableOpacity, Alert } from 'react-na
 import BasketApi from '../../api/BasketApi';
 import Toast from 'react-native-toast-message';
 
-const SearchProduct = ({ item = {}, onAddToBasket, onBasketUpdated }) => {
+const SearchProduct = ({ item = {}, onAddToBasket, onBasketUpdated, reqid = "" }) => {
     const [isAddingToBasket, setIsAddingToBasket] = useState(false);
     
     // Форматирование цены
@@ -88,7 +88,7 @@ const SearchProduct = ({ item = {}, onAddToBasket, onBasketUpdated }) => {
                 comment: ""
             };
             
-            const result = await BasketApi.addToBasket(detailData);
+            const result = await BasketApi.addToBasket(detailData, reqid);
             
             if (result && result.status === 'ok') {
                 showToast("Товар добавлен в корзину");

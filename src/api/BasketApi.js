@@ -24,12 +24,15 @@ const BasketApi = {
     /**
      * Добавляет деталь в корзину
      * @param {Object} detail Объект с данными о детали
+     * @param {string} sreqid Идентификатор запроса search_sort1
      * @returns {Promise<Object|null>} Результат операции или null в случае ошибки
      */
-    async addToBasket(detail) {
+    async addToBasket(detail, sreqid = "") {
         try {
             const sessionId = await this.getSessionId();
             console.log('detail', detail);
+            console.log('sreqid', sreqid);
+            
             const requestData = {
                 my_code: detail.my_code || "",
                 ean13: detail.ean13 || "",
@@ -45,10 +48,13 @@ const BasketApi = {
                 is_excise: detail.is_excise || 0,
                 deliverer_type: detail.deliverer_type || "sklad",
                 detail_id: detail.detail_id || 0,
+                sort1_id: detail.id || 0,
+                
                 brand_id: detail.brand_id || 0,
                 price: detail.price || 0,
                 to_cart_count: detail.to_cart_count || 1,
                 comment: detail.comment || "",
+                sort1_sreqid: sreqid,
                 action: "save_basket_detail"
             };
             

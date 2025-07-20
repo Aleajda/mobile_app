@@ -61,7 +61,8 @@ const AppContent = () => {
         component={MainScreen} 
         options={({ navigation }) => ({
           header: () => <Header navigation={navigation} />,
-          title: "Главная"
+          title: "Главная",
+          drawerItemStyle: {display: 'none'}
         })}  
       />
       <Drawer.Screen 
@@ -78,7 +79,8 @@ const AppContent = () => {
         component={UsersScreen} 
         options={({ navigation }) => ({
           header: () => <Header navigation={navigation} />,
-          title: "Пользователи"
+          title: "Пользователи",
+          drawerItemStyle: {display: 'none'}
         })} 
       />
       <Drawer.Screen 
@@ -86,7 +88,8 @@ const AppContent = () => {
         component={SitesScreen} 
         options={({ navigation }) => ({
           header: () => <Header navigation={navigation} />,
-          title: "Сайты"
+          title: "Сайты",
+          drawerItemStyle: {display: 'none'}
         })} 
       />
       <Drawer.Screen 
@@ -103,7 +106,7 @@ const AppContent = () => {
         component={ProfileScreen} 
         options={({ navigation }) => ({
           header: () => <View><Header navigation={navigation} /><GoBackHeader goTo={"Contractors"} contractor={true}/></View>, 
-          drawerItemStyle: {display: 'none'}
+          drawerItemStyle: {display: 'none'},
         })} 
         initialParams={{ aboutMeButton: false}}
       />
@@ -112,7 +115,8 @@ const AppContent = () => {
         component={ContractorScreen} 
         options={({ navigation }) => ({
           header: () => <Header navigation={navigation} />,
-          title: "Контрагенты"
+          title: "Контрагенты",
+          drawerItemStyle: {display: 'none'}
         })} 
       />
       <Drawer.Screen 

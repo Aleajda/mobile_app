@@ -4,7 +4,7 @@ import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import BasketApi from '../../../api/BasketApi';
 
-const DetailModal = ({ navigation, detailData, article, brand, visible = false, onClose, onAddToBasket, onBasketUpdated }) => {
+const DetailModal = ({ navigation, detailData, article, brand, visible = false, onClose, onAddToBasket, onBasketUpdated, reqid = "" }) => {
     const [modalVisible, setModalVisible] = useState(visible);
     const [quantity, setQuantity] = useState(1);
     const [isAddingToBasket, setIsAddingToBasket] = useState(false);
@@ -99,7 +99,7 @@ const DetailModal = ({ navigation, detailData, article, brand, visible = false, 
             };
             
             console.log('Отправляем данные для добавления в корзину:', detailToAdd);
-            const result = await BasketApi.addToBasket(detailToAdd);
+            const result = await BasketApi.addToBasket(detailToAdd, reqid);
             console.log('Результат добавления в корзину:', result);
             
             if (result && result.status === 'ok') {

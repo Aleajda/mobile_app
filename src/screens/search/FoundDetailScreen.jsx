@@ -16,7 +16,7 @@ const removeSpecialChars = (str) => {
 };
 
 // Компонент для отображения товаров на складе
-const WarehouseBlock = ({ navigation, searchResult, article, brand, brandId }) => {
+const WarehouseBlock = ({ navigation, searchResult, article, brand, brandId, reqid }) => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [detailModalVisible, setDetailModalVisible] = useState(false);
     
@@ -73,7 +73,7 @@ const WarehouseBlock = ({ navigation, searchResult, article, brand, brandId }) =
                     data={itemsList}
                     renderItem={({ item }) => (
                         <TouchableOpacity onPress={() => handleItemPress(item)}>
-                            <SearchProduct item={item} />
+                            <SearchProduct item={item} reqid={reqid} />
                         </TouchableOpacity>
                     )}
                     keyExtractor={(item, index) => item.id ? `warehouse-${title}-${item.id}` : `warehouse-${title}-${item.article}-${item.brand}-${index}`}
@@ -106,6 +106,7 @@ const WarehouseBlock = ({ navigation, searchResult, article, brand, brandId }) =
                     brand={brand}
                     visible={detailModalVisible}
                     onClose={handleCloseDetail}
+                    reqid={reqid}
                 />
             )}
         </View>
@@ -179,6 +180,9 @@ const FoundDetailScreen = ({ navigation, route }) => {
     // Добавляем состояния для накопления всех результатов поиска
     const [allSearchResults, setAllSearchResults] = useState({ items: [], analogs: [] });
     
+    // Добавляем состояние для хранения reqid
+    const [searchReqId, setSearchReqId] = useState("");
+
     // Запускаем поиск при загрузке экрана
     useEffect(() => {
         return () => {
@@ -385,6 +389,7 @@ const FoundDetailScreen = ({ navigation, route }) => {
         setSearchResults({ items: [], analogs: [] });
         setFilteredResults({ items: [], analogs: [] });
         setAllSearchResults({ items: [], analogs: [] }); // Очищаем накопленные результаты
+        setSearchReqId(""); // Сбрасываем reqid
         setItemsCount(prevCounts => ({
             ...prevCounts,
             originals: 0,
@@ -399,6 +404,12 @@ const FoundDetailScreen = ({ navigation, route }) => {
             // Обработка новых результатов
             (result) => {
                 console.log('Получены результаты:', result.totalCount);
+                
+                // Сохраняем reqid из результата
+                if (result && result.reqid && !searchReqId) {
+                    console.log('Сохраняем reqid:', result.reqid);
+                    setSearchReqId(result.reqid);
+                }
                 
                 if (result && result.items) {
                     // Разделяем результаты на оригиналы и аналоги
@@ -488,6 +499,7 @@ const FoundDetailScreen = ({ navigation, route }) => {
                     article={article}
                     brand={brand}
                     brandId={brandId}
+                    reqid={searchReqId}
                 />
             );
         } else if (activeButton === 2) {
@@ -498,6 +510,7 @@ const FoundDetailScreen = ({ navigation, route }) => {
                     article={article}
                     brand={brand}
                     brandId={brandId}
+                    reqid={searchReqId}
                 />
             );
         } else if (activeButton === 3) {
@@ -519,6 +532,7 @@ const FoundDetailScreen = ({ navigation, route }) => {
                     article={article}
                     brand={brand}
                     brandId={brandId}
+                    reqid={searchReqId}
                 />
             );
         }

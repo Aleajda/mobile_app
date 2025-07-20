@@ -9,7 +9,7 @@ const removeSpecialChars = (str) => {
     return str.replace(/[\s+\.\/_&\-#]/g, '').toUpperCase();
 };
 
-const AnalogBlock = ({ navigation, searchResult, article, brand, brandId }) => {
+const AnalogBlock = ({ navigation, searchResult, article, brand, brandId, reqid = "" }) => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [detailModalVisible, setDetailModalVisible] = useState(false);
     
@@ -70,7 +70,7 @@ const AnalogBlock = ({ navigation, searchResult, article, brand, brandId }) => {
                 data={analogs}
                 renderItem={({ item }) => (
                     <TouchableOpacity onPress={() => handleItemPress(item)}>
-                        <SearchProduct item={item} />
+                        <SearchProduct item={item} reqid={reqid} />
                     </TouchableOpacity>
                 )}
                 keyExtractor={(item, index) => item.id ? `analog-${item.id}` : `analog-${item.article}-${item.brand}-${index}`}
@@ -86,6 +86,7 @@ const AnalogBlock = ({ navigation, searchResult, article, brand, brandId }) => {
                     brand={selectedItem.brand}
                     visible={detailModalVisible}
                     onClose={handleCloseDetail}
+                    reqid={reqid}
                 />
             )}
         </View>

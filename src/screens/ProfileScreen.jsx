@@ -15,7 +15,7 @@ import ContractorContractBlock from "../components/myProfile/contractors/Contrac
 import ContractorCarBlock from "../components/myProfile/contractors/ContractorCarBlock";
 import ContractorAktBlock from "../components/myProfile/contractors/ContractorAktBlock";
 import ContractorCheckBlock from "../components/myProfile/contractors/ContractorCheckBlock copy";
-import { getMyCompanies } from "../api/ProfileApi";
+import { getMyCompanies, getUserData } from "../api/ProfileApi";
 
 
 
@@ -29,8 +29,11 @@ const MyProfileScreen = ({ route, navigation }) => {
   const [changePasswordModalOpen, setChangePasswordModalOpen] = useState(false);
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { aboutMeButton, role, username, tabs } = route.params || { aboutMeButton: true };
-  const { isAuthenticated, userData } = useAuth();
+  const { aboutMeButton, role: initialRole, username: initialUsername, tabs } = route.params || { aboutMeButton: true };
+  const { isAuthenticated, userData: authUserData } = useAuth();
+  
+  // Состояние для хранения данных пользователя из API
+  const [profileData, setProfileData] = useState(null);
   
   // Проверка авторизации
   useEffect(() => {
@@ -41,6 +44,22 @@ const MyProfileScreen = ({ route, navigation }) => {
       });
     }
   }, [isAuthenticated, navigation]);
+
+  // Загрузка данных пользователя
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await getUserData();
+        if (response.status === 'ok' && response.user) {
+          setProfileData(response.user[0]);
+        }
+      } catch (error) {
+        console.error('Ошибка при загрузке данных пользователя:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   // Загрузка списка компаний
   useEffect(() => {
@@ -62,7 +81,7 @@ const MyProfileScreen = ({ route, navigation }) => {
   }, []);
 
   const renderContent = () => {
-    if (role === 'Контрагент') {
+    if (profileData?.role_name === 'Контрагент' || initialRole === 'Контрагент') {
       switch (activeButton) {
         case 1:
           return <AboutContractorBlock />;
@@ -91,8 +110,13 @@ const MyProfileScreen = ({ route, navigation }) => {
     }
   };
 
-
-
+  // Получаем имя пользователя для отображения
+  const displayName = profileData 
+    ? `${profileData.name} ${profileData.lastname}`
+    : authUserData?.username || initialUsername || 'Рустам Кутлубаев';
+    
+  // Получаем роль пользователя для отображения
+  const displayRole = profileData?.role_name || initialRole || 'Владелец сайта';
 
   return (
     <View style={styles.container}>
@@ -100,7 +124,7 @@ const MyProfileScreen = ({ route, navigation }) => {
         <View style={styles.nameAndRoleContainer}>
           <View style={styles.nameContainer}>
             <Text style={styles.name}>
-              {userData?.username || username || 'Рустам Кутлубаев'}
+              {displayName}
             </Text>
             <View style={[styles.openDropDown, aboutMeButton ? null : { display: 'none' }]} >
               <TouchableOpacity onPress={() => setModalOpen(true)}>
@@ -110,7 +134,7 @@ const MyProfileScreen = ({ route, navigation }) => {
           </View>
           <View style={styles.roleContainer}>
             <Text style={styles.role}>
-              {role ? role : 'Владелец сайта'}
+              {displayRole}
             </Text>
           </View>
         </View>
@@ -123,9 +147,9 @@ const MyProfileScreen = ({ route, navigation }) => {
                 </Text>
               </View>
             </TouchableOpacity>
-            {role == 'Контрагент'
+            {(profileData?.role_name === 'Контрагент' || initialRole === 'Контрагент')
               ?
-              tabs.map((tab, index) => {
+              tabs?.map((tab, index) => {
                 return (
                   <TouchableOpacity key={index} onPress={() => setActiveButton(index + 2)}>
                     <View style={[styles.companiesButtonContainer, activeButton == index + 2 ? styles.activeHeaderButtonContainer : null]}>
