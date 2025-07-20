@@ -32,10 +32,10 @@ const MyProfileScreen = ({ route, navigation }) => {
   const { aboutMeButton, role: initialRole, username: initialUsername, tabs } = route.params || { aboutMeButton: true };
   const { isAuthenticated, userData: authUserData } = useAuth();
   
-  // Состояние для хранения данных пользователя из API
+  
   const [profileData, setProfileData] = useState(null);
   
-  // Проверка авторизации
+  
   useEffect(() => {
     if (!isAuthenticated) {
       navigation.reset({
@@ -45,7 +45,7 @@ const MyProfileScreen = ({ route, navigation }) => {
     }
   }, [isAuthenticated, navigation]);
 
-  // Загрузка данных пользователя
+  
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -61,7 +61,7 @@ const MyProfileScreen = ({ route, navigation }) => {
     fetchUserData();
   }, []);
 
-  // Загрузка списка компаний
+  
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
@@ -110,12 +110,12 @@ const MyProfileScreen = ({ route, navigation }) => {
     }
   };
 
-  // Получаем имя пользователя для отображения
+  
   const displayName = profileData 
     ? `${profileData.name} ${profileData.lastname}`
     : authUserData?.username || initialUsername || 'Рустам Кутлубаев';
     
-  // Получаем роль пользователя для отображения
+  
   const displayRole = profileData?.role_name || initialRole || 'Владелец сайта';
 
   return (

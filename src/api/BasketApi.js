@@ -2,11 +2,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import ApiMiddleware from "./ApiMiddleware";
 
-// Создаем событие для обновления корзины
 export const basketUpdateEvent = {
     listeners: [],
     
-    // Добавление слушателя
+    
     addListener(callback) {
         this.listeners.push(callback);
         return () => {
@@ -14,7 +13,7 @@ export const basketUpdateEvent = {
         };
     },
     
-    // Вызов всех слушателей
+    
     emit() {
         this.listeners.forEach(callback => callback());
     }
@@ -77,7 +76,6 @@ const BasketApi = {
             console.log('Ответ addToBasket:', response.data);
             
             if (response.data) {
-                // Вызываем событие обновления корзины
                 basketUpdateEvent.emit();
                 return response.data;
             } else {
@@ -85,7 +83,6 @@ const BasketApi = {
                 return null;
             }
         } catch (error) {
-            // Если это не ошибка авторизации, обрабатываем как обычно
             if (!error.isAuthError) {
                 console.error('Ошибка при добавлении в корзину:', error);
             }
@@ -115,16 +112,14 @@ const BasketApi = {
                 }
             );
             
-            // console.log('Ответ getBasketCount:', response.data);
             
             if (response.data && response.data.status === 'ok') {
                 return response.data.details_count || 0;
             } else {
-                // console.error('Ошибка при получении количества товаров в корзине:', response.data);
+                
                 return 0;
             }
         } catch (error) {
-            // Если это не ошибка авторизации, обрабатываем как обычно
             if (!error.isAuthError) {
                 // console.error('Ошибка при получении количества товаров в корзине:', error);
             }
@@ -157,14 +152,13 @@ const BasketApi = {
             // console.log('Ответ getBasketDetails:', response.data);
             
             if (response.data && response.data.status === 'ok') {
-                // Преобразуем данные, чтобы обеспечить совместимость
                 const basketDetails = response.data.basket_details || [];
                 
-                // Убедимся, что count всегда представлен как число
+                
                 return basketDetails.map(item => ({
                     ...item,
                     count: item.count ? parseInt(item.count) : 1,
-                    // Добавляем to_cart_count для обратной совместимости
+                    
                     to_cart_count: item.count ? parseInt(item.count) : 1
                 }));
             } else {
@@ -172,7 +166,7 @@ const BasketApi = {
                 return [];
             }
         } catch (error) {
-            // Если это не ошибка авторизации, обрабатываем как обычно
+            
             if (!error.isAuthError) {
                 // console.error('Ошибка при получении списка товаров в корзине:', error);
             }
@@ -231,7 +225,7 @@ const BasketApi = {
             console.log('Ответ removeFromBasket:', response.data);
             
             if (response.data && response.data.status === 'ok') {
-                // Вызываем событие обновления корзины
+                
                 basketUpdateEvent.emit();
                 return { status: 'ok' };
             } else {
@@ -239,7 +233,7 @@ const BasketApi = {
                 return { status: 'error', message: 'Не удалось удалить товар из корзины' };
             }
         } catch (error) {
-            // Если это не ошибка авторизации, обрабатываем как обычно
+            
             if (!error.isAuthError) {
                 console.error('Ошибка при удалении товара из корзины:', error);
             }
@@ -274,7 +268,7 @@ const BasketApi = {
             console.log('Ответ saveBasket:', response.data);
             
             if (response.data && response.data.status === 'ok') {
-                // Вызываем событие обновления корзины
+                
                 basketUpdateEvent.emit();
                 return { status: 'ok' };
             } else {
@@ -282,7 +276,7 @@ const BasketApi = {
                 return { status: 'error', message: 'Не удалось сохранить корзину' };
             }
         } catch (error) {
-            // Если это не ошибка авторизации, обрабатываем как обычно
+            
             if (!error.isAuthError) {
                 console.error('Ошибка при сохранении корзины:', error);
             }
@@ -307,24 +301,24 @@ const BasketApi = {
             
             const item = basketDetails[index];
             
-            // Создаем копию товара для обновления
+            
             const updatedBasketItem = { ...item };
             
-            // Обновляем цену продажи, если она указана
+            
             if (updatedItem.price !== undefined) {
                 updatedBasketItem.price = updatedItem.price.toString();
             }
             
-            // Обновляем количество с учетом максимально доступного количества
+            
             if (updatedItem.quantity !== undefined) {
                 const maxCount = parseInt(item.max_count || "9999");
                 
-                // Проверяем, не превышает ли новое количество максимально доступное
+                
                 if (updatedItem.quantity > maxCount) {
                     updatedItem.quantity = maxCount;
                 }
+
                 
-                // Проверяем, не меньше ли новое количество минимально допустимого (0)
                 if (updatedItem.quantity < 0) {
                     updatedItem.quantity = 0;
                 }
@@ -349,14 +343,12 @@ const BasketApi = {
                 updatedBasketItem.old_count = currentCount.toString();
             }
             
-            // Обновляем товар в массиве корзины
             const newBasketDetails = [...basketDetails];
             newBasketDetails[index] = updatedBasketItem;
             
-            // Сохраняем обновленную корзину
+            
             return await this.saveBasket(newBasketDetails);
         } catch (error) {
-            // Если это не ошибка авторизации, обрабатываем как обычно
             if (!error.isAuthError) {
                 console.error('Ошибка при обновлении товара в корзине:', error);
             }
@@ -391,7 +383,7 @@ const BasketApi = {
             console.log('Ответ removeMultipleFromBasket:', response.data);
             
             if (response.data && response.data.status === 'ok') {
-                // Вызываем событие обновления корзины
+                
                 basketUpdateEvent.emit();
                 return { status: 'ok' };
             } else {
@@ -399,7 +391,6 @@ const BasketApi = {
                 return { status: 'error', message: 'Не удалось удалить товары из корзины' };
             }
         } catch (error) {
-            // Если это не ошибка авторизации, обрабатываем как обычно
             if (!error.isAuthError) {
                 console.error('Ошибка при удалении товаров из корзины:', error);
             }

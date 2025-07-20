@@ -16,10 +16,10 @@ const ProductCardScreen = ({ navigation }) => {
     const [actionsModalVisible, setActionsModalVisible] = useState(false);
     const [basketItems, setBasketItems] = useState([]);
     
-    // Создаем ref для доступа к методам ProductCardBlock
+   
     const productCardBlockRef = useRef(null);
 
-    // Функция для показа Toast-уведомления
+    
     const showToast = (message) => {
         Toast.show({
             type: 'customToast',
@@ -31,11 +31,11 @@ const ProductCardScreen = ({ navigation }) => {
         });
     };
 
-    // Функция для обновления данных корзины
+    
     const onRefresh = useCallback(async () => {
         setRefreshing(true);
         try {
-            // Вызываем событие обновления корзины
+            
             basketUpdateEvent.emit();
             setRefreshing(false);
         } catch (error) {
@@ -44,7 +44,7 @@ const ProductCardScreen = ({ navigation }) => {
         }
     }, []);
 
-    // Проверка наличия товаров в корзине
+    
     useEffect(() => {
         const checkBasketItems = async () => {
             try {
@@ -60,18 +60,18 @@ const ProductCardScreen = ({ navigation }) => {
         
         checkBasketItems();
         
-        // Подписываемся на событие обновления корзины
+        
         const unsubscribe = basketUpdateEvent.addListener(() => {
             checkBasketItems();
         });
         
-        // Отписываемся при размонтировании компонента
+        
         return () => {
             unsubscribe();
         };
     }, []);
 
-    // Форматирование цены
+    
     const formatPrice = (price) => {
         if (!price) return '0 ₽';
         return new Intl.NumberFormat('ru-RU', {
@@ -82,12 +82,12 @@ const ProductCardScreen = ({ navigation }) => {
         }).format(price);
     };
     
-    // Обработчик открытия модального окна действий
+    
     const handleActionsPress = () => {
         setActionsModalVisible(true);
     };
     
-    // Получение выбранных товаров
+    
     const getSelectedItems = () => {
         if (productCardBlockRef.current && productCardBlockRef.current.getSelectedItemIds) {
             return productCardBlockRef.current.getSelectedItemIds();
@@ -95,21 +95,21 @@ const ProductCardScreen = ({ navigation }) => {
         return [];
     };
     
-    // Выбор всех товаров
+    
     const handleSelectAll = () => {
         if (productCardBlockRef.current && productCardBlockRef.current.handleSelectAll) {
             productCardBlockRef.current.handleSelectAll();
         }
     };
     
-    // Отмена выбора всех товаров
+    
     const handleUnselectAll = () => {
         if (productCardBlockRef.current && productCardBlockRef.current.handleUnselectAll) {
             productCardBlockRef.current.handleUnselectAll();
         }
     };
     
-    // Проверка, все ли товары выбраны
+    
     const isAllSelected = () => {
         if (productCardBlockRef.current && productCardBlockRef.current.isAllSelected) {
             return productCardBlockRef.current.isAllSelected();
@@ -117,7 +117,7 @@ const ProductCardScreen = ({ navigation }) => {
         return false;
     };
 
-    // Получение выбранных товаров для оформления заказа
+    
     const getSelectedItemsForOrder = () => {
         const selectedIds = getSelectedItems();
         if (!selectedIds.length) return [];
@@ -125,11 +125,11 @@ const ProductCardScreen = ({ navigation }) => {
         return basketItems.filter(item => selectedIds.includes(item.id));
     };
 
-    // Обработчик нажатия на кнопку "Оформить заказ"
+    
     const handleOrderPress = () => {
         const selectedItems = getSelectedItemsForOrder();
         if (selectedItems.length === 0) {
-            // Если нет выбранных товаров, показываем уведомление
+            
             showToast('Выберите товары для оформления заказа');
         } else {
             navigation.navigate("OrderPlacing", { items: selectedItems });

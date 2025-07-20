@@ -39,12 +39,12 @@ const SearchDetailScreen = ({ navigation }) => {
         }
     };
 
-    // Автоматический поиск при вводе 3 и более символов
+
     useEffect(() => {
         if (searchValue.length >= 3) {
             const timer = setTimeout(() => {
                 searchBrands();
-            }, 500); // Задержка 500мс для предотвращения частых запросов при быстром вводе
+            }, 500); 
             
             return () => clearTimeout(timer);
         } else if (searchValue.length === 0) {

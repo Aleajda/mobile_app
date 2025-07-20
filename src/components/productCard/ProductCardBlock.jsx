@@ -11,7 +11,7 @@ const ProductCardBlock = forwardRef(({ setProductCardCounter }, ref) => {
     const [selectedItems, setSelectedItems] = useState([]);
     const navigation = useNavigation();
 
-    // Предоставляем методы через ref для родительского компонента
+    
     useImperativeHandle(ref, () => ({
         getSelectedItemIds: () => selectedItems,
         handleSelectAll: () => {
@@ -27,25 +27,25 @@ const ProductCardBlock = forwardRef(({ setProductCardCounter }, ref) => {
         }
     }));
 
-    // Загрузка товаров из корзины при монтировании компонента
+    
     useEffect(() => {
         loadBasketItems();
         
-        // Подписываемся на событие обновления корзины
+        
         const unsubscribe = basketUpdateEvent.addListener(loadBasketItems);
         
-        // Отписываемся при размонтировании компонента
+        
         return () => {
             unsubscribe();
         };
     }, []);
 
-    // Обновляем счетчик выбранных товаров при изменении выбора
+    
     useEffect(() => {
         updateProductCounter();
     }, [selectedItems, basketItems]);
 
-    // Функция загрузки товаров из корзины
+    
     const loadBasketItems = async () => {
         try {
             setLoading(true);
@@ -56,7 +56,7 @@ const ProductCardBlock = forwardRef(({ setProductCardCounter }, ref) => {
             if (Array.isArray(items)) {
                 setBasketItems(items);
                 
-                // Сбрасываем выбранные товары при обновлении корзины
+                
                 setSelectedItems([]);
             } else {
                 setBasketItems([]);
@@ -72,7 +72,7 @@ const ProductCardBlock = forwardRef(({ setProductCardCounter }, ref) => {
         }
     };
 
-    // Обновление счетчика выбранных товаров
+    
     const updateProductCounter = () => {
         if (!basketItems.length) {
             setProductCardCounter({ count: 0, totalPrice: 0 });
@@ -81,7 +81,7 @@ const ProductCardBlock = forwardRef(({ setProductCardCounter }, ref) => {
         
         let totalPrice = 0;
         
-        // Для каждого выбранного товара вычисляем общую стоимость
+        
         selectedItems.forEach(itemId => {
             const item = basketItems.find(basketItem => 
                 (basketItem.id === itemId || basketItem.detail_id === itemId)
@@ -100,7 +100,7 @@ const ProductCardBlock = forwardRef(({ setProductCardCounter }, ref) => {
         });
     };
 
-    // Обработчик выбора товара
+    
     const handleItemSelect = (itemId, isSelected) => {
         if (isSelected) {
             setSelectedItems(prev => [...prev, itemId]);
@@ -109,13 +109,13 @@ const ProductCardBlock = forwardRef(({ setProductCardCounter }, ref) => {
         }
     };
 
-    // Обработчик обновления товара
+    
     const handleItemUpdated = () => {
-        // Перезагружаем список товаров
+        
         loadBasketItems();
     };
 
-    // Если идет загрузка, показываем индикатор
+    
     if (loading) {
         return (
             <View style={styles.loaderContainer}>
@@ -125,7 +125,7 @@ const ProductCardBlock = forwardRef(({ setProductCardCounter }, ref) => {
         );
     }
 
-    // Если произошла ошибка, показываем сообщение об ошибке
+
     if (error) {
         return (
             <View style={styles.errorContainer}>
@@ -134,7 +134,7 @@ const ProductCardBlock = forwardRef(({ setProductCardCounter }, ref) => {
         );
     }
 
-    // Если корзина пуста, показываем сообщение
+    
     if (basketItems.length === 0) {
         return (
             <View style={styles.emptyContainer}>

@@ -43,16 +43,14 @@ export default AuthApi = {
      */
     async login(login, password) {
         try {
-            // Получаем SEED для хеширования пароля
+            
             const seed = await this.getSeed();
             if (!seed) {
                 throw new Error('Не удалось получить SEED');
             }
             
-            // Хешируем пароль с использованием SEED
             const hashedPassword = sha256(password + seed);
             
-            // Получаем текущий sessionId, если есть
             const sessionId = await this.getSessionId();
             
             const loginResponse = await axios.post(

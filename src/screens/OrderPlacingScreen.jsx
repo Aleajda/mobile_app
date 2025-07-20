@@ -22,7 +22,7 @@ const OrderPlacingScreen = ({ route, navigation }) => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Показ Toast-уведомления
+ 
   const showToast = (message) => {
     Toast.show({
       type: 'customToast',
@@ -34,20 +34,20 @@ const OrderPlacingScreen = ({ route, navigation }) => {
     });
   };
 
-  // Получаем товары из параметров навигации
+  
   useEffect(() => {
     if (route.params && route.params.items) {
       setOrderItems(route.params.items);
       calculateTotalPrice(route.params.items);
     } else {
-      // Если товары не переданы, возвращаемся на экран корзины
+      
       navigation.goBack();
     }
   }, [route.params]);
 
-  // Устанавливаем клиента "Себе на склад" по умолчанию при первой загрузке
+  
   useEffect(() => {
-    // Создаем клиента "Себе на склад" по умолчанию
+    
     const defaultClient = {
       id: -1,
       name: 'Себе на склад',
@@ -56,11 +56,11 @@ const OrderPlacingScreen = ({ route, navigation }) => {
     
     setSelectedClient(defaultClient);
     
-    // Загружаем склад по умолчанию
+    
     loadDefaultSklad();
   }, []);
 
-  // Загружаем договоры при выборе клиента
+  
   useEffect(() => {
     if (selectedClient && selectedClient.company_id && selectedClient.company_id !== '-1') {
       loadClientContracts(selectedClient.company_id);
@@ -69,7 +69,7 @@ const OrderPlacingScreen = ({ route, navigation }) => {
     }
   }, [selectedClient]);
 
-  // Расчет общей стоимости товаров
+  
   const calculateTotalPrice = (items) => {
     if (!Array.isArray(items)) return;
     
@@ -82,7 +82,7 @@ const OrderPlacingScreen = ({ route, navigation }) => {
     setTotalPrice(total);
   };
 
-  // Форматирование цены
+  
   const formatPrice = (price) => {
     if (!price) return '0 ₽';
     return new Intl.NumberFormat('ru-RU', {
@@ -114,7 +114,7 @@ const OrderPlacingScreen = ({ route, navigation }) => {
       const response = await BasketApi.getCompanyDogovors(companyId);
       
       if (response && response.status === "ok" && response.dogovors && response.dogovors.length > 0) {
-        // Автоматически выбираем первый договор
+        
         setSelectedContract(response.dogovors[0]);
       } else {
         setSelectedContract(null);
@@ -139,9 +139,9 @@ const OrderPlacingScreen = ({ route, navigation }) => {
     setSelectedContract(contract);
   };
 
-  // Подготовка данных для отправки заказа
+  
   const prepareOrderData = () => {
-    // Формируем массив товаров для заказа
+    
     const details = orderItems.map(item => ({
       id: item.id,
       basket_id: item.basket_id || "",
@@ -187,31 +187,31 @@ const OrderPlacingScreen = ({ route, navigation }) => {
       imported_from_user_lastname: item.imported_from_user_lastname || null
     }));
 
-    // Формируем данные заказа
+    
     return {
       details: details,
       company_id: selectedClient ? selectedClient.company_id : "",
       company_dogovor_id: selectedContract ? selectedContract.id : 0,
-      delivery_type: 1, // Самовывоз
+        delivery_type: 1, 
       delivery_address: selectedSklad ? selectedSklad.address : "",
       delivery_type_id: selectedSklad ? selectedSklad.id : "",
-      payment_type: 1, // Наличные
+      payment_type: 1, 
       sum: totalPrice,
       zakaz_cashback_discount: "0",
       car_id: null
     };
   };
 
-  // Обработчик нажатия на кнопку "Оформить заказ"
+  
   const handlePlaceOrder = async () => {
-    // Проверяем, выбран ли клиент
+    
     if (!selectedClient) {
       showToast('Выберите клиента');
       return;
     }
     
 
-    // Проверяем, выбран ли склад
+    
     if (!selectedSklad) {
       showToast('Выберите склад');
       return;
@@ -220,25 +220,25 @@ const OrderPlacingScreen = ({ route, navigation }) => {
     try {
       setIsSubmitting(true);
       
-      // Подготавливаем данные заказа
+      
       const orderData = prepareOrderData();
       
-      // Отправляем запрос на оформление заказа
+      
       const response = await BasketApi.saveZakaz(orderData);
       
       if (response && response.status === "ok" && response.zakaz_id) {
-        // Очищаем корзину
+        
         await BasketApi.clearBasket();
         
-        // Показываем сообщение об успешном оформлении
+        
         showToast(`Заказ №${response.zakaz_id} успешно оформлен`);
         
-        // Переходим на экран заказов
+        
         setTimeout(() => {
           navigation.navigate("Orders");
         }, 500);
       } else {
-        // Показываем сообщение об ошибке
+        
         showToast('Не удалось оформить заказ');
       }
     } catch (error) {

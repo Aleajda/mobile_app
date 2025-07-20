@@ -5,20 +5,20 @@ import BasketApi, { basketUpdateEvent } from '../../api/BasketApi';
 const Header = ({navigation}) => {
   const [basketCount, setBasketCount] = useState(0);
 
-  // Загрузка количества товаров в корзине при монтировании компонента
+  
   useEffect(() => {
     loadBasketCount();
     
-    // Подписываемся на событие обновления корзины
+    
     const unsubscribe = basketUpdateEvent.addListener(loadBasketCount);
     
-    // Отписываемся при размонтировании компонента
+    
     return () => {
       unsubscribe();
     };
   }, []);
 
-  // Функция загрузки количества товаров в корзине
+  
   const loadBasketCount = async () => {
     try {
       const count = await BasketApi.getBasketCount();

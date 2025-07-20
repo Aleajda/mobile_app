@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 
 const OrderPlacingProduct = ({ item }) => {
-    // Проверяем, есть ли данные товара
+        
     if (!item) {
         return null;
     }
@@ -18,7 +18,7 @@ const OrderPlacingProduct = ({ item }) => {
         }).format(price);
     };
 
-    // Получаем бренд из данных (может быть в поле brand или brand_name)
+    
     const getBrand = () => {
         if (item.brand_name) return item.brand_name;
         if (item.brand) return item.brand;

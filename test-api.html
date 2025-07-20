@@ -67,7 +67,7 @@
     <div id="result">Результат запроса будет отображен здесь...</div>
     
     <script>
-        // Автоматически отправляем запрос при загрузке страницы
+        
         window.onload = function() {
             makeRequest();
         };
@@ -80,7 +80,7 @@
             resultDiv.innerHTML = "Отправка запроса...";
             resultDiv.className = "";
             
-            // Данные для запроса из curl-команды
+        
             const data = {
                 "show_price": "on",
                 "article": article,
@@ -97,7 +97,7 @@
                 "action": "get_brands_online"
             };
             
-            // Заголовки запроса из curl-команды
+        
             const headers = {
                 'Accept': '*/*',
                 'Accept-Language': 'ru-RU,ru;q=0.6',
@@ -113,16 +113,16 @@
                 'Cookie': `SORT1SESSID=${sessionId}`
             };
             
-            // Создаем объект XMLHttpRequest
+            
             const xhr = new XMLHttpRequest();
             xhr.open('POST', 'https://sort1.pro/api/index.php', true);
             
-            // Устанавливаем заголовки
+            
             for (const [key, value] of Object.entries(headers)) {
                 xhr.setRequestHeader(key, value);
             }
             
-            // Обработка ответа
+            
             xhr.onload = function() {
                 if (xhr.status >= 200 && xhr.status < 300) {
                     try {
@@ -139,17 +139,17 @@
                 }
             };
             
-            // Обработка ошибки сети
+            
             xhr.onerror = function() {
                 resultDiv.innerHTML = "Сетевая ошибка! Возможно, проблема с CORS. Проверьте консоль браузера для деталей.";
                 resultDiv.className = "error";
                 console.error("Сетевая ошибка при отправке запроса:", xhr);
             };
             
-            // Отправляем запрос
+            
             xhr.send(JSON.stringify(data));
             
-            // Выводим детали запроса
+            
             console.log("Отправлен запрос:", {
                 url: 'https://sort1.pro/api/index.php',
                 method: 'POST',

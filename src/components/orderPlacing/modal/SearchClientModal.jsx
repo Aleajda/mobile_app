@@ -36,7 +36,7 @@ const SearchClientModal = ({ visible, onClose, onSelectClient }) => {
       const response = await BasketApi.searchClients(searchValue, page);
       
       if (response && response.status === "ok" && response.clients) {
-        // Преобразуем данные клиентов для соответствия нашему формату
+        
         const formattedClients = response.clients.map(client => ({
           id: client.id,
           name: client.name,
@@ -73,7 +73,7 @@ const SearchClientModal = ({ visible, onClose, onSelectClient }) => {
     }
   };
 
-  // Объединяем фиксированные клиенты с результатами поиска
+  
   const allClients = page === 1 ? [...fixedClients, ...clients] : clients;
 
   return (

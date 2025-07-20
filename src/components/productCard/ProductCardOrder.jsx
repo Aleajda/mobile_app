@@ -4,11 +4,11 @@ import ProductCardSettingsModal from './modal/ProductCardSettingsModal';
 import ProductCardEditModal from './modal/ProductCardEditModal';
 
 const ProductCardOrder = ({ item, price, price_dealer, index, onItemUpdated, onSelect, isSelected }) => {
-    // Состояние для модальных окон
+    
     const [settingsModalVisible, setSettingsModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
     
-    // Обработчик выбора товара
+    
     const handleCheck = () => {
         const itemId = item.id || item.detail_id;
         if (onSelect && itemId) {
@@ -16,7 +16,7 @@ const ProductCardOrder = ({ item, price, price_dealer, index, onItemUpdated, onS
         }
     };
     
-    // Определение статуса наличия
+    
     const getAvailabilityStatus = () => {
         if (!item) return { text: 'Нет в наличии', color: '#EB5757', bgColor: '#EB57571A' };
         
@@ -44,12 +44,12 @@ const ProductCardOrder = ({ item, price, price_dealer, index, onItemUpdated, onS
         }
     };
     
-    // Открытие модального окна редактирования
+    
     const openEditModal = () => {
         setEditModalVisible(true);
     };
     
-    // Обработчик обновления товара
+    
     const handleItemUpdated = () => {
         if (onItemUpdated) {
             onItemUpdated();
@@ -58,7 +58,7 @@ const ProductCardOrder = ({ item, price, price_dealer, index, onItemUpdated, onS
     
     const availability = getAvailabilityStatus();
     
-    // Форматирование количества
+    
     const formatQuantity = () => {
         const count = item?.count || item?.to_cart_count || 1;
         return `${count} шт.`;

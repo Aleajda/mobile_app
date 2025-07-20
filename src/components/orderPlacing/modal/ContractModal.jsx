@@ -39,7 +39,7 @@ const ContractModal = ({ visible, onClose, onSelectContract, selectedContractId,
             if (response && response.status === "ok" && response.dogovors) {
                 setContracts(response.dogovors);
                 
-                // Если нет выбранного договора, выбираем первый по умолчанию
+                
                 if (!selectedContractId && response.dogovors.length > 0) {
                     setValue(response.dogovors[0].id);
                 }

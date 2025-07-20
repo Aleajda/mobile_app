@@ -5,7 +5,7 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 const Order = ({ order }) => {
     const navigation = useNavigation();
     
-    // Форматирование даты
+    
     const formatDate = (dateString) => {
         if (!dateString) return '';
         
@@ -19,33 +19,33 @@ const Order = ({ order }) => {
         return `${day} ${month} ${year} в ${hours}:${minutes}`;
     };
     
-    // Получение статуса заказа
+    
     const getStatusText = (statusCode) => {
         const statuses = {
             '11': 'Новый',
             '12': 'В обработке',
             '70': 'Отгружен',
             '201': 'Завершен',
-            // Добавьте другие статусы по мере необходимости
+            
         };
         
         return statuses[statusCode] || 'Новый';
     };
+
     
-    // Определение цвета статуса
     const getStatusColor = (statusCode) => {
         const colors = {
             '11': { bg: '#27AE601A', text: '#27AE60' },
             '12': { bg: '#F2C94C1A', text: '#F2C94C' },
             '70': { bg: '#2F80ED1A', text: '#2F80ED' },
             '201': { bg: '#9B51E01A', text: '#9B51E0' },
-            // Добавьте другие статусы по мере необходимости
+            
         };
         
         return colors[statusCode] || { bg: '#27AE601A', text: '#27AE60' };
     };
     
-    // Если данные заказа не переданы, возвращаем пустой компонент
+    
     if (!order) return null;
     
     const statusColor = getStatusColor(order.status);

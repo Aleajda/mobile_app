@@ -38,7 +38,7 @@ const ChangeAddressModal = ({ visible, onClose, onSelectSklad, selectedSkladId }
             if (response && response.status === "ok" && response.sklads) {
                 setSklads(response.sklads);
                 
-                // Если нет выбранного склада, выбираем первый по умолчанию
+                
                 if (!selectedSkladId && response.sklads.length > 0) {
                     setValue(response.sklads[0].id);
                 }

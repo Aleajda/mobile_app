@@ -10,7 +10,7 @@ const DetailModal = ({ navigation, detailData, article, brand, visible = false, 
     const [isAddingToBasket, setIsAddingToBasket] = useState(false);
     const [showQuantityControls, setShowQuantityControls] = useState(false);
     
-    // Синхронизируем состояние с пропсами
+    
     useEffect(() => {
         setModalVisible(visible);
     }, [visible]);
@@ -26,7 +26,7 @@ const DetailModal = ({ navigation, detailData, article, brand, visible = false, 
         });
     };
 
-    // Форматирование цены
+    
     const formatPrice = (price) => {
         if (!price) return '0 ₽';
         return new Intl.NumberFormat('ru-RU', {
@@ -46,7 +46,7 @@ const DetailModal = ({ navigation, detailData, article, brand, visible = false, 
         }
     };
 
-    // Увеличение количества товара
+    
     const increaseQuantity = () => {
         const maxAvailable = parseInt(detailData?.count) || 10;
         if (quantity < maxAvailable) {
@@ -56,18 +56,18 @@ const DetailModal = ({ navigation, detailData, article, brand, visible = false, 
         }
     };
 
-    // Уменьшение количества товара
+    
     const decreaseQuantity = () => {
         if (quantity > 1) {
             setQuantity(quantity - 1);
         }
     };
 
-    // Добавление товара в корзину
+    
     const handleAddToBasket = async () => {
         if (isAddingToBasket) return;
         
-        // Показываем элементы управления количеством при первом нажатии
+        
         if (!showQuantityControls) {
             setShowQuantityControls(true);
             return;
@@ -76,7 +76,7 @@ const DetailModal = ({ navigation, detailData, article, brand, visible = false, 
         setIsAddingToBasket(true);
         
         try {
-            // Подготавливаем данные для запроса
+            
             const detailToAdd = {
                 my_code: detailData?.my_code || "",
                 ean13: detailData?.ean13 || "",
@@ -105,12 +105,12 @@ const DetailModal = ({ navigation, detailData, article, brand, visible = false, 
             if (result && result.status === 'ok') {
                 showToast(`${quantity} шт. добавлено в корзину`);
                 
-                // Если передан колбэк, вызываем его
+                
                 if (onAddToBasket) {
                     onAddToBasket();
                 }
                 
-                // Закрываем модальное окно после успешного добавления
+                
                 handleClose();
             } else {
                 Alert.alert("Ошибка", "Не удалось добавить товар в корзину");
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
         color: '#828282'
     },
     
-    // Стили для элементов управления количеством
+    
     quantityContainer: {
         flexDirection: 'row',
         alignItems: 'center',

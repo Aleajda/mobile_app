@@ -16,7 +16,7 @@ const DateRangeModal = ({ visible, onClose, selectedRange, setSelectedRange }) =
         const currentYear = today.getFullYear();
         const currentMonth = today.getMonth();
         
-        // Создаем массив из 3 месяцев для отображения
+       
         setVisibleMonths([
           { month: currentMonth, year: currentYear },
           { month: (currentMonth + 1) % 12, year: currentMonth + 1 >= 12 ? currentYear + 1 : currentYear },
@@ -25,13 +25,11 @@ const DateRangeModal = ({ visible, onClose, selectedRange, setSelectedRange }) =
       }
     }, [visible]);
     
-    // Названия месяцев
     const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
     
-    // Названия дней недели
     const weekDays = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
 
-    // Обновляем markedDates при изменении selectedRange или открытии модального окна
+    
     useEffect(() => {
       if (visible && selectedRange.startDate && selectedRange.endDate) {
         updateMarkedDates(selectedRange.startDate, selectedRange.endDate);
@@ -51,12 +49,12 @@ const DateRangeModal = ({ visible, onClose, selectedRange, setSelectedRange }) =
       }
     }, [visible, selectedRange, hoverDate]);
 
-    // Функция для обновления отмеченных дат
+    
     const updateMarkedDates = (startDateStr, endDateStr) => {
       const start = new Date(startDateStr);
       const end = new Date(endDateStr);
       
-      // Сортируем даты, чтобы startDate всегда была раньше endDate
+      
       let finalStart = start, finalEnd = end;
       if (start > end) {
         finalStart = end;
@@ -92,19 +90,19 @@ const DateRangeModal = ({ visible, onClose, selectedRange, setSelectedRange }) =
       setMarkedDates(updatedMarkedDates);
     };
 
-    // Функция для получения количества дней в месяце
+    
     const getDaysInMonth = (year, month) => {
       return new Date(year, month + 1, 0).getDate();
     };
     
-    // Функция для получения первого дня месяца (0 - воскресенье, 1 - понедельник, и т.д.)
+    
     const getFirstDayOfMonth = (year, month) => {
       const day = new Date(year, month, 1).getDay();
-      // Преобразуем, чтобы понедельник был 0, а воскресенье - 6
+      
       return day === 0 ? 6 : day - 1;
     };
 
-    // Функция для проверки, является ли дата сегодняшней
+    
     const isToday = (year, month, day) => {
       const today = new Date();
       return (
@@ -114,22 +112,22 @@ const DateRangeModal = ({ visible, onClose, selectedRange, setSelectedRange }) =
       );
     };
 
-    // Функция для проверки, выбрана ли дата
+    
     const isDateSelected = (dateString) => {
       return dateString in markedDates;
     };
 
-    // Функция для проверки, является ли дата началом выбранного диапазона
+    
     const isStartDate = (dateString) => {
       return markedDates[dateString]?.startingDay;
     };
 
-    // Функция для проверки, является ли дата концом выбранного диапазона
+    
     const isEndDate = (dateString) => {
       return markedDates[dateString]?.endingDay;
     };
 
-    // Функция для переключения на предыдущий месяц
+    
     const showPreviousMonth = () => {
       if (visibleMonths.length > 0) {
         const firstMonth = visibleMonths[0];
@@ -143,7 +141,7 @@ const DateRangeModal = ({ visible, onClose, selectedRange, setSelectedRange }) =
       }
     };
 
-    // Функция для переключения на следующий месяц
+    
     const showNextMonth = () => {
       if (visibleMonths.length > 0) {
         const lastMonth = visibleMonths[visibleMonths.length - 1];
@@ -157,10 +155,10 @@ const DateRangeModal = ({ visible, onClose, selectedRange, setSelectedRange }) =
       }
     };
 
-    // Обработка нажатия на день
+    
     const handleDayPress = (dateString) => {
       if (!selectedRange.startDate || (selectedRange.startDate && selectedRange.endDate)) {
-        // Начинаем новый выбор
+        
         setSelectedRange({ startDate: dateString, endDate: null });
         setHoverDate(null);
         setMarkedDates({
@@ -172,7 +170,7 @@ const DateRangeModal = ({ visible, onClose, selectedRange, setSelectedRange }) =
           }
         });
       } else {
-        // Завершаем выбор диапазона
+        
         setSelectedRange({ 
           startDate: selectedRange.startDate, 
           endDate: dateString 
@@ -182,28 +180,28 @@ const DateRangeModal = ({ visible, onClose, selectedRange, setSelectedRange }) =
       }
     };
 
-    // Обработка наведения на день (для предпросмотра выбора)
+    
     const handleDayHover = (dateString) => {
       if (selectedRange.startDate && !selectedRange.endDate) {
         setHoverDate(dateString);
       }
     };
 
-    // Сбросить выбор дат
+    
     const handleReset = () => {
       setSelectedRange({ startDate: null, endDate: null });
       setHoverDate(null);
       setMarkedDates({});
     };
 
-    // Форматирование даты для отображения
+    
     const formatDate = (dateString) => {
       if (!dateString) return '';
       const date = new Date(dateString);
       return `${date.getDate()} ${monthNames[date.getMonth()].toLowerCase()} ${date.getFullYear()}`;
     };
 
-    // Получение строки с выбранным периодом
+    
     const getSelectedPeriodText = () => {
       if (selectedRange.startDate && selectedRange.endDate) {
         return `${formatDate(selectedRange.startDate)} - ${formatDate(selectedRange.endDate)}`;
@@ -213,7 +211,7 @@ const DateRangeModal = ({ visible, onClose, selectedRange, setSelectedRange }) =
       return '';
     };
 
-    // Быстрый выбор периодов
+    
     const selectPredefinedPeriod = (days) => {
       const endDate = new Date();
       const startDate = new Date();
@@ -225,7 +223,7 @@ const DateRangeModal = ({ visible, onClose, selectedRange, setSelectedRange }) =
       setSelectedRange({ startDate: startDateStr, endDate: endDateStr });
       updateMarkedDates(startDateStr, endDateStr);
       
-      // Прокручиваем к месяцу, содержащему начальную дату
+      
       const startMonth = startDate.getMonth();
       const startYear = startDate.getFullYear();
       
@@ -236,18 +234,18 @@ const DateRangeModal = ({ visible, onClose, selectedRange, setSelectedRange }) =
       ]);
     };
 
-    // Рендер календаря для конкретного месяца
+    
     const renderCalendar = ({ month, year }, index) => {
       const daysInMonth = getDaysInMonth(year, month);
       const firstDay = getFirstDayOfMonth(year, month);
       const days = [];
       
-      // Добавляем пустые ячейки для выравнивания
+      
       for (let i = 0; i < firstDay; i++) {
         days.push(<View key={`empty-${i}`} style={styles.dayCell} />);
       }
       
-      // Добавляем дни месяца
+      
       for (let day = 1; day <= daysInMonth; day++) {
         const date = new Date(year, month, day);
         const dateString = date.toISOString().split('T')[0];
@@ -256,10 +254,10 @@ const DateRangeModal = ({ visible, onClose, selectedRange, setSelectedRange }) =
         const isEndOfRange = isEndDate(dateString);
         const isTodayDate = isToday(year, month, day);
         
-        // Определяем, находится ли день в прошлом месяце
+        
         const isPastDay = new Date() > date;
         
-        // Проверяем, является ли дата промежуточной в диапазоне
+        
         const isMiddleDay = isSelectedDate && !isStartOfRange && !isEndOfRange;
         
         days.push(
@@ -296,7 +294,7 @@ const DateRangeModal = ({ visible, onClose, selectedRange, setSelectedRange }) =
         );
       }
 
-      // Добавляем пустые ячейки в конце для выравнивания сетки
+      
       const totalCells = days.length;
       const rowsNeeded = Math.ceil(totalCells / 7);
       const totalCellsNeeded = rowsNeeded * 7;

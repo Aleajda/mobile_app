@@ -14,26 +14,21 @@ const OrdersScreen = () => {
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState("thisMonth");
 
-    // Функция получения данных о заказах с фильтрацией
+  
     const fetchOrders = async (filter = {}) => {
         try {
             setError(null);
             setLoading(true);
             
-            // Параметры запроса
             const params = {};
             
-            // Добавляем даты, если они указаны в фильтре
             if (filter.startDate) params.dateFrom = filter.startDate;
             if (filter.endDate) params.dateTo = filter.endDate;
             
-            // Получаем заказы с фильтрацией
             const response = await getOrders(params);
             
-            // Выводим результат в консоль
             console.log('Ответ API заказов:', JSON.stringify(response, null, 2));
             
-            // Проверяем наличие данных в ответе (поле zakazs, а не data)
             if (response && response.zakazs && response.zakazs.length > 0) {
                 setOrders(response.zakazs);
                 console.log(`Загружено ${response.zakazs.length} заказов`);
@@ -51,7 +46,6 @@ const OrdersScreen = () => {
         }
     };
 
-    // Функция для получения дат текущего месяца
     const getCurrentMonthDates = () => {
         const today = new Date();
         const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -63,7 +57,6 @@ const OrdersScreen = () => {
         };
     };
 
-    // Функция для получения дат прошлого месяца
     const getLastMonthDates = () => {
         const today = new Date();
         const firstDay = new Date(today.getFullYear(), today.getMonth() - 1, 1);
@@ -75,7 +68,6 @@ const OrdersScreen = () => {
         };
     };
 
-    // Функция для форматирования даты в читаемый вид
     const formatDate = (dateString) => {
         if (!dateString) return '';
         
@@ -86,7 +78,6 @@ const OrdersScreen = () => {
         return `${day < 10 ? '0' + day : day}.${month < 10 ? '0' + month : month}`;
     };
 
-    // Обработка изменения вкладки
     const handleTabChange = (tab) => {
         setActiveTab(tab);
         
@@ -100,38 +91,34 @@ const OrdersScreen = () => {
             dateRange = selectedRange;
         }
         
-        // Обновляем выбранный диапазон, если это не пользовательский
         if (tab !== "custom") {
             setSelectedRange(dateRange);
         }
         
-        // Загружаем заказы с новым фильтром
         fetchOrders(dateRange);
     };
 
-    // Обработка закрытия модального окна выбора дат
     const handleDateModalClose = () => {
         setModalVisible(false);
         
-        // Если выбраны обе даты, применяем фильтр
         if (selectedRange.startDate && selectedRange.endDate) {
             setActiveTab("custom");
             fetchOrders(selectedRange);
         }
     };
 
-    // Загрузка данных при первом рендере
+    
     useEffect(() => {
-        // При первой загрузке применяем фильтр текущего месяца
+        
         const thisMonthDates = getCurrentMonthDates();
         setSelectedRange(thisMonthDates);
         fetchOrders(thisMonthDates);
     }, []);
 
-    // Обновление данных при возврате на экран
+    
     useFocusEffect(
         useCallback(() => {
-            // При возврате на экран используем текущий активный фильтр
+            
             if (activeTab === "thisMonth") {
                 const dates = getCurrentMonthDates();
                 fetchOrders(dates);
@@ -146,11 +133,11 @@ const OrdersScreen = () => {
         }, [activeTab, selectedRange])
     );
 
-    // Обработка обновления списка (pull-to-refresh)
+    
     const onRefresh = () => {
         setRefreshing(true);
         
-        // При обновлении используем текущий активный фильтр
+        
         if (activeTab === "thisMonth") {
             const dates = getCurrentMonthDates();
             fetchOrders(dates);

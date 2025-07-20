@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View, FlatList, ScrollView } from '
 import SearchProduct from './SearchProduct';
 import DetailModal from './modal/DetailModal';
 
-// Функция для удаления специальных символов из строки
+    
 const removeSpecialChars = (str) => {
     if (!str) return '';
     return str.replace(/[\s+\.\/_&\-#]/g, '').toUpperCase();
@@ -13,12 +13,11 @@ const OriginalBlock = ({ navigation, searchResult, article, brand, brandId, reqi
     const [selectedItem, setSelectedItem] = useState(null);
     const [detailModalVisible, setDetailModalVisible] = useState(false);
     
-    // Получаем данные из результатов поиска и фильтруем их по новой логике
+    
     const getItems = () => {
         if (!searchResult || !searchResult.items) return [];
         
-        // Применяем логику фильтрации оригиналов: 
-        // Оригинал это когда артикул совпадает И (бренд совпадает ИЛИ ID бренда совпадает)
+        
         return searchResult.items.filter(item => 
             item && item.article && article && 
             removeSpecialChars(item.article) === removeSpecialChars(article) && 
@@ -39,7 +38,7 @@ const OriginalBlock = ({ navigation, searchResult, article, brand, brandId, reqi
         setSelectedItem(null);
     };
 
-    // Если нет результатов, показываем сообщение
+    
     if (!items || items.length === 0) {
         return (
             <View style={styles.emptyContainer}>

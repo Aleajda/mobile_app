@@ -15,7 +15,7 @@ import Toast from 'react-native-toast-message';
 const ProductCardActionsModal = ({ visible, setVisible, selectedItems, onSelectAll, onUnselectAll, isAllSelected }) => {
     const [isProcessing, setIsProcessing] = useState(false);
     
-    // Функция для показа уведомления
+    
     const showToast = (message) => {
         Toast.show({
             type: 'customToast',
@@ -27,7 +27,7 @@ const ProductCardActionsModal = ({ visible, setVisible, selectedItems, onSelectA
         });
     };
     
-    // Обработчик выбора/отмены выбора всех товаров
+    
     const handleToggleSelectAll = () => {
         if (isAllSelected) {
             onUnselectAll();
@@ -37,11 +37,11 @@ const ProductCardActionsModal = ({ visible, setVisible, selectedItems, onSelectA
         setVisible(false);
     };
     
-    // Обработчик удаления выбранных товаров
+    
     const handleDeleteSelected = async () => {
         if (isProcessing || selectedItems.length === 0) return;
         
-        // Запрашиваем подтверждение
+        
         Alert.alert(
             "Удаление товаров",
             `Вы уверены, что хотите удалить ${selectedItems.length} ${selectedItems.length === 1 ? 'товар' : 'товаров'} из корзины?`,
@@ -57,16 +57,16 @@ const ProductCardActionsModal = ({ visible, setVisible, selectedItems, onSelectA
                         try {
                             setIsProcessing(true);
                             
-                            // Вызываем API для удаления товаров
+                            
                             const result = await BasketApi.removeMultipleFromBasket(selectedItems);
                             
                             if (result && result.status === 'ok') {
                                 showToast(`${selectedItems.length} ${selectedItems.length === 1 ? 'товар удален' : 'товаров удалено'} из корзины`);
                                 
-                                // Закрываем модальное окно
+                                
                                 setVisible(false);
                                 
-                                // Вызываем событие обновления корзины
+                                
                                 basketUpdateEvent.emit();
                             } else {
                                 Alert.alert("Ошибка", "Не удалось удалить товары из корзины");

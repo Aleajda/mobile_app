@@ -15,7 +15,7 @@ import Toast from 'react-native-toast-message';
 const ProductCardSettingsModal = ({ visible, setVisible, setEditModalOpen, itemIndex, onItemDeleted }) => {
     const [isDeleting, setIsDeleting] = useState(false);
     
-    // Функция для показа уведомления
+    
     const showToast = (message) => {
         Toast.show({
             type: 'customToast',
@@ -27,11 +27,11 @@ const ProductCardSettingsModal = ({ visible, setVisible, setEditModalOpen, itemI
         });
     };
     
-    // Обработчик удаления товара
+    
     const handleDeleteItem = async () => {
         if (isDeleting) return;
         
-        // Запрашиваем подтверждение
+        
         Alert.alert(
             "Удаление товара",
             "Вы уверены, что хотите удалить этот товар из корзины?",
@@ -47,16 +47,16 @@ const ProductCardSettingsModal = ({ visible, setVisible, setEditModalOpen, itemI
                         try {
                             setIsDeleting(true);
                             
-                            // Вызываем API для удаления товара
+                            
                             const result = await BasketApi.removeFromBasket(itemIndex);
                             
                             if (result && result.status === 'ok') {
                                 showToast('Товар удален из корзины');
                                 
-                                // Закрываем модальное окно
+                                
                                 setVisible(false);
                                 
-                                // Вызываем колбэк для обновления родительского компонента
+                                
                                 if (onItemDeleted) {
                                     onItemDeleted();
                                 }

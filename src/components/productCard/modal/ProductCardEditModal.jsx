@@ -20,7 +20,7 @@ export default function ProductCardEditModal({ visible, onClose, item, itemIndex
   const [quantity, setQuantity] = useState(1);
   const [isUpdating, setIsUpdating] = useState(false);
   
-  // Инициализация состояния при открытии модального окна
+  
   useEffect(() => {
     if (visible && item) {
       setPrice(item.price ? String(item.price) : '');
@@ -28,7 +28,7 @@ export default function ProductCardEditModal({ visible, onClose, item, itemIndex
     }
   }, [visible, item]);
 
-  // Функция для показа уведомления
+  
   const showToast = (message) => {
     Toast.show({
       type: 'customToast',
@@ -40,37 +40,37 @@ export default function ProductCardEditModal({ visible, onClose, item, itemIndex
     });
   };
 
-  // Очистка поля цены
+  
   const clearPrice = () => setPrice('');
   
-  // Обработчик сохранения изменений
+  
   const handleSave = async () => {
     if (isUpdating) return;
     
     try {
       setIsUpdating(true);
       
-      // Проверка валидности данных
+      
       const priceValue = price ? parseFloat(price) : undefined;
       
-      // Подготавливаем данные для обновления
+      
       const updatedItem = {
         quantity: quantity,
         price: priceValue
       };
       
-      // Вызываем API для обновления товара
+      
       const result = await BasketApi.updateBasketItem(itemIndex, updatedItem);
       
       if (result && result.status === 'ok') {
         showToast('Товар успешно обновлен');
         
-        // Вызываем колбэк для обновления родительского компонента
+        
         if (onItemUpdated) {
           onItemUpdated();
         }
         
-        // Закрываем модальное окно
+        
         onClose();
       } else {
         Alert.alert("Ошибка", "Не удалось обновить товар");

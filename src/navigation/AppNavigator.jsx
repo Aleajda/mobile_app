@@ -27,7 +27,7 @@ const Drawer = createDrawerNavigator();
 const AppContent = () => {
   const { isAuthenticated, isLoading } = useAuth();
   
-  // Инициализируем перехватчики axios при монтировании компонента
+  
   useEffect(() => {
     setupAxiosInterceptors();
   }, []);
@@ -192,7 +192,7 @@ const AppContent = () => {
 const AppNavigator = () => {
   const navigationRef = useRef(null);
   
-  // Устанавливаем navigationRef для использования в middleware
+  
   useEffect(() => {
     if (navigationRef.current) {
       setNavigationRef(navigationRef.current);

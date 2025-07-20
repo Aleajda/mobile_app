@@ -47,7 +47,7 @@ export default SearchApi = {
                 return null;
             }
         } catch (error) {
-            // Если это не ошибка авторизации, обрабатываем как обычно
+            
             if (!error.isAuthError) {
                 console.error('Ошибка при получении брендов:', error);
             }
@@ -100,11 +100,11 @@ export default SearchApi = {
             console.log('Статус ответа searchByArticle:', response.status);
             
             if (response.data) {
-                // Проверяем наличие поля sklad_details
+                
                 if (response.data.sklad_details && Array.isArray(response.data.sklad_details)) {
                     console.log('Получены данные склада, количество:', response.data.sklad_details.length);
                     
-                    // Если есть данные, выводим первый элемент для отладки
+                    
                     if (response.data.sklad_details.length > 0) {
                         console.log('Пример данных со склада:', 
                             JSON.stringify(response.data.sklad_details[0], null, 2));
@@ -119,7 +119,7 @@ export default SearchApi = {
                 return null;
             }
         } catch (error) {
-            // Если это не ошибка авторизации, обрабатываем как обычно
+           
             if (!error.isAuthError) {
                 console.error('Ошибка при поиске по артикулу:', error);
                 if (error.response) {
@@ -187,7 +187,7 @@ export default SearchApi = {
                 return null;
             }
         } catch (error) {
-            // Если это не ошибка авторизации, обрабатываем как обычно
+            
             if (!error.isAuthError) {
                 console.error('Ошибка при поиске деталей:', error);
             }
@@ -226,17 +226,17 @@ export default SearchApi = {
                     return;
                 }
                 
-                // Получаем requestId из первого ответа, если его еще нет
+                
                 if (!requestId && result.reqid) {
                     requestId = result.reqid;
                     console.log('Получен requestId:', requestId);
                 }
                 
-                // Проверяем, есть ли новые детали
+                
                 if (result.items && Array.isArray(result.items)) {
                     console.log('Найдено деталей:', result.items.length);
                     
-                    // Добавляем только новые детали
+                    
                     const newItems = result.items.filter(item => 
                         !foundItems.some(found => 
                             found.article === item.article && 
@@ -259,7 +259,7 @@ export default SearchApi = {
                     }
                 }
                 
-                // Проверяем, завершен ли поиск
+                
                 if (result.res_res && result.res_res[requestId]) {
                     console.log('Статус поиска:', result.res_res[requestId]);
                     
@@ -287,20 +287,20 @@ export default SearchApi = {
                 searchInterval = null;
             }
             
-            // Очищаем найденные элементы
+            
             foundItems = [];
             requestId = "";
             
             console.log('Поиск остановлен, ресурсы очищены');
         };
         
-        // Запускаем первый поиск немедленно
+        
         performSearch();
         
-        // Запускаем интервал для периодических запросов
+        
         searchInterval = setInterval(performSearch, 2000);
         
-        // Возвращаем метод для остановки поиска
+        
         return {
             stopSearch
         };

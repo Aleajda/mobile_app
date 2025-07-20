@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, FlatList, TouchableOpacity } from 'react-native
 import SearchProduct from './SearchProduct';
 import DetailModal from './modal/DetailModal';
 
-// Функция для удаления специальных символов из строки
+
 const removeSpecialChars = (str) => {
     if (!str) return '';
     return str.replace(/[\s+\.\/_&\-#]/g, '').toUpperCase();
@@ -13,16 +13,16 @@ const AnalogBlock = ({ navigation, searchResult, article, brand, brandId, reqid 
     const [selectedItem, setSelectedItem] = useState(null);
     const [detailModalVisible, setDetailModalVisible] = useState(false);
     
-    // Получаем данные из результатов поиска и фильтруем их по новой логике
+    
     const getItems = () => {
-        // Проверяем наличие аналогов в результатах поиска
+        
         if (searchResult && searchResult.analogs) {
             return searchResult.analogs;
         }
         
-        // Если аналогов нет, но есть общие результаты, фильтруем их
+        
         if (searchResult && searchResult.items) {
-            // Аналоги - это все, что не является оригиналами
+            
             return searchResult.items.filter(item => 
                 !(item && item.article && article && 
                 removeSpecialChars(item.article) === removeSpecialChars(article) && 
@@ -46,7 +46,7 @@ const AnalogBlock = ({ navigation, searchResult, article, brand, brandId, reqid 
         setSelectedItem(null);
     };
 
-    // Если нет результатов, показываем сообщение
+    
     if (!analogs || analogs.length === 0) {
         return (
             <View style={styles.emptyContainer}>

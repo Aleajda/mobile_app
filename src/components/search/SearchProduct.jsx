@@ -17,7 +17,7 @@ const SearchProduct = ({ item = {}, onAddToBasket, onBasketUpdated, reqid = "" }
         }).format(price);
     };
     
-    // Определение статуса наличия
+    
     const getAvailabilityStatus = () => {
         if (!item) return { text: 'Нет в наличии', color: '#EB5757' };
         
@@ -47,7 +47,7 @@ const SearchProduct = ({ item = {}, onAddToBasket, onBasketUpdated, reqid = "" }
     
     const availability = getAvailabilityStatus();
 
-    // Функция для показа уведомления
+    
     const showToast = (message) => {
         Toast.show({
             type: 'customToast',
@@ -59,14 +59,14 @@ const SearchProduct = ({ item = {}, onAddToBasket, onBasketUpdated, reqid = "" }
         });
     };
 
-    // Функция добавления товара в корзину
+    
     const handleAddToBasket = async () => {
         if (isAddingToBasket) return;
         
         setIsAddingToBasket(true);
         
         try {
-            // Подготавливаем данные для запроса
+            
             const detailData = {
                 my_code: item.my_code || "",
                 ean13: item.ean13 || "",
@@ -93,7 +93,7 @@ const SearchProduct = ({ item = {}, onAddToBasket, onBasketUpdated, reqid = "" }
             if (result && result.status === 'ok') {
                 showToast("Товар добавлен в корзину");
                 
-                // Если передан колбэк, вызываем его
+                
                 if (onAddToBasket) {
                     onAddToBasket();
                 }
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
         height: 24,
     },
     textContainer: {
-        paddingRight: 50, // Отступ справа для предотвращения перекрытия текста и иконки
+        paddingRight: 50,
     },
     orderTitle: {
         fontFamily: 'Roboto',

@@ -63,7 +63,7 @@ export const getOrderDetails = async (orderId) => {
     
     return await fetchWithAuth(requestData);
   } catch (error) {
-    // Если это не ошибка авторизации, обрабатываем как обычно
+    
     if (!error.isAuthError) {
       console.error('Ошибка при получении деталей заказа:', error);
     }
