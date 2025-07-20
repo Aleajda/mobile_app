@@ -23,11 +23,11 @@ const CompaniesBlock = ({ companies = [], loading = false }) => {
 
     return (
         <View>
-            <TouchableOpacity>
+            {/* <TouchableOpacity>
                 <View style={styles.addNewBtn}>
                     <Text style={styles.addNewBtnText}>Привязать компанию</Text>
                 </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             
             {companies.length === 0 ? (
                 <View style={styles.noCompaniesContainer}>

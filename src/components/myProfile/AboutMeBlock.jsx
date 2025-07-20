@@ -1,7 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useAuth } from "../../api/AuthContext";
+import { getUserData } from "../../api/ProfileApi";
 
 const AboutMeBlock = () => {
+    const [userData, setUserData] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const { authToken } = useAuth();
+
+    useEffect(() => {
+        fetchUserData();
+    }, []);
+
+    const fetchUserData = async () => {
+        try {
+            setLoading(true);
+            const response = await getUserData();
+            if (response.status === 'ok' && response.user) {
+                setUserData(response.user[0]);
+            }
+        } catch (error) {
+            console.error("Ошибка при получении данных пользователя:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <View>
             <View style={styles.mainInfoContainer}>
@@ -11,7 +35,7 @@ const AboutMeBlock = () => {
                         <View style={styles.mainInfoBlockLeft}>
                             <Text style={styles.mainInfoBlockTitle}>Имя</Text>
                             <Text style={styles.mainInfoBlockText}>
-                                Рустам Кутлубаев
+                                {userData ? `${userData.name} ${userData.lastname}` : "Загрузка..."}
                             </Text>
                         </View>
                         <TouchableOpacity>
@@ -26,7 +50,7 @@ const AboutMeBlock = () => {
                         <View style={styles.mainInfoBlockLeft}>
                             <Text style={styles.mainInfoBlockTitle}>Email</Text>
                             <Text style={styles.mainInfoBlockText}>
-                                rust.k@sort-1.pro
+                                {userData?.email || "Загрузка..."}
                             </Text>
                         </View>
                         <TouchableOpacity>
@@ -43,7 +67,7 @@ const AboutMeBlock = () => {
                                 Мобильный номер
                             </Text>
                             <Text style={styles.mainInfoBlockText}>
-                                +7 (903) 960-84-66
+                                {userData?.mphone || userData?.phone || "Загрузка..."}
                             </Text>
                         </View>
                         <TouchableOpacity>
@@ -62,7 +86,7 @@ const AboutMeBlock = () => {
                             Уровень доступа
                         </Text>
                         <Text style={styles.mainInfoBlockText}>
-                            Владелец сайта
+                            {userData?.role_name || "Загрузка..."}
                         </Text>
                     </View>
                     <TouchableOpacity>
@@ -73,7 +97,7 @@ const AboutMeBlock = () => {
                     </TouchableOpacity>
                 </View>
             </View>
-            <View style={styles.anotherBlock}>
+            {/* <View style={styles.anotherBlock}>
                 <View style={styles.mainInfoBlock}>
                     <View style={styles.mainInfoBlockLeft}>
                         <Text style={styles.mainInfoBlockTitle}>Пароль</Text>
@@ -102,7 +126,7 @@ const AboutMeBlock = () => {
                         />
                     </TouchableOpacity>
                 </View>
-            </View>
+            </View> */}
         </View>
     );
 };
